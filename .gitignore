@@ -27,3 +27,12 @@
 *.exe
 *.out
 *.app
+
+# VSCode workspace
+.vscode
+
+# CMake files
+CMakeFiles
+CMakeCache.txt
+Makefile
+cmake_install.cmake
