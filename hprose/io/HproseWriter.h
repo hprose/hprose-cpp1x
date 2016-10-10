@@ -33,6 +33,8 @@ public:
 
     void WriteNull();
 
+    void WriteBool(const bool b);
+
 private:
 
     std::ostream &stream;

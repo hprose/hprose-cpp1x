@@ -19,11 +19,16 @@
 \**********************************************************/
 
 #include <hprose/io/HproseWriter.h>
+#include <hprose/io/HproseTags.h>
 
 namespace hprose{
 
 void HproseWriter::WriteNull() {
-    stream << 'n';
+    stream << HproseTags::TagNull;
+}
+
+void HproseWriter::WriteBool(const bool b) {
+    stream << (b ? HproseTags::TagTrue : HproseTags::TagFalse);
 }
 
 }

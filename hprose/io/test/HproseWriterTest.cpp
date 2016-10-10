@@ -29,6 +29,16 @@ TEST(HproseWriter, WriteNull) {
     EXPECT_EQ(stream.str(), "n");
 }
 
+TEST(HproseWriter, WriteBool) {
+    std::ostringstream stream;
+    hprose::HproseWriter writer(stream);
+    writer.WriteBool(true);
+    EXPECT_EQ(stream.str(), "t");
+    stream.str("");
+    writer.WriteBool(false);
+    EXPECT_EQ(stream.str(), "f");
+}
+
 int main(int argc, char *argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
