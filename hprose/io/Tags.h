@@ -9,18 +9,18 @@
 
 /**********************************************************\
  *                                                        *
- * HproseTags.h                                           *
+ * hprose/io/Tags.h                                       *
  *                                                        *
  * hprose tags constants for cpp.                         *
  *                                                        *
- * LastModified: Oct 10, 2016                             *
+ * LastModified: Oct 11, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #pragma once
 
-namespace hprose { namespace HproseTags {
+namespace hprose { namespace io { namespace tags {
 
 /* Serialize Tags */
 const char TagInteger     = 'i';
@@ -60,4 +60,4 @@ const char TagArgument    = 'A';
 const char TagError       = 'E';
 const char TagEnd         = 'z';
 
-} }
+} } } // namespace

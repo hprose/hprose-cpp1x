@@ -13,25 +13,25 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 10, 2016                             *
+ * LastModified: Oct 11, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
-#include <hprose/io/HproseWriter.h>
+#include <hprose/io/Writer.h>
 
 #include <gtest/gtest.h>
 
 TEST(HproseWriter, WriteNull) {
     std::ostringstream stream;
-    hprose::HproseWriter writer(stream);
+    hprose::io::Writer writer(stream);
     writer.WriteNull();
     EXPECT_EQ(stream.str(), "n");
 }
 
 TEST(HproseWriter, WriteBool) {
     std::ostringstream stream;
-    hprose::HproseWriter writer(stream);
+    hprose::io::Writer writer(stream);
     writer.WriteBool(true);
     EXPECT_EQ(stream.str(), "t");
     stream.str("");

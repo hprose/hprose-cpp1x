@@ -9,11 +9,11 @@
 
 /**********************************************************\
  *                                                        *
- * HproseWriter.h                                         *
+ * hprose/io/Writer.h                                     *
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 10, 2016                             *
+ * LastModified: Oct 11, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -22,18 +22,21 @@
 
 #include <ostream>
 
-namespace hprose {
+namespace hprose { namespace io {
 
-class HproseWriter {
+class Writer {
 public:
 
-    HproseWriter(std::ostream &stream, bool simple = false)
+    Writer(std::ostream &stream, bool simple = false)
         : stream(stream), simple(simple) {
     }
 
     void WriteNull();
 
-    void WriteBool(const bool b);
+    void WriteBool(bool b);
+
+    template<typename ValueType>
+    void WriteInteger(const ValueType &i);
 
 private:
 
@@ -41,4 +44,4 @@ private:
     bool simple;
 };
 
-}
+} } // namespace
