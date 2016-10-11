@@ -10,6 +10,6 @@ include_directories(".")
 
 add_library(hprose STATIC ${SOURCE_FILES})
 
-add_executable(HproseWriterTest hprose/io/test/WriterTest.cpp)
-target_include_directories(HproseWriterTest PUBLIC "${GTEST_DIR}/include")
-target_link_libraries(HproseWriterTest hprose "${GTEST_DIR}/libgtest.a")
+add_executable(WriterTest hprose/io/test/WriterTest.cpp)
+target_include_directories(WriterTest PUBLIC "${GTEST_DIR}/include")
+target_link_libraries(WriterTest hprose "${GTEST_DIR}/libgtest.a")

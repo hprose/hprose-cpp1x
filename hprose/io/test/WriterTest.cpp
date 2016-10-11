@@ -9,7 +9,7 @@
 
 /**********************************************************\
  *                                                        *
- * HproseWriterTest.cpp                                   *
+ * WriterTest.cpp                                         *
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
@@ -22,21 +22,40 @@
 
 #include <gtest/gtest.h>
 
-TEST(HproseWriter, WriteNull) {
+TEST(Writer, WriteNull) {
     std::ostringstream stream;
     hprose::io::Writer writer(stream);
-    writer.WriteNull();
+    writer.writeNull();
     EXPECT_EQ(stream.str(), "n");
 }
 
-TEST(HproseWriter, WriteBool) {
+TEST(Writer, WriteBool) {
     std::ostringstream stream;
     hprose::io::Writer writer(stream);
-    writer.WriteBool(true);
+    writer.writeBool(true);
     EXPECT_EQ(stream.str(), "t");
     stream.str("");
-    writer.WriteBool(false);
+    writer.writeBool(false);
     EXPECT_EQ(stream.str(), "f");
+}
+
+TEST(Writer, SerializeBool) {
+    std::ostringstream stream;
+    hprose::io::Writer writer(stream);
+    writer.serialize(true);
+    EXPECT_EQ(stream.str(), "t");
+    stream.str("");
+    writer.serialize(false);
+    EXPECT_EQ(stream.str(), "f");
+}
+
+TEST(Writer, WriteDigit) {
+    std::ostringstream stream;
+    hprose::io::Writer writer(stream);
+    for (int i = 0; i <= 9; i++) {
+		stream.str("");
+		writer.writeInteger(i);
+	}
 }
 
 int main(int argc, char *argv[]) {

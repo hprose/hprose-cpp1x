@@ -20,6 +20,8 @@
 
 #pragma once
 
+#include <hprose/io/Types.h>
+
 #include <ostream>
 
 namespace hprose { namespace io {
@@ -31,17 +33,43 @@ public:
         : stream(stream), simple(simple) {
     }
 
-    void WriteNull();
+    template<typename T>
+    inline void serialize(const T &v) {
+        writeValue(v);
+    }
 
-    void WriteBool(bool b);
+    template<typename T>
+    inline void writeValue(const T &v) {
+        writeValue(v, NonCVType<T>());
+    }
 
-    template<typename ValueType>
-    void WriteInteger(const ValueType &i);
+    void writeNull();
+
+    void writeBool(bool b);
+
+    template<typename T>
+    void writeInteger(T i) {
+        if (i >= 0 && i <= 9) {
+            stream << static_cast<char>('0' + i);
+        }
+    }
+
+    template<typename T>
+    void writeFloat(T f);
 
 private:
+
+    template<typename T>
+    inline void writeValue(const T &, UnknownType) {
+    }
+
+    template<typename T>
+    inline void writeValue(const T &b, BoolType) {
+        writeBool(b);
+    }
 
     std::ostream &stream;
     bool simple;
 };
 
-} } // namespace
+} } // hprose::io

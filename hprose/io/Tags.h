@@ -60,4 +60,4 @@ const char TagArgument    = 'A';
 const char TagError       = 'E';
 const char TagEnd         = 'z';
 
-} } } // namespace
+} } } // hprose::io::tags

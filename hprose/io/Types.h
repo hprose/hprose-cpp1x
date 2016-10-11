@@ -9,26 +9,46 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/io/Writer.cpp                                   *
+ * hprose/io/Types.h                                      *
  *                                                        *
- * hprose writer unit for cpp.                            *
+ * hprose types header for cpp.                           *
  *                                                        *
  * LastModified: Oct 11, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
-#include <hprose/io/Writer.h>
-#include <hprose/io/Tags.h>
+#pragma once
 
-namespace hprose { namespace io {
+#include <type_traits>
 
-void Writer::writeNull() {
-    stream << tags::TagNull;
-}
+namespace hprose { namespace io { 
 
-void Writer::writeBool(bool b) {
-    stream << (b ? tags::TagTrue : tags::TagFalse);
-}
+template<int v>
+struct IntToType {
+    const static int value = v;
+};
+
+typedef IntToType<-4> UnknownType;
+typedef IntToType< 1> BoolType;
+typedef IntToType< 2> ByteType;
+typedef IntToType< 3> CharType;
+typedef IntToType< 4> EnumType;
+typedef IntToType< 5> IntegerType;
+
+template<typename Type>
+struct TypeToType {
+    typedef IntToType<UnknownType::value> type;
+};
+
+template<>
+struct TypeToType<bool> {
+    typedef BoolType type;
+};
+
+template<typename Type>
+struct NonCVType
+    : public TypeToType<typename std::remove_cv<Type>::type>::type {
+};
 
 } } // hprose::io
