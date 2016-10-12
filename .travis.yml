@@ -5,5 +5,9 @@ compiler:
 os:
   - linux
   - osx
+addons:
+  apt:
+    packages:
+    - cmake
 script: sh ./travis.sh
 sudo: false
