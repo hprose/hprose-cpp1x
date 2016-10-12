@@ -4,11 +4,11 @@ compiler:
   - gcc
 os:
   - linux
+  before_install:
+    - sudo apt-get install software-properties-common
+    - echo "\n" > sudo add-apt-repository ppa:george-edison55/cmake-3.x
+    - sudo apt-get update
+    - sudo apt-get install cmake
   - osx
-before_install:
-  - sudo apt-get install software-properties-common
-  - sudo add-apt-repository ppa:george-edison55/cmake-3.x
-  - sudo apt-get update
-  - sudo apt-get install cmake
 script: sh ./travis.sh
 sudo: require
