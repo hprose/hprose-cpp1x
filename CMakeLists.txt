@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2)
 project(hprose)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11 -lpthread")
 
 set(SOURCE_FILES
     hprose/io/Writer.cpp)
