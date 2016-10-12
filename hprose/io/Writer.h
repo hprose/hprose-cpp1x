@@ -52,6 +52,7 @@ public:
 
     template<typename T>
     void writeInteger(T i) {
+        static_assert(NonCVType<T>::value == IntegerType::value, "Requires integer type");
         if (i >= 0 && i <= 9) {
             stream << static_cast<char>('0' + i);
             return;
@@ -65,7 +66,19 @@ public:
     }
 
     template<typename T>
-    void writeFloat(T f);
+    void writeFloat(T f) {
+        static_assert(NonCVType<T>::value == FloatType::value, "Requires floating point type");
+        if (f != f) {
+            stream << tags::TagNaN;
+        } else if (f == std::numeric_limits<T>::infinity()) {
+            stream << tags::TagInfinity << tags::TagPos;
+        } else if (f == -std::numeric_limits<T>::infinity()) {
+            stream << tags::TagInfinity << tags::TagNeg;
+        } else {
+            stream.precision(std::numeric_limits<T>::digits10);
+            stream << tags::TagDouble << f << tags::TagSemicolon;
+        }
+    }
 
 private:
 
@@ -81,6 +94,11 @@ private:
     template<typename T>
     inline void writeValue(const T &i, IntegerType) {
         writeInteger(i);
+    }
+
+    template<typename T>
+    inline void writeValue(const T &f, FloatType) {
+        writeFloat(f);
     }
 
     std::ostream &stream;

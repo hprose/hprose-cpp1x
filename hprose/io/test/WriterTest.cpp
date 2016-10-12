@@ -24,6 +24,13 @@
 
 #include <random>
 
+#define T(value, expected) { \
+    std::ostringstream stream; \
+    hprose::io::Writer writer(stream); \
+    writer.serialize(value); \
+    EXPECT_EQ(stream.str(), expected); \
+}
+
 TEST(Writer, WriteNull) {
     std::ostringstream stream;
     hprose::io::Writer writer(stream);
@@ -42,43 +49,35 @@ TEST(Writer, WriteBool) {
 }
 
 TEST(Writer, SerializeBool) {
-    std::ostringstream stream;
-    hprose::io::Writer writer(stream);
-    writer.serialize(true);
-    EXPECT_EQ(stream.str(), "t");
-    stream.str("");
-    writer.serialize(false);
-    EXPECT_EQ(stream.str(), "f");
+    T(true, "t");
+    T(false, "f");
 }
 
 TEST(Writer, SerializeDigit) {
-    std::ostringstream stream;
-    hprose::io::Writer writer(stream);
     for (int i = 0; i <= 9; i++) {
-        stream.str("");
-        writer.serialize(i);
-        EXPECT_EQ(stream.str(), std::to_string(i));
+        T(i, std::to_string(i));
     }
 }
 
 TEST(Writer, SerializeInteger) {
-    std::ostringstream stream;
-    hprose::io::Writer writer(stream);
     std::random_device rd;
     std::uniform_int_distribution<int32_t> dis1(10); 
     for (int i = 0; i <= 100; i++) {
-        stream.str("");
         int32_t x = dis1(rd);
-        writer.serialize(x);
-        EXPECT_EQ(stream.str(), "i" + std::to_string(x) + ";");
+        T(x, "i" + std::to_string(x) + ";");
     }
     std::uniform_int_distribution<int64_t> dis2(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
     for (int i = 0; i <= 100; i++) {
-        stream.str("");
         int64_t x = dis2(rd);
-        writer.serialize(x);
-        EXPECT_EQ(stream.str(), "l" + std::to_string(x) + ";");
+        T(x, "l" + std::to_string(x) + ";");
     }
+}
+
+TEST(Writer, SerializeFloat) {
+    T(std::numeric_limits<float>::quiet_NaN(), "N");
+    T(std::numeric_limits<float>::infinity(), "I+");
+    T(-std::numeric_limits<float>::infinity(), "I-");
+    T(3.14159f, "d3.14159;");
 }
 
 int main(int argc, char *argv[]) {
