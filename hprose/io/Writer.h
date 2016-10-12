@@ -13,16 +13,18 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 11, 2016                             *
+ * LastModified: Oct 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #pragma once
 
+#include <hprose/io/Tags.h>
 #include <hprose/io/Types.h>
 
 #include <ostream>
+#include <numeric>
 
 namespace hprose { namespace io {
 
@@ -34,8 +36,9 @@ public:
     }
 
     template<typename T>
-    inline void serialize(const T &v) {
+    inline Writer& serialize(const T &v) {
         writeValue(v);
+        return *this;
     }
 
     template<typename T>
@@ -51,7 +54,14 @@ public:
     void writeInteger(T i) {
         if (i >= 0 && i <= 9) {
             stream << static_cast<char>('0' + i);
+            return;
         }
+        if (i >= std::numeric_limits<int>::min() && i <= std::numeric_limits<int>::max()) {
+            stream << tags::TagInteger;
+        } else {
+            stream << tags::TagLong;
+        }
+        stream << i << tags::TagSemicolon;
     }
 
     template<typename T>
@@ -66,6 +76,11 @@ private:
     template<typename T>
     inline void writeValue(const T &b, BoolType) {
         writeBool(b);
+    }
+
+    template<typename T>
+    inline void writeValue(const T &i, IntegerType) {
+        writeInteger(i);
     }
 
     std::ostream &stream;

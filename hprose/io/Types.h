@@ -13,7 +13,7 @@
  *                                                        *
  * hprose types header for cpp.                           *
  *                                                        *
- * LastModified: Oct 11, 2016                             *
+ * LastModified: Oct 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -35,6 +35,7 @@ typedef IntToType< 2> ByteType;
 typedef IntToType< 3> CharType;
 typedef IntToType< 4> EnumType;
 typedef IntToType< 5> IntegerType;
+typedef IntToType< 6> FloatType;
 
 template<typename Type>
 struct TypeToType {
@@ -44,6 +45,51 @@ struct TypeToType {
 template<>
 struct TypeToType<bool> {
     typedef BoolType type;
+};
+
+template<>
+struct TypeToType<short> {
+    typedef IntegerType type;
+};
+
+template<>
+struct TypeToType<unsigned short> {
+    typedef IntegerType type;
+};
+
+template<>
+struct TypeToType<int> {
+    typedef IntegerType type;
+};
+
+template<>
+struct TypeToType<unsigned int> {
+    typedef IntegerType type;
+};
+
+template<>
+struct TypeToType<long long> {
+    typedef IntegerType type;
+};
+
+template<>
+struct TypeToType<unsigned long long> {
+    typedef IntegerType type;
+};
+
+template<>
+struct TypeToType<float> {
+    typedef FloatType type;
+};
+
+template<>
+struct TypeToType<double> {
+    typedef FloatType type;
+};
+
+template<>
+struct TypeToType<long double> {
+    typedef FloatType type;
 };
 
 template<typename Type>

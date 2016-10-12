@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 11, 2016                             *
+ * LastModified: Oct 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -21,6 +21,8 @@
 #include <hprose/io/Writer.h>
 
 #include <gtest/gtest.h>
+
+#include <random>
 
 TEST(Writer, WriteNull) {
     std::ostringstream stream;
@@ -49,12 +51,33 @@ TEST(Writer, SerializeBool) {
     EXPECT_EQ(stream.str(), "f");
 }
 
-TEST(Writer, WriteDigit) {
+TEST(Writer, SerializeDigit) {
     std::ostringstream stream;
     hprose::io::Writer writer(stream);
     for (int i = 0; i <= 9; i++) {
 		stream.str("");
-		writer.writeInteger(i);
+		writer.serialize(i);
+        EXPECT_EQ(stream.str(), std::to_string(i));
+	}
+}
+
+TEST(Writer, SerializeInt) {
+    std::ostringstream stream;
+    hprose::io::Writer writer(stream);
+    std::random_device rd;
+    std::uniform_int_distribution<int> dis1(10); 
+    for (int i = 0; i <= 100; i++) {
+		stream.str("");
+        int x = dis1(rd);
+		writer.serialize(x);
+        EXPECT_EQ(stream.str(), "i" + std::to_string(x) + ";");
+	}
+    std::uniform_int_distribution<long long> dis2(static_cast<long long>(std::numeric_limits<int>::max()) + 1);
+    for (int i = 0; i <= 100; i++) {
+		stream.str("");
+        long long x = dis2(rd);
+		writer.serialize(x);
+        EXPECT_EQ(stream.str(), "l" + std::to_string(x) + ";");
 	}
 }
 

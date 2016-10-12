@@ -13,13 +13,12 @@
  *                                                        *
  * hprose writer unit for cpp.                            *
  *                                                        *
- * LastModified: Oct 11, 2016                             *
+ * LastModified: Oct 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #include <hprose/io/Writer.h>
-#include <hprose/io/Tags.h>
 
 namespace hprose { namespace io {
 
