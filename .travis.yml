@@ -11,6 +11,12 @@ matrix:
           sources: &sources
             - llvm-toolchain-precise-3.8
             - ubuntu-toolchain-r-test
+      before_install:
+        - sudo apt-get remove cmake
+        - sudo apt-get install software-properties-common
+        - sudo add-apt-repository -y ppa:george-edison55/precise-backports
+        - sudo apt-get update
+        - sudo apt-get install cmake
     - os: linux
       env: COMPILER_NAME=clang CXX=clang++-3.8 CC=clang-3.8
       addons:
@@ -18,4 +24,10 @@ matrix:
           packages:
             - clang-3.8
           sources: *sources
+      before_install:
+        - sudo apt-get remove cmake
+        - sudo apt-get install software-properties-common
+        - sudo add-apt-repository -y ppa:george-edison55/precise-backports
+        - sudo apt-get update
+        - sudo apt-get install cmake
 script: sh ./travis.sh
