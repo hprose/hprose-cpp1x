@@ -5,19 +5,14 @@ compiler:
 os:
   - linux
   - osx
-addons:
- apt:
-   sources:
-   - ubuntu-toolchain-r-test
-   packages:
-   - gcc-4.7
-   - g++-4.7
-   - clang-3.5
 before_install:
   - sudo apt-get remove cmake
   - sudo apt-get install software-properties-common
   - sudo add-apt-repository -y ppa:george-edison55/precise-backports
+  - sudo add-apt-repository -y ppa:ubuntu-toolchain-r/test
   - sudo apt-get update
   - sudo apt-get install cmake
+  - sudo apt-get install gcc-4.7
+  - sudo apt-get install clang-3.5
 script: sh ./travis.sh
 sudo: require
