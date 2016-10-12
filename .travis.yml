@@ -5,5 +5,5 @@ compiler:
 os:
   - linux
   - osx
-script: ./travis.sh
+script: sh ./travis.sh
 sudo: false
