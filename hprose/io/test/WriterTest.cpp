@@ -61,13 +61,15 @@ TEST(Writer, SerializeDigit) {
 
 TEST(Writer, SerializeInteger) {
     std::random_device rd;
+
     std::uniform_int_distribution<int32_t> dis1(10); 
-    for (int i = 0; i <= 100; i++) {
+    for (int i = 0; i < 100; i++) {
         int32_t x = dis1(rd);
         T(x, "i" + std::to_string(x) + ";");
     }
+
     std::uniform_int_distribution<int64_t> dis2(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
-    for (int i = 0; i <= 100; i++) {
+    for (int i = 0; i < 100; i++) {
         int64_t x = dis2(rd);
         T(x, "l" + std::to_string(x) + ";");
     }
@@ -78,6 +80,16 @@ TEST(Writer, SerializeFloat) {
     T(std::numeric_limits<float>::infinity(), "I+");
     T(-std::numeric_limits<float>::infinity(), "I-");
     T(3.14159f, "d3.14159;");
+
+    T(std::numeric_limits<double>::quiet_NaN(), "N");
+    T(std::numeric_limits<double>::infinity(), "I+");
+    T(-std::numeric_limits<double>::infinity(), "I-");
+    T(3.14159265358979, "d3.14159265358979;");
+
+    T(std::numeric_limits<long double>::quiet_NaN(), "N");
+    T(std::numeric_limits<long double>::infinity(), "I+");
+    T(-std::numeric_limits<long double>::infinity(), "I-");
+    T(3.14159265358979324l, "d3.14159265358979324;");
 }
 
 int main(int argc, char *argv[]) {
