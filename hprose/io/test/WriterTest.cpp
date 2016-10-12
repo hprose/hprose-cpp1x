@@ -55,30 +55,30 @@ TEST(Writer, SerializeDigit) {
     std::ostringstream stream;
     hprose::io::Writer writer(stream);
     for (int i = 0; i <= 9; i++) {
-		stream.str("");
-		writer.serialize(i);
+        stream.str("");
+        writer.serialize(i);
         EXPECT_EQ(stream.str(), std::to_string(i));
-	}
+    }
 }
 
-TEST(Writer, SerializeInt) {
+TEST(Writer, SerializeInteger) {
     std::ostringstream stream;
     hprose::io::Writer writer(stream);
     std::random_device rd;
-    std::uniform_int_distribution<int> dis1(10); 
+    std::uniform_int_distribution<int32_t> dis1(10); 
     for (int i = 0; i <= 100; i++) {
-		stream.str("");
-        int x = dis1(rd);
-		writer.serialize(x);
+        stream.str("");
+        int32_t x = dis1(rd);
+        writer.serialize(x);
         EXPECT_EQ(stream.str(), "i" + std::to_string(x) + ";");
-	}
-    std::uniform_int_distribution<long long> dis2(static_cast<long long>(std::numeric_limits<int>::max()) + 1);
+    }
+    std::uniform_int_distribution<int64_t> dis2(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
     for (int i = 0; i <= 100; i++) {
-		stream.str("");
-        long long x = dis2(rd);
-		writer.serialize(x);
+        stream.str("");
+        int64_t x = dis2(rd);
+        writer.serialize(x);
         EXPECT_EQ(stream.str(), "l" + std::to_string(x) + ";");
-	}
+    }
 }
 
 int main(int argc, char *argv[]) {

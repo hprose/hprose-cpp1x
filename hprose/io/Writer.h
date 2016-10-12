@@ -56,7 +56,7 @@ public:
             stream << static_cast<char>('0' + i);
             return;
         }
-        if (i >= std::numeric_limits<int>::min() && i <= std::numeric_limits<int>::max()) {
+        if (i >= std::numeric_limits<int32_t>::min() && i <= std::numeric_limits<int32_t>::max()) {
             stream << tags::TagInteger;
         } else {
             stream << tags::TagLong;
