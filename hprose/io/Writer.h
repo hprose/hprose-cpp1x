@@ -25,6 +25,7 @@
 
 #include <ostream>
 #include <numeric>
+#include <limits>
 
 namespace hprose { namespace io {
 
