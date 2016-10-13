@@ -13,7 +13,7 @@
  *                                                        *
  * hprose types header for cpp.                           *
  *                                                        *
- * LastModified: Oct 12, 2016                             *
+ * LastModified: Oct 13, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -64,6 +64,16 @@ struct TypeToType<int> {
 
 template<>
 struct TypeToType<unsigned int> {
+    typedef IntegerType type;
+};
+
+template<>
+struct TypeToType<long> {
+    typedef IntegerType type;
+};
+
+template<>
+struct TypeToType<unsigned long> {
     typedef IntegerType type;
 };
 
