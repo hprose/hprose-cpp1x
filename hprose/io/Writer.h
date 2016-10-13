@@ -27,6 +27,8 @@
 #include <ostream>
 #include <numeric>
 #include <limits>
+#include <locale>
+#include <codecvt>
 
 namespace hprose { namespace io {
 
@@ -100,6 +102,11 @@ public:
             // write ref
             writeString(str, length);
         }
+    }
+
+    void writeString(const std::wstring& str) {
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
+        writeString(conv.to_bytes(str));
     }
 
 private:

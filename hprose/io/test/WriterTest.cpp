@@ -84,6 +84,15 @@ TEST(Writer, SerializeString) {
     T(std::string("π"), "uπ");
     T(std::string("你"), "u你");
     T(std::string("你好"), "s2\"你好\"");
+    T(std::string("你好啊,hello!"), "s10\"你好啊,hello!\"");
+    T(std::string("🇨🇳"), "s4\"🇨🇳\"");
+
+    T(std::wstring(L""), "e");
+    T(std::wstring(L"π"), "uπ");
+    T(std::wstring(L"你"), "u你");
+    T(std::wstring(L"你好"), "s2\"你好\"");
+    T(std::wstring(L"你好啊,hello!"), "s10\"你好啊,hello!\"");
+    T(std::wstring(L"🇨🇳"), "s4\"🇨🇳\"");
 }
 
 int main(int argc, char *argv[]) {
