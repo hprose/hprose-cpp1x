@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 12, 2016                             *
+ * LastModified: Oct 13, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -44,6 +44,7 @@ public:
 
     template<typename T>
     inline void writeValue(const T &v) {
+        static_assert(NonCVType<T>::value != UnknownType::value,  "Attempt to write a value that can not be serializable");
         writeValue(v, NonCVType<T>());
     }
 
@@ -84,7 +85,8 @@ public:
 private:
 
     template<typename T>
-    inline void writeValue(const T &, UnknownType) {
+    inline void writeValue(const T &, NullPtrType) {
+        writeNull();
     }
 
     template<typename T>

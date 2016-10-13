@@ -30,6 +30,7 @@ struct IntToType {
 };
 
 typedef IntToType<-4> UnknownType;
+typedef IntToType<-3> NullPtrType;
 typedef IntToType< 1> BoolType;
 typedef IntToType< 2> ByteType;
 typedef IntToType< 3> CharType;
@@ -40,6 +41,11 @@ typedef IntToType< 6> FloatType;
 template<typename Type>
 struct TypeToType {
     typedef IntToType<UnknownType::value> type;
+};
+
+template<>
+struct TypeToType<std::nullptr_t> {
+    typedef NullPtrType type;
 };
 
 template<>
