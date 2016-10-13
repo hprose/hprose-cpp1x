@@ -79,6 +79,13 @@ TEST(Writer, SerializeFloat) {
     T(3.14159265358979323846l, "d3.14159265358979324;");
 }
 
+TEST(Writer, SerializeString) {
+    T(std::string(""), "e");
+    T(std::string("π"), "uπ");
+    T(std::string("你"), "u你");
+    T(std::string("你好"), "s2\"你好\"");
+}
+
 int main(int argc, char *argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

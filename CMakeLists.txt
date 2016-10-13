@@ -4,7 +4,8 @@ project(hprose)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
 
 set(SOURCE_FILES
-    hprose/io/Writer.cpp)
+    hprose/io/Writer.cpp
+    hprose/util/Util.cpp)
 
 include_directories(".")
 

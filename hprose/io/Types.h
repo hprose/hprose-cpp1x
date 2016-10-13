@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <string>
 #include <type_traits>
 
 namespace hprose { namespace io { 
@@ -37,6 +38,7 @@ typedef IntToType< 3> CharType;
 typedef IntToType< 4> EnumType;
 typedef IntToType< 5> IntegerType;
 typedef IntToType< 6> FloatType;
+typedef IntToType< 7> StringType;
 
 template<typename Type>
 struct TypeToType {
@@ -106,6 +108,11 @@ struct TypeToType<double> {
 template<>
 struct TypeToType<long double> {
     typedef FloatType type;
+};
+
+template<typename Element, typename Traits, typename Allocator>
+struct TypeToType<std::basic_string<Element, Traits, Allocator> > {
+    typedef StringType type;
 };
 
 template<typename Type>

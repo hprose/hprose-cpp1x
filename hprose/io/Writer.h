@@ -22,6 +22,7 @@
 
 #include <hprose/io/Tags.h>
 #include <hprose/io/Types.h>
+#include <hprose/util/Util.h>
 
 #include <ostream>
 #include <numeric>
@@ -82,6 +83,25 @@ public:
         }
     }
 
+    template<typename T>
+    void writeString(const T& s) {
+        static_assert(NonCVType<T>::value == StringType::value, "Requires string type");
+    }
+
+    void writeString(const std::string& str) {
+        int length = util::UTF16Length(str);
+        if (length == 0) {
+            stream << tags::TagEmpty;
+        } else if (length == 1) {
+            stream << tags::TagUTF8Char << str;
+        } else if (length < 0) {
+
+        } else {
+            // write ref
+            writeString(str, length);
+        }
+    }
+
 private:
 
     template<typename T>
@@ -102,6 +122,15 @@ private:
     template<typename T>
     inline void writeValue(const T &f, FloatType) {
         writeFloat(f);
+    }
+
+    template<typename T>
+    inline void writeValue(const T &s, StringType) {
+        writeString(s);
+    }
+
+    void writeString(const std::string& str, int length) {
+        stream << tags::TagString << length << tags::TagQuote << str << tags::TagQuote;
     }
 
     std::ostream &stream;
