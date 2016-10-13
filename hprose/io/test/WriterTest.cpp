@@ -93,6 +93,20 @@ TEST(Writer, SerializeString) {
     T(std::wstring(L"你好"), "s2\"你好\"");
     T(std::wstring(L"你好啊,hello!"), "s10\"你好啊,hello!\"");
     T(std::wstring(L"🇨🇳"), "s4\"🇨🇳\"");
+
+    T(std::u16string(u""), "e");
+    T(std::u16string(u"π"), "uπ");
+    T(std::u16string(u"你"), "u你");
+    T(std::u16string(u"你好"), "s2\"你好\"");
+    T(std::u16string(u"你好啊,hello!"), "s10\"你好啊,hello!\"");
+    T(std::u16string(u"🇨🇳"), "s4\"🇨🇳\"");
+
+    T(std::u32string(U""), "e");
+    T(std::u32string(U"π"), "uπ");
+    T(std::u32string(U"你"), "u你");
+    T(std::u32string(U"你好"), "s2\"你好\"");
+    T(std::u32string(U"你好啊,hello!"), "s10\"你好啊,hello!\"");
+    T(std::u32string(U"🇨🇳"), "s4\"🇨🇳\"");
 }
 
 int main(int argc, char *argv[]) {

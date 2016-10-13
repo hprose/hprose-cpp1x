@@ -109,6 +109,16 @@ public:
         writeString(conv.to_bytes(str));
     }
 
+    void writeString(const std::u16string& str) {
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
+        writeString(conv.to_bytes(str));
+    }
+
+    void writeString(const std::u32string& str) {
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+        writeString(conv.to_bytes(str));
+    }
+
 private:
 
     template<typename T>
