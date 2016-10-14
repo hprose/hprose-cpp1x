@@ -26,5 +26,6 @@ matrix:
           packages:
             - clang-3.8
             - libc++-dev
+            - libc++abi-dev
           sources: *sources
 script: sh ./travis.sh
