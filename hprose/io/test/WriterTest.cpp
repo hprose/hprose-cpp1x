@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 13, 2016                             *
+ * LastModified: Oct 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -80,32 +80,32 @@ TEST(Writer, SerializeFloat) {
 }
 
 TEST(Writer, SerializeString) {
-    T(std::string(""), "e");
-    T(std::string("π"), "uπ");
-    T(std::string("你"), "u你");
-    T(std::string("你好"), "s2\"你好\"");
-    T(std::string("你好啊,hello!"), "s10\"你好啊,hello!\"");
-    T(std::string("🇨🇳"), "s4\"🇨🇳\"");
+    T(std::string(u8""), "e");
+    T(std::string(u8"π"), "uπ");
+    T(std::string(u8"你"), "u你");
+    T(std::string(u8"你好"), R"(s2"你好")");
+    T(std::string(u8"你好啊,hello!"), R"(s10"你好啊,hello!")");
+    T(std::string(u8"🇨🇳"), "s4\"🇨🇳\"");
 
     T(std::wstring(L""), "e");
     T(std::wstring(L"π"), "uπ");
     T(std::wstring(L"你"), "u你");
-    T(std::wstring(L"你好"), "s2\"你好\"");
-    T(std::wstring(L"你好啊,hello!"), "s10\"你好啊,hello!\"");
+    T(std::wstring(L"你好"), R"(s2"你好")");
+    T(std::wstring(L"你好啊,hello!"), R"(s10"你好啊,hello!")");
     T(std::wstring(L"🇨🇳"), "s4\"🇨🇳\"");
 
     T(std::u16string(u""), "e");
     T(std::u16string(u"π"), "uπ");
     T(std::u16string(u"你"), "u你");
-    T(std::u16string(u"你好"), "s2\"你好\"");
-    T(std::u16string(u"你好啊,hello!"), "s10\"你好啊,hello!\"");
+    T(std::u16string(u"你好"), R"(s2"你好")");
+    T(std::u16string(u"你好啊,hello!"), R"(s10"你好啊,hello!")");
     T(std::u16string(u"🇨🇳"), "s4\"🇨🇳\"");
 
     T(std::u32string(U""), "e");
     T(std::u32string(U"π"), "uπ");
     T(std::u32string(U"你"), "u你");
-    T(std::u32string(U"你好"), "s2\"你好\"");
-    T(std::u32string(U"你好啊,hello!"), "s10\"你好啊,hello!\"");
+    T(std::u32string(U"你好"), R"(s2"你好")");
+    T(std::u32string(U"你好啊,hello!"), R"(s10"你好啊,hello!")");
     T(std::u32string(U"🇨🇳"), "s4\"🇨🇳\"");
 }
 

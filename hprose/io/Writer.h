@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 13, 2016                             *
+ * LastModified: Oct 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -30,7 +30,8 @@
 #include <locale>
 #include <codecvt>
 
-namespace hprose { namespace io {
+namespace hprose {
+namespace io {
 
 class Writer {
 public:
@@ -40,14 +41,15 @@ public:
     }
 
     template<typename T>
-    inline Writer& serialize(const T &v) {
+    inline Writer &serialize(const T &v) {
         writeValue(v);
         return *this;
     }
 
     template<typename T>
     inline void writeValue(const T &v) {
-        static_assert(NonCVType<T>::value != UnknownType::value,  "Attempt to write a value that can not be serializable");
+        static_assert(NonCVType<T>::value != UnknownType::value,
+                      "Attempt to write a value that can not be serializable");
         writeValue(v, NonCVType<T>());
     }
 
@@ -86,11 +88,11 @@ public:
     }
 
     template<typename T>
-    void writeString(const T& s) {
+    void writeString(const T &s) {
         static_assert(NonCVType<T>::value == StringType::value, "Requires string type");
     }
 
-    void writeString(const std::string& str) {
+    void writeString(const std::string &str) {
         int length = util::UTF16Length(str);
         if (length == 0) {
             stream << tags::TagEmpty;
@@ -104,17 +106,17 @@ public:
         }
     }
 
-    void writeString(const std::wstring& str) {
+    void writeString(const std::wstring &str) {
         std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
         writeString(conv.to_bytes(str));
     }
 
-    void writeString(const std::u16string& str) {
+    void writeString(const std::u16string &str) {
         std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
         writeString(conv.to_bytes(str));
     }
 
-    void writeString(const std::u32string& str) {
+    void writeString(const std::u32string &str) {
         std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
         writeString(conv.to_bytes(str));
     }
@@ -146,7 +148,7 @@ private:
         writeString(s);
     }
 
-    void writeString(const std::string& str, int length) {
+    void writeString(const std::string &str, int length) {
         stream << tags::TagString << length << tags::TagQuote << str << tags::TagQuote;
     }
 
@@ -154,4 +156,5 @@ private:
     bool simple;
 };
 
-} } // hprose::io
+}
+} // hprose::io

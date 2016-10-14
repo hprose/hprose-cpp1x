@@ -28,6 +28,9 @@
 *.out
 *.app
 
+# IDEA workspace
+.idea
+
 # VSCode workspace
 .vscode
 

@@ -13,16 +13,17 @@
  *                                                        *
  * some util for cpp.                                     *
  *                                                        *
- * LastModified: Oct 13, 2016                             *
+ * LastModified: Oct 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #include <hprose/util/Util.h>
 
-namespace hprose { namespace util {
+namespace hprose {
+namespace util {
 
-int UTF16Length(const std::string& str) {
+int UTF16Length(const std::string &str) {
     int length = str.length();
     int n = length;
     int p = 0;
@@ -57,9 +58,10 @@ int UTF16Length(const std::string& str) {
                 break;
             default:
                 return -1;
-            }
+        }
     }
     return n;
 }
 
-} } // hprose::util
+}
+} // hprose::util

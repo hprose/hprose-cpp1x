@@ -13,14 +13,16 @@
  *                                                        *
  * hprose tags constants for cpp.                         *
  *                                                        *
- * LastModified: Oct 11, 2016                             *
+ * LastModified: Oct 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #pragma once
 
-namespace hprose { namespace io { namespace tags {
+namespace hprose {
+namespace io {
+namespace tags {
 
 /* Serialize Tags */
 const char TagInteger     = 'i';
@@ -38,7 +40,7 @@ const char TagUTC         = 'Z';
 const char TagBytes       = 'b';
 const char TagUTF8Char    = 'u';
 const char TagString      = 's';
-const char TagGuid        = 'g';  
+const char TagGuid        = 'g';
 const char TagList        = 'a';
 const char TagMap         = 'm';
 const char TagClass       = 'c';
@@ -60,4 +62,6 @@ const char TagArgument    = 'A';
 const char TagError       = 'E';
 const char TagEnd         = 'z';
 
-} } } // hprose::io::tags
+}
+}
+} // hprose::io::tags

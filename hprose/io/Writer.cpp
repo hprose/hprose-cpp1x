@@ -20,7 +20,8 @@
 
 #include <hprose/io/Writer.h>
 
-namespace hprose { namespace io {
+namespace hprose {
+namespace io {
 
 void Writer::writeNull() {
     stream << tags::TagNull;
@@ -30,4 +31,5 @@ void Writer::writeBool(bool b) {
     stream << (b ? tags::TagTrue : tags::TagFalse);
 }
 
-} } // hprose::io
+}
+} // hprose::io

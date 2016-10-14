@@ -13,7 +13,7 @@
  *                                                        *
  * hprose types header for cpp.                           *
  *                                                        *
- * LastModified: Oct 13, 2016                             *
+ * LastModified: Oct 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -23,7 +23,8 @@
 #include <string>
 #include <type_traits>
 
-namespace hprose { namespace io { 
+namespace hprose {
+namespace io {
 
 template<int v>
 struct IntToType {
@@ -120,4 +121,5 @@ struct NonCVType
     : public TypeToType<typename std::remove_cv<Type>::type>::type {
 };
 
-} } // hprose::io
+}
+} // hprose::io

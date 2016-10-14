@@ -13,7 +13,7 @@
  *                                                        *
  * some util for cpp.                                     *
  *                                                        *
- * LastModified: Oct 13, 2016                             *
+ * LastModified: Oct 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -22,10 +22,12 @@
 
 #include <string>
 
-namespace hprose { namespace util {
+namespace hprose {
+namespace util {
 
 // UTF16Length return the UTF16 length of str.
 // str must be an UTF8 encode string, otherwise return -1.
-int UTF16Length(const std::string& str);
+int UTF16Length(const std::string &str);
 
-} } // hprose::util
+}
+} // hprose::util
