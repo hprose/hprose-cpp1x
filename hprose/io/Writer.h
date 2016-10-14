@@ -29,15 +29,46 @@
 #include <limits>
 #include <locale>
 #include <codecvt>
+#include <unordered_map>
 
 namespace hprose {
 namespace io {
 
+namespace internal {
+
+class WriterRefer {
+public:
+
+    void set(uintptr_t ptr) {
+        ref[ptr] = lastref++;
+    }
+
+    bool write(std::ostream &stream, uintptr_t ptr) {
+        auto r = ref.find(ptr);
+        if (r != ref.end()) {
+            stream << tags::TagRef << r->second << tags::TagSemicolon;
+            return true;
+        }
+        return false;
+    }
+
+    void reset() {
+        ref.clear();
+        lastref = 0;
+    }
+
+private:
+    std::unordered_map<uintptr_t, int> ref;
+    int lastref;
+};
+
+} // hprose::io::internal
+
 class Writer {
 public:
 
-    Writer(std::ostream &stream, bool simple = false)
-        : stream(stream), simple(simple) {
+    Writer(std::ostream &stream, bool simple = true)
+        : stream(stream), refer(simple ? nullptr : new internal::WriterRefer()) {
     }
 
     template<typename T>
@@ -48,8 +79,7 @@ public:
 
     template<typename T>
     inline void writeValue(const T &v) {
-        static_assert(NonCVType<T>::value != UnknownType::value,
-                      "Attempt to write a value that can not be serializable");
+        static_assert(NonCVType<T>::value != UnknownType::value, "Attempt to write a value that can not be serializable");
         writeValue(v, NonCVType<T>());
     }
 
@@ -101,7 +131,10 @@ public:
         } else if (length < 0) {
 
         } else {
-            // write ref
+            if (writeRef(reinterpret_cast<uintptr_t>(&str))) {
+                return;
+            }
+            setRef(reinterpret_cast<uintptr_t>(&str));
             writeString(str, length);
         }
     }
@@ -120,6 +153,20 @@ public:
         std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
         writeString(conv.to_bytes(str));
     }
+
+    inline bool writeRef(uintptr_t ptr) {
+        return refer ? refer->write(stream, ptr) : false;
+    }
+
+    inline void setRef(uintptr_t ptr) {
+        if (refer) refer->set(ptr);
+    }
+
+    inline void reset() {
+        if (refer) refer->reset();
+    }
+
+    std::ostream &stream;
 
 private:
 
@@ -152,8 +199,7 @@ private:
         stream << tags::TagString << length << tags::TagQuote << str << tags::TagQuote;
     }
 
-    std::ostream &stream;
-    bool simple;
+    std::unique_ptr<internal::WriterRefer> refer;
 };
 
 }

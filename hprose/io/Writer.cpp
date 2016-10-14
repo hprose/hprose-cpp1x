@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer unit for cpp.                            *
  *                                                        *
- * LastModified: Oct 12, 2016                             *
+ * LastModified: Oct 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
