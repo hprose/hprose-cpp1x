@@ -24,9 +24,6 @@ matrix:
           packages:
             - clang-3.8
             - libc++-dev
-            - libc++1
-            - libc++abi-dev
-            - libc++abi1
           sources: *sources
       before_install:
         - sudo apt-get remove cmake
