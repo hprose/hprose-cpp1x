@@ -27,10 +27,4 @@ matrix:
             - clang-3.8
             - libc++-dev
           sources: *sources
-      before_install:
-        - sudo apt-get remove cmake
-        - sudo apt-get install software-properties-common
-        - sudo add-apt-repository -y ppa:george-edison55/precise-backports
-        - sudo apt-get update
-        - sudo apt-get install cmake
 script: sh ./travis.sh
