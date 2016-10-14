@@ -22,14 +22,17 @@
 
 namespace hprose {
 namespace io {
+namespace internal {
 
-void Writer::writeNull() {
-    stream << tags::TagNull;
+bool WriterRefer::write(std::ostream &stream, uintptr_t ptr) {
+    auto r = ref.find(ptr);
+    if (r != ref.end()) {
+        stream << tags::TagRef << r->second << tags::TagSemicolon;
+        return true;
+    }
+    return false;
 }
 
-void Writer::writeBool(bool b) {
-    stream << (b ? tags::TagTrue : tags::TagFalse);
 }
-
 }
 } // hprose::io

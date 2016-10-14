@@ -38,21 +38,13 @@ namespace internal {
 
 class WriterRefer {
 public:
-
-    void set(uintptr_t ptr) {
+    inline void set(uintptr_t ptr) {
         ref[ptr] = lastref++;
     }
 
-    bool write(std::ostream &stream, uintptr_t ptr) {
-        auto r = ref.find(ptr);
-        if (r != ref.end()) {
-            stream << tags::TagRef << r->second << tags::TagSemicolon;
-            return true;
-        }
-        return false;
-    }
+    bool write(std::ostream &stream, uintptr_t ptr);
 
-    void reset() {
+    inline void reset() {
         ref.clear();
         lastref = 0;
     }
@@ -66,7 +58,6 @@ private:
 
 class Writer {
 public:
-
     Writer(std::ostream &stream, bool simple = true)
         : stream(stream), refer(simple ? nullptr : new internal::WriterRefer()) {
     }
@@ -83,9 +74,13 @@ public:
         writeValue(v, NonCVType<T>());
     }
 
-    void writeNull();
+    inline void writeNull() {
+        stream << tags::TagNull;
+    }
 
-    void writeBool(bool b);
+    inline void writeBool(bool b) {
+        stream << (b ? tags::TagTrue : tags::TagFalse);
+    }
 
     template<typename T>
     void writeInteger(T i) {
@@ -169,7 +164,6 @@ public:
     std::ostream &stream;
 
 private:
-
     template<typename T>
     inline void writeValue(const T &, NullPtrType) {
         writeNull();
