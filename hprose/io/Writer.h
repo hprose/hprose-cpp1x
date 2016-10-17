@@ -58,6 +58,9 @@ private:
 
 class Writer {
 public:
+    typedef std::true_type SignedType;
+    typedef std::false_type UnignedType;
+
     Writer(std::ostream &stream, bool simple = true)
         : stream(stream), refer(simple ? nullptr : new internal::WriterRefer()) {
     }
@@ -83,18 +86,9 @@ public:
     }
 
     template<typename T>
-    void writeInteger(T i) {
+    inline void writeInteger(T i) {
         static_assert(NonCVType<T>::value == IntegerType::value, "Requires integer type");
-        if (i >= 0 && i <= 9) {
-            stream << static_cast<char>('0' + i);
-            return;
-        }
-        if (i >= std::numeric_limits<int32_t>::min() && i <= std::numeric_limits<int32_t>::max()) {
-            stream << tags::TagInteger;
-        } else {
-            stream << tags::TagLong;
-        }
-        stream << i << tags::TagSemicolon;
+        writeInteger(i, std::is_signed<T>());
     }
 
     template<typename T>
@@ -205,6 +199,36 @@ private:
     template<typename T>
     inline void writeValue(const T &s, StringType) {
         writeString(s);
+    }
+
+    template<typename T>
+    void writeInteger(T i, const SignedType &) {
+        if (i >= 0 && i <= 9) {
+            stream << static_cast<char>('0' + i);
+            return;
+        }
+        if (i >= std::numeric_limits<int32_t>::min() && i <= std::numeric_limits<int32_t>::max()) {
+            stream << tags::TagInteger;
+        } else {
+            stream << tags::TagLong;
+        }
+        util::WriteInt(stream, i);
+        stream << tags::TagSemicolon;
+    }
+
+    template<typename T>
+    void writeInteger(T u, const UnignedType &) {
+        if (u <= 9) {
+            stream << static_cast<char>('0' + u);
+            return;
+        }
+        if (u <= std::numeric_limits<int32_t>::max()) {
+            stream << tags::TagInteger;
+        } else {
+            stream << tags::TagLong;
+        }
+        util::WriteUint(stream, u);
+        stream << tags::TagSemicolon;
     }
 
     void writeString(const std::string &str, int length) {

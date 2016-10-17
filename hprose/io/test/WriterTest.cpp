@@ -62,6 +62,21 @@ TEST(Writer, SerializeInteger) {
     }
 }
 
+TEST(Writer, SerializeInt8) {
+    for (signed char i = 0; i <= 9; i++) {
+        T(i, std::to_string(i));
+    }
+
+    for (signed char i = 9; i < 127; i++) {
+        signed char x = i + 1;
+        T(x, "i" + std::to_string(x) + ";");
+    }
+
+    for (signed char i = -128; i < 0; i++) {
+        T(i, "i" + std::to_string(i) + ";");
+    }
+}
+
 TEST(Writer, SerializeFloat) {
     T(std::numeric_limits<float>::quiet_NaN(), "N");
     T(std::numeric_limits<float>::infinity(), "I+");

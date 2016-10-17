@@ -59,6 +59,16 @@ struct TypeToType<bool> {
 };
 
 template<>
+struct TypeToType<signed char> {
+    typedef IntegerType type;
+};
+
+template<>
+struct TypeToType<unsigned char> {
+    typedef IntegerType type;
+};
+
+template<>
 struct TypeToType<short> {
     typedef IntegerType type;
 };
