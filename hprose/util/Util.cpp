@@ -26,7 +26,7 @@ namespace util {
 const char digits[] =
     "0123456789";
 
-const char digit2[] = 
+const char digit2[] =
 	"0001020304050607080910111213141516171819"
 	"2021222324252627282930313233343536373839"
 	"4041424344454647484950515253545556575859"
@@ -87,78 +87,78 @@ const char digit3[] =
 
 void WriteInt(std::ostream &stream, int64_t i) {
     if (i == 0) {
-		stream << '0';
+        stream << '0';
         return;
-	}
-	if (i == std::numeric_limits<int64_t>::min()) {
+    }
+    if (i == std::numeric_limits<int64_t>::min()) {
         stream << "-9223372036854775808";
-		return;
-	}
-	char sign = '+';
-	if (i < 0) {
-		sign = '-';
-		i = -i;
-	}
+        return;
+    }
+    char sign = '+';
+    if (i < 0) {
+        sign = '-';
+        i = -i;
+    }
     char buf[20];
     int off = 20;
-	int64_t q, p;
-	while (i >= 100) {
-		q = i / 1000;
-		p = (i - (q * 1000)) * 3;
-		i = q;
-		off -= 3;
-		buf[off] = digit3[p];
-		buf[off+1] = digit3[p+1];
-		buf[off+2] = digit3[p+2];
-	}
-	if (i >= 10) {
-		q = i / 100;
-		p = (i - (q * 100)) * 2;
-		i = q;
-		off -= 2;
-		buf[off] = digit2[p];
-		buf[off+1] = digit2[p+1];
-	}
-	if (i > 0) {
-		off--;
-		buf[off] = digits[i];
-	}
-	if (sign == '-') {
-		off--;
-		buf[off] = sign;
-	}
+    int64_t q, p;
+    while (i >= 100) {
+        q = i / 1000;
+        p = (i - (q * 1000)) * 3;
+        i = q;
+        off -= 3;
+        buf[off] = digit3[p];
+        buf[off + 1] = digit3[p + 1];
+        buf[off + 2] = digit3[p + 2];
+    }
+    if (i >= 10) {
+        q = i / 100;
+        p = (i - (q * 100)) * 2;
+        i = q;
+        off -= 2;
+        buf[off] = digit2[p];
+        buf[off + 1] = digit2[p + 1];
+    }
+    if (i > 0) {
+        off--;
+        buf[off] = digits[i];
+    }
+    if (sign == '-') {
+        off--;
+        buf[off] = sign;
+    }
     stream.write(&buf[off], 20 - off);
 }
 
 void WriteUint(std::ostream &stream, uint64_t u) {
     if (u == 0) {
-		stream << '0';
+        stream << '0';
         return;
-	}
+    }
     char buf[20];
     int off = 20;
-	uint64_t q, p;
-	while (u >= 100) {
-		q = u / 1000;
-		p = (u - (q * 1000)) * 3;
-		u = q;
-		off -= 3;
-		buf[off] = digit3[p];
-		buf[off+1] = digit3[p+1];
-		buf[off+2] = digit3[p+2];
-	}
-	if (u >= 10) {
-		q = u / 100;
-		p = (u - (q * 100)) * 2;
-		u = q;
-		off -= 2;
-		buf[off] = digit2[p];
-		buf[off+1] = digit2[p+1];
-	}
-	if (u > 0) {
-		off--;
-		buf[off] = digits[u];
-	}
+    uint64_t q, p;
+    while (u >= 100) {
+        q = u / 1000;
+        p = (u - (q * 1000)) * 3;
+        u = q;
+        off -= 3;
+        buf[off] = digit3[p];
+        buf[off + 1] = digit3[p + 1];
+        buf[off + 2] = digit3[p + 2];
+    }
+    if (u >= 10) {
+        q = u / 100;
+        p = (u - (q * 100)) * 2;
+        u = q;
+        off -= 2;
+        buf[off] = digit2[p];
+        buf[off + 1] = digit2[p + 1];
+    }
+    if (u > 0) {
+        off--;
+        buf[off] = digits[u];
+    }
     stream.write(&buf[off], 20 - off);
 }
 

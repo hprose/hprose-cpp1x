@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer unit for cpp.                            *
  *                                                        *
- * LastModified: Oct 14, 2016                             *
+ * LastModified: Oct 17, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -27,7 +27,9 @@ namespace internal {
 bool WriterRefer::write(std::ostream &stream, uintptr_t ptr) {
     auto r = ref.find(ptr);
     if (r != ref.end()) {
-        stream << tags::TagRef << r->second << tags::TagSemicolon;
+        stream << tags::TagRef;
+        util::WriteInt(stream, r->second);
+        stream << tags::TagSemicolon;
         return true;
     }
     return false;
@@ -35,4 +37,4 @@ bool WriterRefer::write(std::ostream &stream, uintptr_t ptr) {
 
 }
 }
-} // hprose::io
+} // hprose::io::internal

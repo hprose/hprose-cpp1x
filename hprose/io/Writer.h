@@ -232,14 +232,18 @@ private:
     }
 
     void writeString(const std::string &str, int length) {
-        stream << tags::TagString << length << tags::TagQuote << str << tags::TagQuote;
+        stream << tags::TagString;
+        util::WriteInt(stream, length);
+        stream << tags::TagQuote << str << tags::TagQuote;
     }
 
     void writeListHeader(int count) {
-        stream << tags::TagList << count << tags::TagOpenbrace;
+        stream << tags::TagList;
+        util::WriteInt(stream, count);
+        stream << tags::TagOpenbrace;
     }
 
-    void writeListFooter() {
+    inline void writeListFooter() {
         stream << tags::TagClosebrace;
     }
 
