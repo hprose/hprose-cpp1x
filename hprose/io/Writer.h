@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 14, 2016                             *
+ * LastModified: Oct 17, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -113,6 +113,19 @@ public:
     }
 
     template<typename T>
+    void writeComplex(const std::complex<T> &c) {
+        if (c.imag() == 0) {
+            writeFloat(c.real());
+            return;
+        }
+        setRef(0);
+        writeListHeader(2);
+        writeFloat(c.real());
+        writeFloat(c.imag());
+        writeListFooter();
+    }
+
+    template<typename T>
     void writeString(const T &s) {
         static_assert(NonCVType<T>::value == StringType::value, "Requires string type");
     }
@@ -185,12 +198,25 @@ private:
     }
 
     template<typename T>
+    inline void writeValue(const T &c, ComplexType) {
+        writeComplex(c);
+    }
+
+    template<typename T>
     inline void writeValue(const T &s, StringType) {
         writeString(s);
     }
 
     void writeString(const std::string &str, int length) {
         stream << tags::TagString << length << tags::TagQuote << str << tags::TagQuote;
+    }
+
+    void writeListHeader(int count) {
+        stream << tags::TagList << count << tags::TagOpenbrace;
+    }
+
+    void writeListFooter() {
+        stream << tags::TagClosebrace;
     }
 
     std::unique_ptr<internal::WriterRefer> refer;

@@ -13,7 +13,7 @@
  *                                                        *
  * hprose types header for cpp.                           *
  *                                                        *
- * LastModified: Oct 14, 2016                             *
+ * LastModified: Oct 17, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -21,6 +21,7 @@
 #pragma once
 
 #include <string>
+#include <complex>
 #include <type_traits>
 
 namespace hprose {
@@ -39,7 +40,8 @@ typedef IntToType< 3> CharType;
 typedef IntToType< 4> EnumType;
 typedef IntToType< 5> IntegerType;
 typedef IntToType< 6> FloatType;
-typedef IntToType< 7> StringType;
+typedef IntToType< 7> ComplexType;
+typedef IntToType< 8> StringType;
 
 template<typename Type>
 struct TypeToType {
@@ -109,6 +111,11 @@ struct TypeToType<double> {
 template<>
 struct TypeToType<long double> {
     typedef FloatType type;
+};
+
+template<typename T>
+struct TypeToType<std::complex<T>> {
+    typedef ComplexType type;
 };
 
 template<typename Element, typename Traits, typename Allocator>

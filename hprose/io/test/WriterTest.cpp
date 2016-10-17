@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 14, 2016                             *
+ * LastModified: Oct 17, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -77,6 +77,17 @@ TEST(Writer, SerializeFloat) {
     T(std::numeric_limits<long double>::infinity(), "I+");
     T(-std::numeric_limits<long double>::infinity(), "I-");
     T(3.14159265358979323846l, "d3.14159265358979324;");
+}
+
+TEST(Writer, SerializeComplex) {
+    T(std::complex<float>(100.f), "d100;");
+    T(std::complex<float>(0, 100.f), "a2{d0;d100;}");
+
+    T(std::complex<double>(100.f), "d100;");
+    T(std::complex<double>(0, 100.f), "a2{d0;d100;}");
+
+    T(std::complex<long double>(100.f), "d100;");
+    T(std::complex<long double>(0, 100.f), "a2{d0;d100;}");
 }
 
 TEST(Writer, SerializeString) {
