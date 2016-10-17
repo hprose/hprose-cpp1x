@@ -131,7 +131,7 @@ public:
         } else if (length == 1) {
             stream << tags::TagUTF8Char << str;
         } else if (length < 0) {
-
+            writeBytes(reinterpret_cast<const unsigned char *>(str.data()), str.length());
         } else {
             if (writeRef(reinterpret_cast<uintptr_t>(&str))) {
                 return;
@@ -154,6 +154,33 @@ public:
     void writeString(const std::u32string &str) {
         std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
         writeString(conv.to_bytes(str));
+    }
+
+    void writeBytes(const unsigned char *s, int count) {
+        setRef(0);
+        if (count == 0) {
+            stream << tags::TagBytes << tags::TagQuote << tags::TagQuote;
+            return;
+        }
+        stream << tags::TagBytes;
+        util::WriteInt(stream, count);
+        stream << tags::TagQuote;
+        stream.write(reinterpret_cast<const char *>(s), count);
+        stream << tags::TagQuote;
+    }
+
+    template<typename T>
+    void writeList(const T &l) {
+        static_assert(NonCVType<T>::value == ListType::value, "Requires list type");
+    }
+
+    template<size_t Size>
+    void writeList(const std::array<unsigned char, Size> &a) {
+        writeBytes(a.data(), Size);
+    }
+
+    void writeList(const std::vector<unsigned char> &v) {
+        writeBytes(v.data(), v.size());
     }
 
     inline bool writeRef(uintptr_t ptr) {
@@ -199,6 +226,11 @@ private:
     template<typename T>
     inline void writeValue(const T &s, StringType) {
         writeString(s);
+    }
+
+    template<typename T>
+    inline void writeValue(const T &l, ListType) {
+        writeList(l);
     }
 
     template<typename T>

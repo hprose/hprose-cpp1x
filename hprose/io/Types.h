@@ -20,8 +20,10 @@
 
 #pragma once
 
-#include <string>
 #include <complex>
+#include <string>
+#include <array>
+#include <vector>
 #include <type_traits>
 
 namespace hprose {
@@ -41,7 +43,12 @@ typedef IntToType< 4> EnumType;
 typedef IntToType< 5> IntegerType;
 typedef IntToType< 6> FloatType;
 typedef IntToType< 7> ComplexType;
-typedef IntToType< 8> StringType;
+typedef IntToType< 8> TimeType;
+typedef IntToType< 9> StringType;
+typedef IntToType<10> UUIDType;
+typedef IntToType<11> ListType;
+typedef IntToType<12> MapType;
+typedef IntToType<13> ObjectType;
 
 template<typename Type>
 struct TypeToType {
@@ -131,6 +138,16 @@ struct TypeToType<std::complex<T>> {
 template<typename Element, typename Traits, typename Allocator>
 struct TypeToType<std::basic_string<Element, Traits, Allocator> > {
     typedef StringType type;
+};
+
+template<typename Element, size_t Size>
+struct TypeToType<std::array<Element, Size> > {
+    typedef ListType type;
+};
+
+template<typename Element, typename Allocator>
+struct TypeToType<std::vector<Element, Allocator> > {
+    typedef ListType type;
 };
 
 template<typename Type>

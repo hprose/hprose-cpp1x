@@ -112,27 +112,28 @@ TEST(Writer, SerializeString) {
     T(std::string(u8"你好"), R"(s2"你好")");
     T(std::string(u8"你好啊,hello!"), R"(s10"你好啊,hello!")");
     T(std::string(u8"🇨🇳"), "s4\"🇨🇳\"");
+    T(std::string("\x80\x81\x82"), std::string("b3\"\x80\x81\x82\""));
 
     T(std::wstring(L""), "e");
     T(std::wstring(L"π"), "uπ");
     T(std::wstring(L"你"), "u你");
     T(std::wstring(L"你好"), R"(s2"你好")");
     T(std::wstring(L"你好啊,hello!"), R"(s10"你好啊,hello!")");
-    T(std::wstring(L"🇨🇳"), "s4\"🇨🇳\"");
+    T(std::wstring(L"🇨🇳"), R"(s4"🇨🇳")");
 
     T(std::u16string(u""), "e");
     T(std::u16string(u"π"), "uπ");
     T(std::u16string(u"你"), "u你");
     T(std::u16string(u"你好"), R"(s2"你好")");
     T(std::u16string(u"你好啊,hello!"), R"(s10"你好啊,hello!")");
-    T(std::u16string(u"🇨🇳"), "s4\"🇨🇳\"");
+    T(std::u16string(u"🇨🇳"), R"(s4"🇨🇳")");
 
     T(std::u32string(U""), "e");
     T(std::u32string(U"π"), "uπ");
     T(std::u32string(U"你"), "u你");
     T(std::u32string(U"你好"), R"(s2"你好")");
     T(std::u32string(U"你好啊,hello!"), R"(s10"你好啊,hello!")");
-    T(std::u32string(U"🇨🇳"), "s4\"🇨🇳\"");
+    T(std::u32string(U"🇨🇳"), R"(s4"🇨🇳")");
 }
 
 int main(int argc, char *argv[]) {
