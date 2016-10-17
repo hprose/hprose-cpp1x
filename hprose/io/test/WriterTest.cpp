@@ -136,6 +136,11 @@ TEST(Writer, SerializeString) {
     T(std::u32string(U"🇨🇳"), R"(s4"🇨🇳")");
 }
 
+TEST(Writer, SerializeBytes) {
+    T(std::vector<unsigned char>({'h', 'e', 'l', 'l', 'o'}), R"(b5"hello")");
+    T(std::vector<unsigned char>(), R"(b"")");
+}
+
 int main(int argc, char *argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

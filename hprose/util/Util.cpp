@@ -20,6 +20,8 @@
 
 #include <hprose/util/Util.h>
 
+#include <limits>
+
 namespace hprose {
 namespace util {
 
