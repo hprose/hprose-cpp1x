@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 17, 2016                             *
+ * LastModified: Oct 18, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -136,9 +136,26 @@ TEST(Writer, SerializeString) {
     T(std::u32string(U"🇨🇳"), R"(s4"🇨🇳")");
 }
 
-TEST(Writer, SerializeBytes) {
-    T(std::vector<unsigned char>({'h', 'e', 'l', 'l', 'o'}), R"(b5"hello")");
-    T(std::vector<unsigned char>(), R"(b"")");
+TEST(Writer, SerializeList) {
+    std::array<int, 3> a1{ {1, 2, 3} };
+    std::array<double, 3> a2{ {1, 2, 3} };
+    std::array<bool, 3> a3{ {true, false, true} };
+    std::array<int, 0> a4{};
+    std::array<bool, 0> a5{};
+    T(a1, "a3{123}");
+    T(a2, "a3{d1;d2;d3;}");
+    T(a3, "a3{tft}");
+    T(a4, "a{}");
+    T(a5, "a{}");
+
+    T(std::vector<uint8_t>({'h', 'e', 'l', 'l', 'o'}), R"(b5"hello")");
+    T(std::vector<uint8_t>(), R"(b"")");
+
+    T(std::vector<int>({1, 2, 3}), "a3{123}");
+    T(std::vector<double>({1, 2, 3}), "a3{d1;d2;d3;}");
+    // T(std::vector<bool>({true, false, true}), "a3{tft123}");
+    T(std::vector<int>(), "a{}");
+    // T(std::vector<bool>(), "a{}");
 }
 
 int main(int argc, char *argv[]) {

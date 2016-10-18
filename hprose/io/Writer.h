@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 17, 2016                             *
+ * LastModified: Oct 18, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -131,7 +131,7 @@ public:
         } else if (length == 1) {
             stream << tags::TagUTF8Char << str;
         } else if (length < 0) {
-            writeBytes(reinterpret_cast<const unsigned char *>(str.data()), str.length());
+            writeBytes(reinterpret_cast<const uint8_t *>(str.data()), str.length());
         } else {
             if (writeRef(reinterpret_cast<uintptr_t>(&str))) {
                 return;
@@ -156,16 +156,16 @@ public:
         writeString(conv.to_bytes(str));
     }
 
-    void writeBytes(const unsigned char *s, int count) {
+    void writeBytes(const uint8_t *data, size_t count) {
         setRef(0);
         if (count == 0) {
             stream << tags::TagBytes << tags::TagQuote << tags::TagQuote;
             return;
         }
         stream << tags::TagBytes;
-        util::WriteInt(stream, count);
+        util::WriteUint(stream, count);
         stream << tags::TagQuote;
-        stream.write(reinterpret_cast<const char *>(s), count);
+        stream.write(reinterpret_cast<const char *>(data), count);
         stream << tags::TagQuote;
     }
 
@@ -175,12 +175,47 @@ public:
     }
 
     template<size_t Size>
-    void writeList(const std::array<unsigned char, Size> &a) {
+    void writeList(const std::array<uint8_t, Size> &a) {
         writeBytes(a.data(), Size);
     }
 
-    void writeList(const std::vector<unsigned char> &v) {
+    template<typename T, size_t Size>
+    void writeList(const std::array<T, Size> &array) {
+        if (writeRef(reinterpret_cast<uintptr_t>(&array))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&array));
+        if (Size == 0) {
+            writeEmptyList();
+            return;
+        }
+        writeListHeader(Size);
+        for (auto itr = array.cbegin(); itr != array.cend(); itr++) {
+            writeValue(*itr);
+        }
+        writeListFooter();
+    }
+
+    void writeList(const std::vector<uint8_t> &v) {
         writeBytes(v.data(), v.size());
+    }
+
+    template<typename T>
+    void writeList(const std::vector<T> &vec) {
+        if (writeRef(reinterpret_cast<uintptr_t>(&vec))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&vec));
+        size_t count = vec.size();
+        if (count == 0) {
+            writeEmptyList();
+            return;
+        }
+        writeListHeader(count);
+        for (auto itr = vec.cbegin(); itr != vec.cend(); itr++) {
+            writeValue(*itr);
+        }
+        writeListFooter();
     }
 
     inline bool writeRef(uintptr_t ptr) {
@@ -269,14 +304,18 @@ private:
         stream << tags::TagQuote << str << tags::TagQuote;
     }
 
-    void writeListHeader(int count) {
+    void writeListHeader(size_t count) {
         stream << tags::TagList;
-        util::WriteInt(stream, count);
+        util::WriteUint(stream, count);
         stream << tags::TagOpenbrace;
     }
 
     inline void writeListFooter() {
         stream << tags::TagClosebrace;
+    }
+
+    inline void writeEmptyList() {
+        stream << tags::TagList << tags::TagOpenbrace << tags::TagClosebrace;
     }
 
     std::unique_ptr<internal::WriterRefer> refer;
