@@ -24,6 +24,10 @@
 #include <string>
 #include <array>
 #include <vector>
+#include <deque>
+#include <forward_list>
+#include <list>
+#include <set>
 #include <type_traits>
 
 namespace hprose {
@@ -140,13 +144,38 @@ struct TypeToType<std::basic_string<Element, Traits, Allocator> > {
     typedef StringType type;
 };
 
-template<typename Element, size_t Size>
-struct TypeToType<std::array<Element, Size> > {
+template<typename T, size_t Size>
+struct TypeToType<std::array<T, Size> > {
     typedef ListType type;
 };
 
-template<typename Element, typename Allocator>
-struct TypeToType<std::vector<Element, Allocator> > {
+template<typename T, typename Allocator>
+struct TypeToType<std::vector<T, Allocator> > {
+    typedef ListType type;
+};
+
+template<typename T, typename Allocator>
+struct TypeToType<std::deque<T, Allocator> > {
+    typedef ListType type;
+};
+
+template<typename T, typename Allocator>
+struct TypeToType<std::forward_list<T, Allocator> > {
+    typedef ListType type;
+};
+
+template<typename T, typename Allocator>
+struct TypeToType<std::list<T, Allocator> > {
+    typedef ListType type;
+};
+
+template<typename Key, typename Compare, typename Allocator>
+struct TypeToType<std::set<Key, Compare, Allocator> > {
+    typedef ListType type;
+};
+
+template<typename Key, typename Compare, typename Allocator>
+struct TypeToType<std::multiset<Key, Compare, Allocator> > {
     typedef ListType type;
 };
 

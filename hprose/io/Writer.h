@@ -170,8 +170,22 @@ public:
     }
 
     template<typename T>
-    void writeList(const T &l) {
+    void writeList(const T &lst) {
         static_assert(NonCVType<T>::value == ListType::value, "Requires list type");
+        if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&lst));
+        size_t count = lst.size();
+        if (count == 0) {
+            writeEmptyList();
+            return;
+        }
+        writeListHeader(count);
+        for (auto itr = lst.cbegin(); itr != lst.cend(); ++itr) {
+            writeValue(*itr);
+        }
+        writeListFooter();
     }
 
     template<size_t Size>
@@ -179,43 +193,8 @@ public:
         writeBytes(a.data(), Size);
     }
 
-    template<typename T, size_t Size>
-    void writeList(const std::array<T, Size> &array) {
-        if (writeRef(reinterpret_cast<uintptr_t>(&array))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&array));
-        if (Size == 0) {
-            writeEmptyList();
-            return;
-        }
-        writeListHeader(Size);
-        for (auto itr = array.cbegin(); itr != array.cend(); itr++) {
-            writeValue(*itr);
-        }
-        writeListFooter();
-    }
-
     void writeList(const std::vector<uint8_t> &v) {
         writeBytes(v.data(), v.size());
-    }
-
-    template<typename T>
-    void writeList(const std::vector<T> &vec) {
-        if (writeRef(reinterpret_cast<uintptr_t>(&vec))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&vec));
-        size_t count = vec.size();
-        if (count == 0) {
-            writeEmptyList();
-            return;
-        }
-        writeListHeader(count);
-        for (auto itr = vec.cbegin(); itr != vec.cend(); itr++) {
-            writeValue(*itr);
-        }
-        writeListFooter();
     }
 
     inline bool writeRef(uintptr_t ptr) {

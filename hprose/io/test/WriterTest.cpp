@@ -156,6 +156,12 @@ TEST(Writer, SerializeList) {
     // T(std::vector<bool>({true, false, true}), "a3{tft123}");
     T(std::vector<int>(), "a{}");
     // T(std::vector<bool>(), "a{}");
+
+    T(std::deque<int>({1, 2, 3}), "a3{123}");
+    // T(std::forward_list<int>({1, 2, 3}), "a3{123}");
+    T(std::list<int>({1, 2, 3}), "a3{123}");
+    T(std::set<int>({1, 2, 3}), "a3{123}");
+    T(std::multiset<int>({1, 2, 3}), "a3{123}");
 }
 
 int main(int argc, char *argv[]) {
