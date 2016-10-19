@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 18, 2016                             *
+ * LastModified: Oct 19, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -195,6 +195,41 @@ public:
 
     void writeList(const std::vector<uint8_t> &v) {
         writeBytes(v.data(), v.size());
+    }
+
+    void writeList(const std::vector<bool> &lst) {
+        if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&lst));
+        size_t count = lst.size();
+        if (count == 0) {
+            writeEmptyList();
+            return;
+        }
+        writeListHeader(count);
+        for (auto itr = lst.cbegin(); itr != lst.cend(); ++itr) {
+            writeBool(*itr);
+        }
+        writeListFooter();
+    }
+
+    template<typename T>
+    void writeList(const std::forward_list<T> &lst) {
+        if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&lst));
+        size_t count = std::distance(std::begin(lst), std::end(lst));
+        if (count == 0) {
+            writeEmptyList();
+            return;
+        }
+        writeListHeader(count);
+        for (auto itr = lst.cbegin(); itr != lst.cend(); ++itr) {
+            writeValue(*itr);
+        }
+        writeListFooter();
     }
 
     inline bool writeRef(uintptr_t ptr) {

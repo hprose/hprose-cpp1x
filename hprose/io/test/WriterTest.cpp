@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 18, 2016                             *
+ * LastModified: Oct 19, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -63,16 +63,16 @@ TEST(Writer, SerializeInteger) {
 }
 
 TEST(Writer, SerializeInt8) {
-    for (signed char i = 0; i <= 9; i++) {
+    for (int8_t i = 0; i <= 9; i++) {
         T(i, std::to_string(i));
     }
 
-    for (signed char i = 9; i < 127; i++) {
-        signed char x = i + 1;
+    for (int8_t i = 9; i < 127; i++) {
+        int8_t x = i + 1;
         T(x, "i" + std::to_string(x) + ";");
     }
 
-    for (signed char i = -128; i < 0; i++) {
+    for (int8_t i = -128; i < 0; i++) {
         T(i, "i" + std::to_string(i) + ";");
     }
 }
@@ -153,12 +153,12 @@ TEST(Writer, SerializeList) {
 
     T(std::vector<int>({1, 2, 3}), "a3{123}");
     T(std::vector<double>({1, 2, 3}), "a3{d1;d2;d3;}");
-    // T(std::vector<bool>({true, false, true}), "a3{tft123}");
+    T(std::vector<bool>({true, false, true}), "a3{tft}");
     T(std::vector<int>(), "a{}");
-    // T(std::vector<bool>(), "a{}");
+    T(std::vector<bool>(), "a{}");
 
     T(std::deque<int>({1, 2, 3}), "a3{123}");
-    // T(std::forward_list<int>({1, 2, 3}), "a3{123}");
+    T(std::forward_list<int>({1, 2, 3}), "a3{123}");
     T(std::list<int>({1, 2, 3}), "a3{123}");
     T(std::set<int>({1, 2, 3}), "a3{123}");
     T(std::multiset<int>({1, 2, 3}), "a3{123}");
