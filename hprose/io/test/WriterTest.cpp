@@ -164,6 +164,11 @@ TEST(Writer, SerializeList) {
     T(std::multiset<int>({1, 2, 3}), "a3{123}");
 }
 
+TEST(Writer, SerializeTuple) {
+    T(std::make_tuple(), "a{}");
+    T(std::make_tuple(1, 3.14, true), "a3{1d3.14;t}");
+}
+
 int main(int argc, char *argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

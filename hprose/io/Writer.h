@@ -193,11 +193,13 @@ public:
         writeBytes(a.data(), Size);
     }
 
-    void writeList(const std::vector<uint8_t> &v) {
+    template<typename Allocator>
+    void writeList(const std::vector<uint8_t, Allocator> &v) {
         writeBytes(v.data(), v.size());
     }
 
-    void writeList(const std::vector<bool> &lst) {
+    template<typename Allocator>
+    void writeList(const std::vector<bool, Allocator> &lst) {
         if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
             return;
         }
@@ -229,6 +231,22 @@ public:
         for (auto itr = lst.cbegin(); itr != lst.cend(); ++itr) {
             writeValue(*itr);
         }
+        writeListFooter();
+    }
+
+    template<typename... Type>
+    void writeList(const std::tuple<Type...> &lst) {
+        if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&lst));
+        size_t count = std::tuple_size<std::tuple<Type...> >::value;
+        if (count == 0) {
+            writeEmptyList();
+            return;
+        }
+        writeListHeader(count);
+        writeTupleElement(lst);
         writeListFooter();
     }
 
@@ -330,6 +348,18 @@ private:
 
     inline void writeEmptyList() {
         stream << tags::TagList << tags::TagOpenbrace << tags::TagClosebrace;
+    }
+
+    template<std::size_t Index = 0, typename... Tuple>
+    inline typename std::enable_if<Index == sizeof...(Tuple), void>::type
+    writeTupleElement(const std::tuple<Tuple...> &) {
+    }
+
+    template<std::size_t Index = 0, typename... Tuple>
+    inline typename std::enable_if<Index < sizeof...(Tuple), void>::type
+    writeTupleElement(const std::tuple<Tuple...> &tuple) {
+        writeValue(std::get<Index>(tuple));
+        writeTupleElement<Index + 1, Tuple...>(tuple);
     }
 
     std::unique_ptr<internal::WriterRefer> refer;

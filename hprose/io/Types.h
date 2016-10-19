@@ -13,7 +13,7 @@
  *                                                        *
  * hprose types header for cpp.                           *
  *                                                        *
- * LastModified: Oct 17, 2016                             *
+ * LastModified: Oct 19, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -28,6 +28,7 @@
 #include <forward_list>
 #include <list>
 #include <set>
+#include <tuple>
 #include <type_traits>
 
 namespace hprose {
@@ -176,6 +177,11 @@ struct TypeToType<std::set<Key, Compare, Allocator> > {
 
 template<typename Key, typename Compare, typename Allocator>
 struct TypeToType<std::multiset<Key, Compare, Allocator> > {
+    typedef ListType type;
+};
+
+template<typename... Types>
+struct TypeToType<std::tuple<Types...> > {
     typedef ListType type;
 };
 
