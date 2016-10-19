@@ -61,7 +61,7 @@ public:
     typedef std::true_type SignedType;
     typedef std::false_type UnignedType;
 
-    Writer(std::ostream &stream, bool simple = true)
+    Writer(std::ostream &stream, bool simple = false)
         : stream(stream), refer(simple ? nullptr : new internal::WriterRefer()) {
     }
 

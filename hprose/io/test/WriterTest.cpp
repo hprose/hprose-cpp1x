@@ -26,7 +26,7 @@
 
 #define T(value, expected) { \
     std::ostringstream stream; \
-    hprose::io::Writer writer(stream); \
+    hprose::io::Writer writer(stream, true); \
     writer.serialize(value); \
     EXPECT_EQ(stream.str(), expected); \
 }
