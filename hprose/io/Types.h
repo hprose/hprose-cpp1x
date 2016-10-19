@@ -28,7 +28,10 @@
 #include <forward_list>
 #include <list>
 #include <set>
+#include <unordered_set>
 #include <tuple>
+#include <map>
+#include <unordered_map>
 #include <type_traits>
 
 namespace hprose {
@@ -180,9 +183,39 @@ struct TypeToType<std::multiset<Key, Compare, Allocator> > {
     typedef ListType type;
 };
 
+template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
+struct TypeToType<std::unordered_set<Key, Hash, KeyEqual, Allocator> > {
+    typedef ListType type;
+};
+
+template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
+struct TypeToType<std::unordered_multiset<Key, Hash, KeyEqual, Allocator> > {
+    typedef ListType type;
+};
+
 template<typename... Types>
 struct TypeToType<std::tuple<Types...> > {
     typedef ListType type;
+};
+
+template<typename Key, typename T, typename Compare, typename Allocator>
+struct TypeToType<std::map<Key, T, Compare, Allocator> > {
+    typedef MapType type;
+};
+
+template<typename Key, typename T, typename Compare, typename Allocator>
+struct TypeToType<std::multimap<Key, T, Compare, Allocator> > {
+    typedef MapType type;
+};
+
+template<typename Key, typename T, typename Hash, typename KeyEqual, typename Allocator>
+struct TypeToType<std::unordered_map<Key, T, Hash, KeyEqual, Allocator> > {
+    typedef MapType type;
+};
+
+template<typename Key, typename T, typename Hash, typename KeyEqual, typename Allocator>
+struct TypeToType<std::unordered_multimap<Key, T, Hash, KeyEqual, Allocator> > {
+    typedef MapType type;
 };
 
 template<typename Type>

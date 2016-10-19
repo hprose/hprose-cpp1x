@@ -250,6 +250,26 @@ public:
         writeListFooter();
     }
 
+    template<typename T>
+    void writeMap(const T &map) {
+        static_assert(NonCVType<T>::value == MapType::value, "Requires map type");
+        if (writeRef(reinterpret_cast<uintptr_t>(&map))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&map));
+        size_t count = map.size();
+        if (count == 0) {
+            writeEmptyMap();
+            return;
+        }
+        writeMapHeader(count);
+        for (auto itr = map.cbegin(); itr != map.cend(); ++itr) {
+            writeValue(itr->first);
+            writeValue(itr->second);
+        }
+        writeMapFooter();
+    }
+
     inline bool writeRef(uintptr_t ptr) {
         return refer ? refer->write(stream, ptr) : false;
     }
@@ -298,6 +318,11 @@ private:
     template<typename T>
     inline void writeValue(const T &l, ListType) {
         writeList(l);
+    }
+
+    template<typename T>
+    inline void writeValue(const T &m, MapType) {
+        writeMap(m);
     }
 
     template<typename T>
@@ -360,6 +385,20 @@ private:
     writeTupleElement(const std::tuple<Tuple...> &tuple) {
         writeValue(std::get<Index>(tuple));
         writeTupleElement<Index + 1, Tuple...>(tuple);
+    }
+
+    void writeMapHeader(size_t count) {
+        stream << tags::TagMap;
+        util::WriteUint(stream, count);
+        stream << tags::TagOpenbrace;
+    }
+
+    inline void writeMapFooter() {
+        stream << tags::TagClosebrace;
+    }
+
+    inline void writeEmptyMap() {
+        stream << tags::TagMap << tags::TagOpenbrace << tags::TagClosebrace;
     }
 
     std::unique_ptr<internal::WriterRefer> refer;

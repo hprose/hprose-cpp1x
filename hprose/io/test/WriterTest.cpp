@@ -169,6 +169,15 @@ TEST(Writer, SerializeTuple) {
     T(std::make_tuple(1, 3.14, true), "a3{1d3.14;t}");
 }
 
+TEST(Writer, SerializeMap) {
+    std::map<int, float> map;
+    T(map, "m{}");
+    map[4] = 4.13;
+    map[9] = 9.24;
+    map[1] = 1.09;
+    T(map, "m3{1d1.09;4d4.13;9d9.24;}");
+}
+
 int main(int argc, char *argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();
