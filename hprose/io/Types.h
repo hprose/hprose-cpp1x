@@ -21,6 +21,7 @@
 #pragma once
 
 #include <complex>
+#include <ratio>
 #include <string>
 #include <array>
 #include <vector>
@@ -52,12 +53,13 @@ typedef IntToType< 4> EnumType;
 typedef IntToType< 5> IntegerType;
 typedef IntToType< 6> FloatType;
 typedef IntToType< 7> ComplexType;
-typedef IntToType< 8> TimeType;
-typedef IntToType< 9> StringType;
-typedef IntToType<10> UUIDType;
-typedef IntToType<11> ListType;
-typedef IntToType<12> MapType;
-typedef IntToType<13> ObjectType;
+typedef IntToType< 8> RatioType;
+typedef IntToType< 9> TimeType;
+typedef IntToType<10> StringType;
+typedef IntToType<11> UUIDType;
+typedef IntToType<12> ListType;
+typedef IntToType<13> MapType;
+typedef IntToType<14> ObjectType;
 
 template<typename Type>
 struct TypeToType {
@@ -140,8 +142,13 @@ struct TypeToType<long double> {
 };
 
 template<typename T>
-struct TypeToType<std::complex<T>> {
+struct TypeToType<std::complex<T> > {
     typedef ComplexType type;
+};
+
+template<intmax_t N, intmax_t D>
+struct TypeToType<std::ratio<N, D> > {
+    typedef RatioType type;
 };
 
 template<typename Element, typename Traits, typename Allocator>
@@ -149,8 +156,8 @@ struct TypeToType<std::basic_string<Element, Traits, Allocator> > {
     typedef StringType type;
 };
 
-template<typename T, size_t Size>
-struct TypeToType<std::array<T, Size> > {
+template<typename T, size_t N>
+struct TypeToType<std::array<T, N> > {
     typedef ListType type;
 };
 

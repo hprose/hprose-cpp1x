@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 19, 2016                             *
+ * LastModified: Oct 20, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -29,7 +29,6 @@
 #include <limits>
 #include <locale>
 #include <codecvt>
-#include <unordered_map>
 
 namespace hprose {
 namespace io {
@@ -119,6 +118,17 @@ public:
         writeListFooter();
     }
 
+    template<intmax_t N, intmax_t D>
+    void writeRatio(const std::ratio<N, D> &r) {
+        if (r.den == 1) {
+            writeInteger(r.num);
+            return;
+        }
+        setRef(0);
+        std::string s = std::to_string(r.num) + "/" + std::to_string(r.den);
+        writeString(s, s.length());
+    }
+
     template<typename T>
     void writeString(const T &s) {
         static_assert(NonCVType<T>::value == StringType::value, "Requires string type");
@@ -188,9 +198,9 @@ public:
         writeListFooter();
     }
 
-    template<size_t Size>
-    void writeList(const std::array<uint8_t, Size> &a) {
-        writeBytes(a.data(), Size);
+    template<size_t N>
+    void writeList(const std::array<uint8_t, N> &a) {
+        writeBytes(a.data(), N);
     }
 
     template<typename Allocator>
@@ -328,6 +338,11 @@ private:
     }
 
     template<typename T>
+    inline void writeValue(const T &r, RatioType) {
+        writeRatio(r);
+    }
+
+    template<typename T>
     inline void writeValue(const T &s, StringType) {
         writeString(s);
     }
@@ -343,7 +358,7 @@ private:
     }
 
     template<typename T>
-    void writeInteger(T i, const SignedType &) {
+    void writeInteger(T i, SignedType) {
         if (i >= 0 && i <= 9) {
             stream << static_cast<char>('0' + i);
             return;
@@ -358,7 +373,7 @@ private:
     }
 
     template<typename T>
-    void writeInteger(T u, const UnignedType &) {
+    void writeInteger(T u, UnignedType) {
         if (u <= 9) {
             stream << static_cast<char>('0' + u);
             return;

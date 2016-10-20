@@ -105,6 +105,11 @@ TEST(Writer, SerializeComplex) {
     T(std::complex<long double>(0, 100.f), "a2{d0;d100;}");
 }
 
+TEST(Writer, SerializeRatio) {
+    T(std::ratio<123>(), "i123;");
+    T((std::ratio<1, 123>()), R"(s5"123/2")");
+}
+
 TEST(Writer, SerializeString) {
     T(std::string(u8""), "e");
     T(std::string(u8"π"), "uπ");
