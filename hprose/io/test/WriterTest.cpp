@@ -107,7 +107,7 @@ TEST(Writer, SerializeComplex) {
 
 TEST(Writer, SerializeRatio) {
     T(std::ratio<123>(), "i123;");
-    T((std::ratio<1, 123>()), R"(s5"123/2")");
+    T((std::ratio<123, 2>()), R"(s5"123/2")");
 }
 
 TEST(Writer, SerializeString) {

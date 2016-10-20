@@ -200,7 +200,7 @@ public:
 
     template<size_t N>
     void writeList(const std::array<uint8_t, N> &a) {
-        writeBytes(a.data(), N);
+        writeBytes(a.data(), a.size());
     }
 
     template<typename Allocator>
