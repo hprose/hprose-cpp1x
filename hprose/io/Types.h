@@ -13,7 +13,7 @@
  *                                                        *
  * hprose types header for cpp.                           *
  *                                                        *
- * LastModified: Oct 19, 2016                             *
+ * LastModified: Oct 20, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -29,6 +29,7 @@
 #include <list>
 #include <set>
 #include <unordered_set>
+#include <bitset>
 #include <tuple>
 #include <map>
 #include <unordered_map>
@@ -190,6 +191,11 @@ struct TypeToType<std::unordered_set<Key, Hash, KeyEqual, Allocator> > {
 
 template<typename Key, typename Hash, typename KeyEqual, typename Allocator>
 struct TypeToType<std::unordered_multiset<Key, Hash, KeyEqual, Allocator> > {
+    typedef ListType type;
+};
+
+template<size_t N>
+struct TypeToType<std::bitset<N> > {
     typedef ListType type;
 };
 

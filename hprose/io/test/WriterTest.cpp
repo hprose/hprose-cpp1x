@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 19, 2016                             *
+ * LastModified: Oct 20, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -162,6 +162,12 @@ TEST(Writer, SerializeList) {
     T(std::list<int>({1, 2, 3}), "a3{123}");
     T(std::set<int>({1, 2, 3}), "a3{123}");
     T(std::multiset<int>({1, 2, 3}), "a3{123}");
+}
+
+TEST(Writer, SerializeBitset) {
+    T(std::bitset<0>(), "a{}");
+    T(std::bitset<8>(), "a8{ffffffff}");   // [0,0,0,0,0,0,0,0]
+    T(std::bitset<8>(42), "a8{ftftftff}"); // [0,0,1,0,1,0,1,0]
 }
 
 TEST(Writer, SerializeTuple) {

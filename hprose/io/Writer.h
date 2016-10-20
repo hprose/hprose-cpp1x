@@ -234,6 +234,23 @@ public:
         writeListFooter();
     }
 
+    template<size_t N>
+    void writeList(const std::bitset<N> &b) {
+        if (writeRef(reinterpret_cast<uintptr_t>(&b))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&b));
+        if (N == 0) {
+            writeEmptyList();
+            return;
+        }
+        writeListHeader(N);
+        for (auto i = 0; i < N; ++i) {
+            writeBool(b.test(i));
+        }
+        writeListFooter();
+    }
+
     template<typename... Type>
     void writeList(const std::tuple<Type...> &lst) {
         if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
