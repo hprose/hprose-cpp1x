@@ -77,6 +77,14 @@ TEST(Writer, SerializeInt8) {
     }
 }
 
+enum Color { red, green, blue };
+
+TEST(Writer, SerializeEnum) {
+    T(red, "0");
+    T(green, "1");
+    T(blue, "2");
+}
+
 TEST(Writer, SerializeFloat) {
     T(std::numeric_limits<float>::quiet_NaN(), "N");
     T(std::numeric_limits<float>::infinity(), "I+");

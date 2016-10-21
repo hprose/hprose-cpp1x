@@ -48,6 +48,14 @@ encode(const T &v, Writer &writer) {
 
 template<class T>
 inline typename std::enable_if<
+    std::is_enum<T>::value
+>::type
+encode(const T &v, Writer &writer) {
+    writer.writeInteger(static_cast<int>(v));
+}
+
+template<class T>
+inline typename std::enable_if<
     std::is_floating_point<T>::value
 >::type
 encode(const T &v, Writer &writer) {
