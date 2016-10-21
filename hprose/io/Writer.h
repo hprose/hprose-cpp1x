@@ -91,8 +91,25 @@ public:
 
     template<class T>
     typename std::enable_if<
-        std::is_integral<T>::value &&
-        std::is_signed<T>::value
+        (std::is_integral<T>::value &&
+         std::is_signed<T>::value &&
+         sizeof(T) <= sizeof(int32_t))
+    >::type
+    writeInteger(T i) {
+        if (i >= 0 && i <= 9) {
+            stream << static_cast<char>('0' + i);
+            return;
+        }
+        stream << tags::TagInteger;
+        util::WriteInt(stream, i);
+        stream << tags::TagSemicolon;
+    }
+
+    template<class T>
+    typename std::enable_if<
+        (std::is_integral<T>::value &&
+         std::is_signed<T>::value &&
+         sizeof(T) > sizeof(int32_t))
     >::type
     writeInteger(T i) {
         if (i >= 0 && i <= 9) {
@@ -110,8 +127,25 @@ public:
 
     template<class T>
     typename std::enable_if<
-        std::is_integral<T>::value &&
-        std::is_unsigned<T>::value
+        (std::is_integral<T>::value &&
+         std::is_unsigned<T>::value &&
+         sizeof(T) <= sizeof(uint16_t))
+    >::type
+    writeInteger(T u) {
+        if (u <= 9) {
+            stream << static_cast<char>('0' + u);
+            return;
+        }
+        stream << tags::TagInteger;
+        util::WriteUint(stream, u);
+        stream << tags::TagSemicolon;
+    }
+
+    template<class T>
+    typename std::enable_if<
+        (std::is_integral<T>::value &&
+         std::is_unsigned<T>::value &&
+         sizeof(T) > sizeof(uint16_t))
     >::type
     writeInteger(T u) {
         if (u <= 9) {
