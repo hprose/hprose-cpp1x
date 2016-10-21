@@ -161,4 +161,4 @@ inline void encode(const std::unordered_multimap<Key, T, Hash, KeyEqual, Allocat
 }
 
 }
-}
+} // hprose::io

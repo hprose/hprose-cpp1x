@@ -8,12 +8,13 @@ endif()
 
 set(SOURCE_FILES
     hprose/io/Writer.cpp
+    hprose/io/Reader.cpp
     hprose/util/Util.cpp)
 
 include_directories(".")
 
 add_library(hprose STATIC ${SOURCE_FILES})
 
-add_executable(WriterTest hprose/io/test/WriterTest.cpp)
-target_include_directories(WriterTest PUBLIC "${GTEST_DIR}/include")
-target_link_libraries(WriterTest hprose pthread "${GTEST_DIR}/libgtest.a")
+add_executable(IOTest.out hprose/io/test/WriterTest.cpp hprose/io/test/ReaderTest.cpp)
+target_include_directories(IOTest.out PUBLIC "${GTEST_DIR}/include")
+target_link_libraries(IOTest.out hprose pthread "${GTEST_DIR}/libgtest.a")
