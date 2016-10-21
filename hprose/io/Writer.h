@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 20, 2016                             *
+ * LastModified: Oct 21, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -21,14 +21,19 @@
 #pragma once
 
 #include <hprose/io/Tags.h>
-#include <hprose/io/Types.h>
 #include <hprose/util/Util.h>
 
 #include <ostream>
 #include <numeric>
 #include <limits>
+#include <complex>
+#include <ratio>
+#include <string>
 #include <locale>
 #include <codecvt>
+#include <vector>
+#include <forward_list>
+#include <unordered_map>
 
 namespace hprose {
 namespace io {
@@ -57,23 +62,19 @@ private:
 
 class Writer {
 public:
-    typedef std::true_type SignedType;
-    typedef std::false_type UnignedType;
-
     Writer(std::ostream &stream, bool simple = false)
         : stream(stream), refer(simple ? nullptr : new internal::WriterRefer()) {
     }
 
-    template<typename T>
+    template<class T>
     inline Writer &serialize(const T &v) {
         writeValue(v);
         return *this;
     }
 
-    template<typename T>
+    template<class T>
     inline void writeValue(const T &v) {
-        static_assert(NonCVType<T>::value != UnknownType::value, "Attempt to write a value that can not be serializable");
-        writeValue(v, NonCVType<T>());
+        encode(v, *this);
     }
 
     inline void writeNull() {
@@ -84,15 +85,49 @@ public:
         stream << (b ? tags::TagTrue : tags::TagFalse);
     }
 
-    template<typename T>
-    inline void writeInteger(T i) {
-        static_assert(NonCVType<T>::value == IntegerType::value, "Requires integer type");
-        writeInteger(i, std::is_signed<T>());
+    template<class T>
+    typename std::enable_if<
+        std::is_integral<T>::value &&
+        std::is_signed<T>::value
+    >::type
+    writeInteger(T i) {
+        if (i >= 0 && i <= 9) {
+            stream << static_cast<char>('0' + i);
+            return;
+        }
+        if (i >= std::numeric_limits<int32_t>::min() && i <= std::numeric_limits<int32_t>::max()) {
+            stream << tags::TagInteger;
+        } else {
+            stream << tags::TagLong;
+        }
+        util::WriteInt(stream, i);
+        stream << tags::TagSemicolon;
     }
 
-    template<typename T>
-    void writeFloat(T f) {
-        static_assert(NonCVType<T>::value == FloatType::value, "Requires floating point type");
+    template<class T>
+    typename std::enable_if<
+        std::is_integral<T>::value &&
+        std::is_unsigned<T>::value
+    >::type
+    writeInteger(T u) {
+        if (u <= 9) {
+            stream << static_cast<char>('0' + u);
+            return;
+        }
+        if (u <= std::numeric_limits<int32_t>::max()) {
+            stream << tags::TagInteger;
+        } else {
+            stream << tags::TagLong;
+        }
+        util::WriteUint(stream, u);
+        stream << tags::TagSemicolon;
+    }
+
+    template<class T>
+    typename std::enable_if<
+        std::is_floating_point<T>::value
+    >::type
+    writeFloat(T f) {
         if (f != f) {
             stream << tags::TagNaN;
         } else if (f == std::numeric_limits<T>::infinity()) {
@@ -105,7 +140,7 @@ public:
         }
     }
 
-    template<typename T>
+    template<class T>
     void writeComplex(const std::complex<T> &c) {
         if (c.imag() == 0) {
             writeFloat(c.real());
@@ -127,11 +162,6 @@ public:
         setRef(0);
         std::string s = std::to_string(r.num) + "/" + std::to_string(r.den);
         writeString(s, s.length());
-    }
-
-    template<typename T>
-    void writeString(const T &s) {
-        static_assert(NonCVType<T>::value == StringType::value, "Requires string type");
     }
 
     void writeString(const std::string &str) {
@@ -179,9 +209,8 @@ public:
         stream << tags::TagQuote;
     }
 
-    template<typename T>
+    template<class T>
     void writeList(const T &lst) {
-        static_assert(NonCVType<T>::value == ListType::value, "Requires list type");
         if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
             return;
         }
@@ -203,12 +232,12 @@ public:
         writeBytes(a.data(), a.size());
     }
 
-    template<typename Allocator>
+    template<class Allocator>
     void writeList(const std::vector<uint8_t, Allocator> &v) {
         writeBytes(v.data(), v.size());
     }
 
-    template<typename Allocator>
+    template<class Allocator>
     void writeList(const std::vector<bool, Allocator> &lst) {
         if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
             return;
@@ -226,7 +255,7 @@ public:
         writeListFooter();
     }
 
-    template<typename T>
+    template<class T>
     void writeList(const std::forward_list<T> &lst) {
         if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
             return;
@@ -261,7 +290,7 @@ public:
         writeListFooter();
     }
 
-    template<typename... Type>
+    template<class... Type>
     void writeList(const std::tuple<Type...> &lst) {
         if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
             return;
@@ -277,9 +306,8 @@ public:
         writeListFooter();
     }
 
-    template<typename T>
+    template<class T>
     void writeMap(const T &map) {
-        static_assert(NonCVType<T>::value == MapType::value, "Requires map type");
         if (writeRef(reinterpret_cast<uintptr_t>(&map))) {
             return;
         }
@@ -312,81 +340,6 @@ public:
     std::ostream &stream;
 
 private:
-    template<typename T>
-    inline void writeValue(const T &, NullPtrType) {
-        writeNull();
-    }
-
-    template<typename T>
-    inline void writeValue(const T &b, BoolType) {
-        writeBool(b);
-    }
-
-    template<typename T>
-    inline void writeValue(const T &i, IntegerType) {
-        writeInteger(i);
-    }
-
-    template<typename T>
-    inline void writeValue(const T &f, FloatType) {
-        writeFloat(f);
-    }
-
-    template<typename T>
-    inline void writeValue(const T &c, ComplexType) {
-        writeComplex(c);
-    }
-
-    template<typename T>
-    inline void writeValue(const T &r, RatioType) {
-        writeRatio(r);
-    }
-
-    template<typename T>
-    inline void writeValue(const T &s, StringType) {
-        writeString(s);
-    }
-
-    template<typename T>
-    inline void writeValue(const T &l, ListType) {
-        writeList(l);
-    }
-
-    template<typename T>
-    inline void writeValue(const T &m, MapType) {
-        writeMap(m);
-    }
-
-    template<typename T>
-    void writeInteger(T i, SignedType) {
-        if (i >= 0 && i <= 9) {
-            stream << static_cast<char>('0' + i);
-            return;
-        }
-        if (i >= std::numeric_limits<int32_t>::min() && i <= std::numeric_limits<int32_t>::max()) {
-            stream << tags::TagInteger;
-        } else {
-            stream << tags::TagLong;
-        }
-        util::WriteInt(stream, i);
-        stream << tags::TagSemicolon;
-    }
-
-    template<typename T>
-    void writeInteger(T u, UnignedType) {
-        if (u <= 9) {
-            stream << static_cast<char>('0' + u);
-            return;
-        }
-        if (u <= std::numeric_limits<int32_t>::max()) {
-            stream << tags::TagInteger;
-        } else {
-            stream << tags::TagLong;
-        }
-        util::WriteUint(stream, u);
-        stream << tags::TagSemicolon;
-    }
-
     void writeString(const std::string &str, int length) {
         stream << tags::TagString;
         util::WriteInt(stream, length);
@@ -407,13 +360,17 @@ private:
         stream << tags::TagList << tags::TagOpenbrace << tags::TagClosebrace;
     }
 
-    template<std::size_t Index = 0, typename... Tuple>
-    inline typename std::enable_if<Index == sizeof...(Tuple), void>::type
+    template<std::size_t Index = 0, class... Tuple>
+    inline typename std::enable_if<
+        Index == sizeof...(Tuple)
+    >::type
     writeTupleElement(const std::tuple<Tuple...> &) {
     }
 
-    template<std::size_t Index = 0, typename... Tuple>
-    inline typename std::enable_if<Index < sizeof...(Tuple), void>::type
+    template<std::size_t Index = 0, class... Tuple>
+    inline typename std::enable_if<
+        Index < sizeof...(Tuple)
+    >::type
     writeTupleElement(const std::tuple<Tuple...> &tuple) {
         writeValue(std::get<Index>(tuple));
         writeTupleElement<Index + 1, Tuple...>(tuple);
@@ -438,3 +395,5 @@ private:
 
 }
 } // hprose::io
+
+#include <hprose/io/Writer-inl.h>
