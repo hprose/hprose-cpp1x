@@ -12,7 +12,7 @@ bool parseBool(const std::string &s) {
     if (s == "0" || s == "f" || s == "F" || s == "false" || s == "FALSE" || s == "False") {
         return false;
     }
-    throw "parse bool error";
+    throw std::runtime_error("parse bool failed");
 }
 
 bool readNumberAsBool(Reader &reader) {
@@ -67,7 +67,7 @@ bool BoolDecode(Reader &reader, char tag) {
         case tags::TagString:
             return readStringAsBool(reader);
         default:
-            throw "cast error";
+            throw CastError<bool>(tag);
     }
 }
 

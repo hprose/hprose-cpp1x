@@ -35,10 +35,27 @@ namespace io {
 
 namespace internal {
 
+std::string TagToString(char tag);
+
 class ReaderRefer {
 };
 
 } // hprose::io::internal
+
+struct UnexpectedTag : std::runtime_error {
+    explicit UnexpectedTag(char tag)
+        : std::runtime_error(tag == -1 ?
+                             "no byte found in stream" :
+                             std::string("unexpected serialize tag '") + tag + "' in stream") {
+    }
+};
+
+template<class T>
+struct CastError : std::runtime_error {
+    explicit CastError(char tag)
+        : std::runtime_error(internal::TagToString(tag) + " can't change to " + typeid(T).name()) {
+    }
+};
 
 template<class T>
 struct Decoder;
@@ -71,33 +88,7 @@ public:
         return decoders::BoolDecode(*this, stream.get());
     }
 
-    int64_t readInt64(char tag) {
-        int64_t i = 0;
-        auto b = stream.get();
-        if (b == tag) {
-            return i;
-        }
-        bool neg = false;
-        switch (b) {
-            case '-':
-                neg = true;
-            case '+':
-                b = stream.get();
-        }
-        if (neg) {
-            while (b != tag) {
-                i = i * 10 - (b - '0');
-                b = stream.get();
-            }
-        } else {
-            while
-                (b != tag) {
-                i = i * 10 + (b - '0');
-                b = stream.get();
-            }
-        }
-        return i;
-    }
+    int64_t readInt64(char tag);
 
     int readLength() {
         return static_cast<int>(readInt64(tags::TagQuote));
@@ -145,12 +136,12 @@ public:
                 }
                 case 15: {
                     if ((c & 8) == 8) {
-                        throw "bad utf8";
+                        throw std::runtime_error("bad utf-8 encode");
                     }
                     i++;
                 }
                 default:
-                    throw "bad utf8";
+                    throw std::runtime_error("bad utf-8 encode");
             };
         }
         stream.get();
