@@ -103,52 +103,9 @@ public:
         return stream.get() == tags::TagPos ? std::numeric_limits<T>::infinity() : -std::numeric_limits<T>::infinity();
     }
 
-    std::string readUTF8String(int length) {
-        std::stringstream ss;
-        if (length == 0) {
-            return ss.str();
-        }
-        for (auto i = 0; i < length; i++) {
-            int c = stream.get();
-            switch (c >> 4) {
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                case 4:
-                case 5:
-                case 6:
-                case 7: {
-                    ss << static_cast<char>(c);
-                    break;
-                }
-                case 12:
-                case 13: {
-                    ss << static_cast<char>(c);
-                    ss << static_cast<char>(stream.get());
-                    break;
-                }
-                case 14: {
-                    ss << static_cast<char>(c);
-                    ss << static_cast<char>(stream.get());
-                    ss << static_cast<char>(stream.get());
-                    break;
-                }
-                case 15: {
-                    if ((c & 8) == 8) {
-                        throw std::runtime_error("bad utf-8 encode");
-                    }
-                    i++;
-                }
-                default:
-                    throw std::runtime_error("bad utf-8 encode");
-            };
-        }
-        stream.get();
-        return ss.str();
-    }
+    std::string readUTF8String(int length);
 
-    std::string readString() {
+    inline std::string readString() {
         std::string s = readUTF8String(readLength());
         stream.get();
         return s;
