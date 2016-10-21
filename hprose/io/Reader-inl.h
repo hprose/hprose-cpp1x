@@ -24,17 +24,13 @@ namespace hprose {
 namespace io {
 
 template<class T>
-struct Decoder {
-    inline T decode(Reader &reader) {
-    }
-};
+inline void decode(T &, Reader &reader) {
+}
 
 template<>
-struct Decoder<bool> {
-    inline bool decode(Reader &reader) {
-        return reader.readBool();
-    }
-};
+inline void decode(bool &b, Reader &reader) {
+    b = reader.readBool();
+}
 
 }
 } // hprose::io

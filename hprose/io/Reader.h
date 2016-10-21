@@ -24,6 +24,8 @@
 #include <hprose/io/decoders/BoolDecoder.h>
 
 #include <istream>
+#include <numeric>
+#include <limits>
 
 namespace hprose {
 namespace io {
@@ -46,16 +48,39 @@ public:
 
     template<class T>
     inline T unserialize() {
-        return readValue<T>();
+        T v;
+        readValue(v);
+        return std::move(v);
     }
 
     template<class T>
-    inline T readValue() {
-        return Decoder<T>().decode(*this);
+    inline Reader &unserialize(T &v) {
+        readValue(v);
+        return *this;
+    }
+
+    template<class T>
+    inline void readValue(T &v) {
+        return decode(v, *this);
     }
 
     inline bool readBool() {
         return decoders::BoolDecode(*this, stream.get());
+    }
+
+    template<class T>
+    typename std::enable_if<
+        std::is_floating_point<T>::value,
+        T
+    >::type
+    readInfinity() {
+        return stream.get() == tags::TagPos ? std::numeric_limits<T>::infinity() : -std::numeric_limits<T>::infinity();
+    }
+
+    std::string readUntil(char tag) {
+        std::string s;
+        std::getline(stream, s, tag);
+        return std::move(s);
     }
 
     std::istream &stream;

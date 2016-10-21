@@ -33,4 +33,6 @@
 
 TEST(Reader, UnserializeBool) {
     T(bool, true, true);
+    T(bool, 0, false);
+    T(bool, 99, true);
 }
