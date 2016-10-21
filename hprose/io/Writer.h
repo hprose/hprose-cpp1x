@@ -266,13 +266,32 @@ public:
     }
 
     template<size_t N>
-    void writeList(const std::array<uint8_t, N> &a) {
+    inline void writeList(const uint8_t (&v)[N]) {
+        writeBytes(v, N);
+    }
+
+    template<size_t N>
+    inline void writeList(const std::array<uint8_t, N> &a) {
         writeBytes(a.data(), a.size());
     }
 
     template<class Allocator>
-    void writeList(const std::vector<uint8_t, Allocator> &v) {
+    inline void writeList(const std::vector<uint8_t, Allocator> &v) {
         writeBytes(v.data(), v.size());
+    }
+
+    template<class T, size_t N>
+    void writeList(const T (&v)[N]) {
+        setRef(0);
+        if (N == 0) {
+            writeEmptyList();
+            return;
+        }
+        writeListHeader(N);
+        for (auto i = 0; i < N; ++i) {
+            writeValue(v[i]);
+        }
+        writeListFooter();
     }
 
     template<class Allocator>

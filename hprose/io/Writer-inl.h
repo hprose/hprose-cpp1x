@@ -77,6 +77,14 @@ inline void encode(const std::basic_string<Element, Traits, Allocator> &v, Write
     writer.writeString(v);
 }
 
+template<class T>
+inline typename std::enable_if<
+    std::is_array<T>::value
+>::type
+encode(const T &v, Writer &writer) {
+    writer.writeList(v);
+}
+
 template<class T, size_t N>
 inline void encode(const std::array<T, N> &v, Writer &writer) {
     writer.writeList(v);
