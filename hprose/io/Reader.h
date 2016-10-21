@@ -85,12 +85,12 @@ public:
     }
 
     inline bool readBool() {
-        return decoders::BoolDecode(*this, stream.get());
+        return decoders::BoolDecode(*this, static_cast<char>(stream.get()));
     }
 
     int64_t readInt64(char tag);
 
-    int readLength() {
+    inline int readLength() {
         return static_cast<int>(readInt64(tags::TagQuote));
     }
 
@@ -150,6 +150,7 @@ public:
 
     std::string readString() {
         std::string s = readUTF8String(readLength());
+        stream.get();
         return s;
     }
 
@@ -166,7 +167,6 @@ public:
     std::istream &stream;
 
 private:
-
     std::unique_ptr<internal::ReaderRefer> refer;
 };
 

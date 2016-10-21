@@ -26,7 +26,6 @@ namespace io {
 namespace internal {
 
 std::string TagToString(char tag) {
-
     switch (tag) {
         case '0':
         case '1':
@@ -39,42 +38,43 @@ std::string TagToString(char tag) {
         case '8':
         case '9':
         case tags::TagInteger:
-            return "Integer";
+            return "int";
         case tags::TagLong:
-            return "Long";
+            return "long long";
         case tags::TagDouble:
-            return "Double";
+            return "double";
         case tags::TagNull:
-            return "Null";
+            return "null";
         case tags::TagEmpty:
-            return "Empty String";
+            return "empty string";
         case tags::TagTrue:
-            return "True";
+            return "true";
         case tags::TagFalse:
-            return "False";
+            return "false";
         case tags::TagNaN:
-            return "NaN";
+            return "nan";
         case tags::TagInfinity:
-            return "Infinity";
+            return "infinity";
         case tags::TagDate:
         case tags::TagTime:
-            return "DateTime";
+            return "time";
         case tags::TagBytes:
-            return "Bytes";
+            return "bytes";
         case tags::TagUTF8Char:
         case tags::TagString:
-            return "String";
+            return "string";
         case tags::TagGuid:
-            return "GUID";
+            return "uuid";
         case tags::TagList:
-            return "List";
+            return "list";
         case tags::TagMap:
-            return "Map";
+            return "map";
         case tags::TagClass:
+            return "class";
         case tags::TagObject:
-            return "Object";
+            return "object";
         case tags::TagRef:
-            return "Reference";
+            return "reference";
         default:
             throw UnexpectedTag(tag);
     }
