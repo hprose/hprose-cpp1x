@@ -20,15 +20,11 @@
 
 #pragma once
 
-#include <array>
 #include <deque>
 #include <list>
 #include <set>
 #include <unordered_set>
-#include <bitset>
-#include <tuple>
 #include <map>
-#include <type_traits>
 
 namespace hprose {
 namespace io {

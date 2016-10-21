@@ -31,9 +31,13 @@
 #include <string>
 #include <locale>
 #include <codecvt>
+#include <array>
 #include <vector>
 #include <forward_list>
+#include <tuple>
+#include <bitset>
 #include <unordered_map>
+#include <type_traits>
 
 namespace hprose {
 namespace io {
