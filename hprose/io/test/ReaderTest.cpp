@@ -35,4 +35,6 @@ TEST(Reader, UnserializeBool) {
     T(bool, true, true);
     T(bool, 0, false);
     T(bool, 99, true);
+    T(bool, std::string("true"), true);
+    T(bool, std::string("false"), false);
 }

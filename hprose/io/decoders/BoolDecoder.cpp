@@ -5,6 +5,16 @@ namespace hprose {
 namespace io {
 namespace decoders {
 
+bool parseBool(const std::string &s) {
+    if (s == "1" || s == "t" || s == "T" || s == "true" || s == "TRUE" || s == "True") {
+        return true;
+    }
+    if (s == "0" || s == "f" || s == "F" || s == "false" || s == "FALSE" || s == "False") {
+        return false;
+    }
+    throw "parse bool error";
+}
+
 bool readNumberAsBool(Reader &reader) {
     std::string s = reader.readUntil(tags::TagSemicolon);
     if (s.length() == 1) {
@@ -20,11 +30,11 @@ bool readInfAsBool(Reader &reader) {
 }
 
 bool readUTF8CharAsBool(Reader &reader) {
-    return false;
+    return parseBool(reader.readUTF8String(1));
 }
 
 bool readStringAsBool(Reader &reader) {
-    return false;
+    return parseBool(reader.readStringWithoutTag());
 }
 
 bool BoolDecode(Reader &reader, char tag) {
@@ -57,7 +67,7 @@ bool BoolDecode(Reader &reader, char tag) {
         case tags::TagString:
             return readStringAsBool(reader);
         default:
-            return false;
+            throw "cast error";
     }
 }
 
