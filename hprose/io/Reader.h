@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Oct 21, 2016                             *
+ * LastModified: Oct 24, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -70,7 +70,7 @@ public:
     inline T unserialize() {
         T v;
         readValue(v);
-        return std::move(v);
+        return v;
     }
 
     template<class T>
@@ -118,7 +118,7 @@ public:
     std::string readUntil(char tag) {
         std::string s;
         std::getline(stream, s, tag);
-        return std::move(s);
+        return s;
     }
 
     std::istream &stream;

@@ -1,3 +1,14 @@
+/**********************************************************\
+ *                                                        *
+ * hprose/io/decoders/BoolDecoder.cpp                     *
+ *                                                        *
+ * hprose bool decoder for cpp.                           *
+ *                                                        *
+ * LastModified: Oct 22, 2016                             *
+ * Author: Chen fei <cf@hprose.com>                       *
+ *                                                        *
+\**********************************************************/
+
 #include <hprose/io/decoders/BoolDecoder.h>
 #include <hprose/io/Reader.h>
 
@@ -24,7 +35,7 @@ bool readNumberAsBool(Reader &reader) {
     }
 }
 
-bool readInfAsBool(Reader &reader) {
+bool readInfinityAsBool(Reader &reader) {
     reader.readInfinity<float>();
     return true;
 }
@@ -35,6 +46,10 @@ bool readUTF8CharAsBool(Reader &reader) {
 
 bool readStringAsBool(Reader &reader) {
     return parseBool(reader.readStringWithoutTag());
+}
+
+bool readRefAsBool(Reader &reader) {
+    return false;
 }
 
 bool BoolDecode(Reader &reader, char tag) {
@@ -61,11 +76,13 @@ bool BoolDecode(Reader &reader, char tag) {
         case tags::TagDouble:
             return readNumberAsBool(reader);
         case tags::TagInfinity:
-            return readInfAsBool(reader);
+            return readInfinityAsBool(reader);
         case tags::TagUTF8Char:
             return readUTF8CharAsBool(reader);
         case tags::TagString:
             return readStringAsBool(reader);
+        case tags::TagRef:
+            return readRefAsBool(reader);
         default:
             throw CastError<bool>(tag);
     }

@@ -13,14 +13,12 @@
  *                                                        *
  * hprose bool decoder for cpp.                           *
  *                                                        *
- * LastModified: Oct 21, 2016                             *
+ * LastModified: Oct 22, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #pragma once
-
-#include <hprose/io/Tags.h>
 
 namespace hprose {
 namespace io {

@@ -13,7 +13,7 @@
  *                                                        *
  * hprose decode funtions for cpp.                        *
  *                                                        *
- * LastModified: Oct 21, 2016                             *
+ * LastModified: Oct 22, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -23,11 +23,6 @@
 namespace hprose {
 namespace io {
 
-template<class T>
-inline void decode(T &, Reader &reader) {
-}
-
-template<>
 inline void decode(bool &b, Reader &reader) {
     b = reader.readBool();
 }
