@@ -13,7 +13,7 @@
  *                                                        *
  * some util for cpp.                                     *
  *                                                        *
- * LastModified: Oct 17, 2016                             *
+ * LastModified: Oct 24, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -28,7 +28,7 @@ namespace util {
 
 void WriteInt(std::ostream &stream, int64_t i);
 
-void WriteUint(std::ostream &os, uint64_t u);
+void WriteUint(std::ostream &stream, uint64_t u);
 
 // UTF16Length return the UTF16 length of str.
 // str must be an UTF8 encode string, otherwise return -1.

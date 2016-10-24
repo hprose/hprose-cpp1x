@@ -259,8 +259,8 @@ public:
             return;
         }
         writeListHeader(count);
-        for (auto itr = lst.cbegin(); itr != lst.cend(); ++itr) {
-            writeValue(*itr);
+        for (auto &&e : lst) {
+            writeValue(e);
         }
         writeListFooter();
     }
@@ -306,8 +306,8 @@ public:
             return;
         }
         writeListHeader(count);
-        for (auto itr = lst.cbegin(); itr != lst.cend(); ++itr) {
-            writeBool(*itr);
+        for (auto &&e : lst) {
+            writeBool(e);
         }
         writeListFooter();
     }
@@ -324,8 +324,8 @@ public:
             return;
         }
         writeListHeader(count);
-        for (auto itr = lst.cbegin(); itr != lst.cend(); ++itr) {
-            writeValue(*itr);
+        for (auto &&e : lst) {
+            writeValue(e);
         }
         writeListFooter();
     }
@@ -375,9 +375,9 @@ public:
             return;
         }
         writeMapHeader(count);
-        for (auto itr = map.cbegin(); itr != map.cend(); ++itr) {
-            writeValue(itr->first);
-            writeValue(itr->second);
+        for (auto &&e : map) {
+            writeValue(e.first);
+            writeValue(e.second);
         }
         writeMapFooter();
     }
