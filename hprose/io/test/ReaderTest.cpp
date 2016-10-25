@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader test for cpp.                            *
  *                                                        *
- * LastModified: Oct 21, 2016                             *
+ * LastModified: Oct 25, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -37,4 +37,13 @@ TEST(Reader, UnserializeBool) {
     T(bool, 99, true);
     T(bool, std::string("true"), true);
     T(bool, std::string("false"), false);
+}
+
+TEST(Reader, UnserializeInt) {
+    T(int, true, 1);
+    T(int, 0, 0);
+    T(int, 99, 99);
+    T(int, 99.9, 99);
+    T(int, std::string("99"), 99);
+    T(int, std::string("999"), 999);
 }

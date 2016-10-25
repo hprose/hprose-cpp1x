@@ -4,7 +4,7 @@
  *                                                        *
  * hprose bool decoder for cpp.                           *
  *                                                        *
- * LastModified: Oct 22, 2016                             *
+ * LastModified: Oct 25, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -35,16 +35,16 @@ bool readNumberAsBool(Reader &reader) {
     }
 }
 
-bool readInfinityAsBool(Reader &reader) {
+inline bool readInfinityAsBool(Reader &reader) {
     reader.readInfinity<float>();
     return true;
 }
 
-bool readUTF8CharAsBool(Reader &reader) {
+inline bool readUTF8CharAsBool(Reader &reader) {
     return parseBool(reader.readUTF8String(1));
 }
 
-bool readStringAsBool(Reader &reader) {
+inline bool readStringAsBool(Reader &reader) {
     return parseBool(reader.readStringWithoutTag());
 }
 

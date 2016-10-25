@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Oct 24, 2016                             *
+ * LastModified: Oct 25, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -22,6 +22,7 @@
 
 #include <hprose/io/Tags.h>
 #include <hprose/io/decoders/BoolDecoder.h>
+#include <hprose/io/decoders/IntDecoder.h>
 
 #include <istream>
 #include <sstream>
@@ -88,6 +89,15 @@ public:
         return decoders::BoolDecode(*this, static_cast<char>(stream.get()));
     }
 
+    template<class T>
+    inline typename std::enable_if<
+        std::is_integral<T>::value,
+        T
+    >::type
+    readInteger() {
+        return decoders::IntDecode(*this, static_cast<char>(stream.get()));
+    }
+
     int64_t readInt64(char tag);
 
     inline int readLength() {
@@ -101,6 +111,33 @@ public:
     >::type
     readInfinity() {
         return stream.get() == tags::TagPos ? std::numeric_limits<T>::infinity() : -std::numeric_limits<T>::infinity();
+    }
+
+    template<class T>
+    typename std::enable_if<
+        std::is_same<T, float>::value,
+        T
+    >::type
+    readFloat() {
+        return std::stof(readUntil(tags::TagSemicolon));
+    }
+
+    template<class T>
+    typename std::enable_if<
+        std::is_same<T, double>::value,
+        T
+    >::type
+    readFloat() {
+        return std::stod(readUntil(tags::TagSemicolon));
+    }
+
+    template<class T>
+    typename std::enable_if<
+        std::is_same<T, long double>::value,
+        T
+    >::type
+    readFloat() {
+        return std::stold(readUntil(tags::TagSemicolon));
     }
 
     std::string readUTF8String(int length);

@@ -10,6 +10,7 @@ set(SOURCE_FILES
     hprose/io/Writer.cpp
     hprose/io/Reader.cpp
     hprose/io/decoders/BoolDecoder.cpp
+    hprose/io/decoders/IntDecoder.cpp
     hprose/util/Util.cpp)
 
 include_directories(".")
