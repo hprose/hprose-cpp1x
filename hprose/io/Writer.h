@@ -258,7 +258,12 @@ public:
             writeDate(1900 + t.tm_year, t.tm_mon + 1, t.tm_mday);
             writeTime(t.tm_hour, t.tm_min, t.tm_sec, 0);
         }
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
         stream << tags::TagUTC;
+#else
+        stream << (t.tm_gmtoff == 0 ? tags::TagUTC : tags::TagSemicolon);
+#endif
+
     }
 
     template<class Clock, class Duration>
@@ -429,7 +434,7 @@ private:
 
     inline void writeTime(int hour, int min, int sec, int nsec) {
         stream << tags::TagTime;
-        util::WriteTime(stream, hour, min, sec); 
+        util::WriteTime(stream, hour, min, sec);
     }
 
     void writeListHeader(size_t count) {

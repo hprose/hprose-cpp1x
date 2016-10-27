@@ -157,6 +157,10 @@ std::tm makeTm(int year, int month, int day, int hour = 0, int min = 0, int sec 
     tm.tm_hour = hour;
     tm.tm_min = min;
     tm.tm_sec = sec;
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+#else
+    tm.tm_gmtoff = 0;
+#endif
     return tm;
 }
 
