@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader test for cpp.                            *
  *                                                        *
- * LastModified: Oct 25, 2016                             *
+ * LastModified: Oct 27, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -46,4 +46,8 @@ TEST(Reader, UnserializeInt) {
     T(int, 99.9, 99);
     T(int, std::string("99"), 99);
     T(int, std::string("999"), 999);
+}
+
+TEST(Reader, UnserializeFloat) {
+    T(float, true, 1);
 }

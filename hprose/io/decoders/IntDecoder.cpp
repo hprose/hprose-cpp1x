@@ -4,7 +4,7 @@
  *                                                        *
  * hprose int decoder for cpp.                            *
  *                                                        *
- * LastModified: Oct 25, 2016                             *
+ * LastModified: Oct 27, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -17,11 +17,11 @@ namespace io {
 namespace decoders {
 
 inline int64_t readInt64(Reader &reader) {
-    return reader.readInt64(tags::TagSemicolon);
+    return reader.readArithmetic<int64_t>(tags::TagSemicolon);
 }
 
 inline int64_t readDoubleAsInt(Reader &reader) {
-    return static_cast<int64_t>(reader.readFloat<double>());
+    return static_cast<int64_t>(reader.ByteReader::readFloat<double>());
 }
 
 inline int64_t readUTF8CharAsInt(Reader &reader) {
@@ -86,7 +86,7 @@ int64_t IntDecode(Reader &reader, char tag) {
         case tags::TagRef:
             return readRefAsInt(reader);
         default:
-            throw CastError<bool>(tag);
+            throw CastError<int64_t>(tag);
     }
 }
 

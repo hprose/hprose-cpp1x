@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Oct 25, 2016                             *
+ * LastModified: Oct 27, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -23,6 +23,8 @@
 #include <hprose/io/Tags.h>
 #include <hprose/io/decoders/BoolDecoder.h>
 #include <hprose/io/decoders/IntDecoder.h>
+#include <hprose/io/decoders/FloatDecoder.h>
+#include <hprose/util/Util.h>
 
 #include <istream>
 #include <sstream>
@@ -61,10 +63,89 @@ struct CastError : std::runtime_error {
 template<class T>
 struct Decoder;
 
-class Reader {
+class ByteReader {
+public:
+    ByteReader(std::istream &stream)
+        : stream(stream) {
+    }
+
+    template<class T>
+    typename std::enable_if<
+        std::is_arithmetic<T>::value,
+        T
+    >::type
+    readArithmetic(char tag) {
+        auto b = stream.get();
+        if (b == tag) {
+            return 0;
+        }
+        T i = 0;
+        auto neg = false;
+        switch (b) {
+            case '-':
+                neg = true;
+            case '+':
+                b = stream.get();
+            default:
+                break;
+        }
+        if (neg) {
+            while (b != tag) {
+                i = i * 10 - (b - '0');
+                b = stream.get();
+            }
+        } else {
+            while (b != tag) {
+                i = i * 10 + (b - '0');
+                b = stream.get();
+            }
+        }
+        return i;
+    }
+
+    inline int readLength() {
+        return readArithmetic<int>(tags::TagQuote);
+    }
+
+    template<class T>
+    typename std::enable_if<
+        std::is_floating_point<T>::value,
+        T
+    >::type
+    readInfinity() {
+        return stream.get() == tags::TagPos ? std::numeric_limits<T>::infinity() : -std::numeric_limits<T>::infinity();
+    }
+
+    template<class T>
+    typename std::enable_if<
+        std::is_floating_point<T>::value,
+        T
+    >::type
+    readFloat() {
+        return util::StringToFloat<T>(readUntil(tags::TagSemicolon));
+    }
+
+    std::string readUntil(char tag) {
+        std::string s;
+        std::getline(stream, s, tag);
+        return s;
+    }
+
+    std::string readUTF8String(int length);
+
+    inline std::string readString() {
+        std::string s = readUTF8String(readLength());
+        stream.get();
+        return s;
+    }
+
+    std::istream &stream;
+};
+
+class Reader : public ByteReader {
 public:
     Reader(std::istream &stream, bool simple = false)
-        : stream(stream), refer(simple ? nullptr : new internal::ReaderRefer()) {
+        : ByteReader(stream), refer(simple ? nullptr : new internal::ReaderRefer()) {
     }
 
     template<class T>
@@ -98,67 +179,20 @@ public:
         return decoders::IntDecode(*this, static_cast<char>(stream.get()));
     }
 
-    int64_t readInt64(char tag);
-
-    inline int readLength() {
-        return static_cast<int>(readInt64(tags::TagQuote));
-    }
-
     template<class T>
     typename std::enable_if<
         std::is_floating_point<T>::value,
         T
     >::type
-    readInfinity() {
-        return stream.get() == tags::TagPos ? std::numeric_limits<T>::infinity() : -std::numeric_limits<T>::infinity();
-    }
-
-    template<class T>
-    typename std::enable_if<
-        std::is_same<T, float>::value,
-        T
-    >::type
     readFloat() {
-        return std::stof(readUntil(tags::TagSemicolon));
-    }
-
-    template<class T>
-    typename std::enable_if<
-        std::is_same<T, double>::value,
-        T
-    >::type
-    readFloat() {
-        return std::stod(readUntil(tags::TagSemicolon));
-    }
-
-    template<class T>
-    typename std::enable_if<
-        std::is_same<T, long double>::value,
-        T
-    >::type
-    readFloat() {
-        return std::stold(readUntil(tags::TagSemicolon));
-    }
-
-    std::string readUTF8String(int length);
-
-    inline std::string readString() {
-        std::string s = readUTF8String(readLength());
-        stream.get();
-        return s;
+        return decoders::FloatDecode<T>(*this, static_cast<char>(stream.get()));
     }
 
     std::string readStringWithoutTag() {
         return readString();
     }
 
-    std::string readUntil(char tag) {
-        std::string s;
-        std::getline(stream, s, tag);
-        return s;
-    }
-
-    std::istream &stream;
+//    std::istream &stream;
 
 private:
     std::unique_ptr<internal::ReaderRefer> refer;
@@ -167,4 +201,5 @@ private:
 }
 } // hprose::io
 
+#include <hprose/io/decoders/FloatDecoder-inl.h>
 #include <hprose/io/Reader-inl.h>
