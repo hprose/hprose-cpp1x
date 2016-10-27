@@ -192,8 +192,6 @@ public:
         return readString();
     }
 
-//    std::istream &stream;
-
 private:
     std::unique_ptr<internal::ReaderRefer> refer;
 };

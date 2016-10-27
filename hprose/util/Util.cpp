@@ -13,7 +13,7 @@
  *                                                        *
  * some util for cpp.                                     *
  *                                                        *
- * LastModified: Oct 17, 2016                             *
+ * LastModified: Oct 27, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -162,6 +162,27 @@ void WriteUint(std::ostream &stream, uint64_t u) {
         buf[off] = digits[u];
     }
     stream.write(&buf[off], 20 - off);
+}
+
+void WriteDate(std::ostream &stream, int year, int month, int day) {
+    int q = year / 100;
+    int p = q << 1;
+    stream << digit2[p] << digit2[p + 1];
+    p = (year - q * 100) << 1;
+    stream << digit2[p] << digit2[p + 1];
+    p = month << 1;
+    stream << digit2[p] << digit2[p + 1];
+    p = day << 1;
+    stream << digit2[p] << digit2[p + 1];
+}
+
+void WriteTime(std::ostream &stream, int hour, int min, int sec) {
+    int p = hour << 1;
+    stream << digit2[p] << digit2[p + 1];
+    p = min << 1;
+    stream << digit2[p] << digit2[p + 1];
+    p = sec << 1;
+    stream << digit2[p] << digit2[p + 1];
 }
 
 int UTF16Length(const std::string &str) {

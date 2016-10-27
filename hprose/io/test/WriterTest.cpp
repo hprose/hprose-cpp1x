@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 21, 2016                             *
+ * LastModified: Oct 27, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -147,6 +147,23 @@ TEST(Writer, SerializeString) {
     T(std::u32string(U"你好"), R"(s2"你好")");
     T(std::u32string(U"你好啊,hello!"), R"(s10"你好啊,hello!")");
     T(std::u32string(U"🇨🇳"), R"(s4"🇨🇳")");
+}
+
+std::tm makeTm(int year, int month, int day, int hour = 0, int min = 0, int sec = 0) {
+    std::tm tm;
+    tm.tm_year = year - 1900;
+    tm.tm_mon = month - 1;
+    tm.tm_mday = day;
+    tm.tm_hour = hour;
+    tm.tm_min = min;
+    tm.tm_sec = sec;
+    return tm;
+}
+
+TEST(Writer, SerializeTime) {
+    T(makeTm(1980, 12, 1), "D19801201Z");
+    T(makeTm(1970, 1, 1, 12, 34, 56), "T123456Z");
+    T(makeTm(1980, 12, 1, 12, 34, 56), "D19801201T123456Z");
 }
 
 TEST(Writer, SerializeList) {

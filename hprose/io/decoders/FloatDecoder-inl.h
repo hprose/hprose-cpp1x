@@ -27,7 +27,7 @@ namespace io {
 namespace decoders {
 
 template<class T>
-typename std::enable_if<
+inline typename std::enable_if<
     std::is_floating_point<T>::value,
     T
 >::type
@@ -36,7 +36,7 @@ readLongAsFloat(Reader &reader) {
 }
 
 template<class T>
-typename std::enable_if<
+inline typename std::enable_if<
     std::is_floating_point<T>::value,
     T
 >::type
@@ -45,7 +45,7 @@ readUTF8CharAsFloat(Reader &reader) {
 }
 
 template<class T>
-typename std::enable_if<
+inline typename std::enable_if<
     std::is_floating_point<T>::value,
     T
 >::type

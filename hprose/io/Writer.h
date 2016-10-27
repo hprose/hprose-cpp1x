@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 21, 2016                             *
+ * LastModified: Oct 27, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -31,6 +31,7 @@
 #include <string>
 #include <locale>
 #include <codecvt>
+#include <chrono>
 #include <array>
 #include <vector>
 #include <forward_list>
@@ -247,6 +248,24 @@ public:
         stream << tags::TagQuote;
     }
 
+    void writeTime(const std::tm &t) {
+        setRef(0);
+        if (t.tm_hour == 0 && t.tm_min == 0 && t.tm_sec == 0) {
+            writeDate(1900 + t.tm_year, t.tm_mon + 1, t.tm_mday);
+        } else if (t.tm_year == 70 && t.tm_mon == 0 && t.tm_mday == 1) {
+            writeTime(t.tm_hour, t.tm_min, t.tm_sec, 0);
+        } else {
+            writeDate(1900 + t.tm_year, t.tm_mon + 1, t.tm_mday);
+            writeTime(t.tm_hour, t.tm_min, t.tm_sec, 0);
+        }
+        stream << tags::TagUTC;
+    }
+
+    template<class Clock, class Duration>
+    void writeTime(const std::chrono::time_point<Clock, Duration> &t) {
+
+    }
+
     template<class T>
     void writeList(const T &lst) {
         if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
@@ -401,6 +420,16 @@ private:
         stream << tags::TagString;
         util::WriteInt(stream, length);
         stream << tags::TagQuote << str << tags::TagQuote;
+    }
+
+    inline void writeDate(int year, int month, int day) {
+        stream << tags::TagDate;
+        util::WriteDate(stream, year, month, day);
+    }
+
+    inline void writeTime(int hour, int min, int sec, int nsec) {
+        stream << tags::TagTime;
+        util::WriteTime(stream, hour, min, sec); 
     }
 
     void writeListHeader(size_t count) {

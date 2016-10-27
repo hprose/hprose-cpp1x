@@ -31,6 +31,10 @@ void WriteInt(std::ostream &stream, int64_t i);
 
 void WriteUint(std::ostream &stream, uint64_t u);
 
+void WriteDate(std::ostream &stream, int year, int month, int day);
+
+void WriteTime(std::ostream &stream, int hour, int min, int sec);
+
 // UTF16Length return the UTF16 length of str.
 // str must be an UTF8 encode string, otherwise return -1.
 int UTF16Length(const std::string &str);
