@@ -4,7 +4,7 @@
  *                                                        *
  * hprose int decoder for cpp.                            *
  *                                                        *
- * LastModified: Oct 27, 2016                             *
+ * LastModified: Oct 28, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -33,7 +33,8 @@ inline int64_t readStringAsInt(Reader &reader) {
 }
 
 int64_t readDateTimeAsInt(Reader &reader) {
-    return 0;
+    auto tm = reader.readDateTimeWithoutTag();
+    return mktime(&tm);
 }
 
 int64_t readTimeAsInt(Reader &reader) {

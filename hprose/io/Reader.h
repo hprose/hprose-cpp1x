@@ -69,6 +69,18 @@ public:
         : stream(stream) {
     }
 
+    int read2Digit() {
+        auto n = stream.get() - '0';
+        return n * 10 + (stream.get() - '0');
+    }
+
+    int read4Digit() {
+        auto n = stream.get() - '0';
+        n = n * 10 + (stream.get() - '0');
+        n = n * 10 + (stream.get() - '0');
+        return n * 10 + (stream.get() - '0');
+    }
+
     template<class T>
     typename std::enable_if<
         std::is_arithmetic<T>::value,
@@ -190,6 +202,42 @@ public:
 
     std::string readStringWithoutTag() {
         return readString();
+    }
+
+    std::tm readDateTimeWithoutTag() {
+        std::tm tm;
+        tm.tm_year = read4Digit() - 1900;
+        tm.tm_mon = read2Digit() - 1;
+        tm.tm_mday = read2Digit();
+        auto tag = stream.get();
+        if (tag == tags::TagTime) {
+            tm.tm_hour = read2Digit();
+            tm.tm_min = read2Digit();
+            tm.tm_sec = read2Digit();
+            tag = stream.get();
+            if (tag == tags::TagPoint) {
+            }
+        } else {
+            tm.tm_hour = 0;
+            tm.tm_min = 0;
+            tm.tm_sec = 0;
+        }
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+
+#else
+        if (tag == tags::TagUTC) {
+            tm.tm_gmtoff = 0;
+        } else {
+            std::time_t t = time(0);
+            std::tm temp;
+            localtime_r(&t, &temp);
+            tm.tm_isdst = temp.tm_isdst;
+            tm.tm_gmtoff = temp.tm_gmtoff;
+            tm.tm_zone = temp.tm_zone;
+            mktime(&tm);
+        }
+#endif
+        return tm;
     }
 
 private:
