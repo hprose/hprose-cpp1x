@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 27, 2016                             *
+ * LastModified: Oct 28, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -259,11 +259,10 @@ public:
             writeTime(t.tm_hour, t.tm_min, t.tm_sec, 0);
         }
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-        stream << tags::TagUTC;
+        stream << tags::TagSemicolon;
 #else
         stream << (t.tm_gmtoff == 0 ? tags::TagUTC : tags::TagSemicolon);
 #endif
-
     }
 
     template<class Clock, class Duration>

@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 27, 2016                             *
+ * LastModified: Oct 28, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -46,35 +46,94 @@ TEST(Writer, SerializeDigit) {
     }
 }
 
-TEST(Writer, SerializeInteger) {
+TEST(Writer, SerializeInt) {
     std::random_device rd;
 
     std::uniform_int_distribution<int32_t> dis1(10); 
     for (int i = 0; i < 100; i++) {
-        int32_t x = dis1(rd);
+        auto x = dis1(rd);
         T(x, "i" + std::to_string(x) + ";");
     }
 
     std::uniform_int_distribution<int64_t> dis2(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
     for (int i = 0; i < 100; i++) {
-        int64_t x = dis2(rd);
+        auto x = dis2(rd);
         T(x, "l" + std::to_string(x) + ";");
     }
 }
 
 TEST(Writer, SerializeInt8) {
-    for (int8_t i = 0; i <= 9; i++) {
-        T(i, std::to_string(i));
+    for (auto i = 0; i <= 9; i++) {
+        T(static_cast<int8_t>(i), std::to_string(i));
     }
 
-    for (int8_t i = 9; i < 127; i++) {
-        int8_t x = i + 1;
+    for (auto i = 10; i < 128; i++) {
+        T(static_cast<int8_t>(i), "i" + std::to_string(i) + ";");
+    }
+
+    for (auto i = -128; i < 0; i++) {
+        T(static_cast<int8_t>(i), "i" + std::to_string(i) + ";");
+    }
+}
+
+TEST(Writer, SerializeInt16) {
+    auto i = std::numeric_limits<int16_t>::max();
+    T(i, "i" + std::to_string(i) + ";");
+}
+
+TEST(Writer, SerializeInt32) {
+    auto i = std::numeric_limits<int32_t>::max();
+    T(i, "i" + std::to_string(i) + ";");
+}
+
+TEST(Writer, SerializeInt64) {
+    int64_t i1 = std::numeric_limits<int32_t>::max();
+    T(i1, "i" + std::to_string(i1) + ";");
+    int64_t i2 = std::numeric_limits<int64_t>::max();
+    T(i2, "l" + std::to_string(i2) + ";");
+}
+
+TEST(Writer, SerializeUint) {
+    std::random_device rd;
+
+    std::uniform_int_distribution<int32_t> dis1(10); 
+    for (auto i = 0; i < 100; i++) {
+        uint32_t x = dis1(rd);
         T(x, "i" + std::to_string(x) + ";");
     }
 
-    for (int8_t i = -128; i < 0; i++) {
-        T(i, "i" + std::to_string(i) + ";");
+    std::uniform_int_distribution<int64_t> dis2(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
+    for (auto i = 0; i < 100; i++) {
+        uint64_t x = dis2(rd);
+        T(x, "l" + std::to_string(x) + ";");
     }
+}
+
+TEST(Writer, SerializeUint8) {
+    for (auto u = 0; u <= 9; u++) {
+        T(static_cast<uint8_t>(u), std::to_string(u));
+    }
+
+    for (auto u = 10; u < 256; u++) {
+        T(static_cast<uint8_t>(u), "i" + std::to_string(u) + ";");
+    }
+}
+
+TEST(Writer, SerializeUint16) {
+    auto u = std::numeric_limits<uint16_t>::max();
+    T(u, "i" + std::to_string(u) + ";");
+}
+
+TEST(Writer, SerializeUint32) {
+    auto u = std::numeric_limits<uint32_t>::max();
+    T(u, "l" + std::to_string(u) + ";");
+}
+
+TEST(Writer, SerializeUint64) {
+    uint64_t u1 = std::numeric_limits<uint32_t>::max();
+    T(u1, "l" + std::to_string(u1) + ";");
+    uint64_t u2 = std::numeric_limits<uint64_t>::max();
+    T(u2, "l" + std::to_string(u2) + ";");
 }
 
 enum Color { red, green, blue };
@@ -149,7 +208,7 @@ TEST(Writer, SerializeString) {
     T(std::u32string(U"🇨🇳"), R"(s4"🇨🇳")");
 }
 
-std::tm makeTm(int year, int month, int day, int hour = 0, int min = 0, int sec = 0) {
+std::tm makeTm(int year, int month, int day, int hour = 0, int min = 0, int sec = 0, int gmtoff = 0) {
     std::tm tm;
     tm.tm_year = year - 1900;
     tm.tm_mon = month - 1;
@@ -159,15 +218,24 @@ std::tm makeTm(int year, int month, int day, int hour = 0, int min = 0, int sec 
     tm.tm_sec = sec;
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 #else
-    tm.tm_gmtoff = 0;
+    tm.tm_gmtoff = gmtoff;
 #endif
     return tm;
 }
 
 TEST(Writer, SerializeTime) {
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+    T(makeTm(1980, 12, 1), "D19801201;");
+    T(makeTm(1970, 1, 1, 12, 34, 56), "T123456;");
+    T(makeTm(1980, 12, 1, 12, 34, 56), "D19801201T123456;");
+#else
     T(makeTm(1980, 12, 1), "D19801201Z");
     T(makeTm(1970, 1, 1, 12, 34, 56), "T123456Z");
     T(makeTm(1980, 12, 1, 12, 34, 56), "D19801201T123456Z");
+    T(makeTm(1980, 12, 1, 0, 0, 0, 28800), "D19801201;");
+    T(makeTm(1970, 1, 1, 12, 34, 56, 28800), "T123456;");
+    T(makeTm(1980, 12, 1, 12, 34, 56, 28800), "D19801201T123456;");
+#endif
 }
 
 TEST(Writer, SerializeList) {
