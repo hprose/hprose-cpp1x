@@ -38,7 +38,8 @@ int64_t readDateTimeAsInt(Reader &reader) {
 }
 
 int64_t readTimeAsInt(Reader &reader) {
-    return 0;
+    auto tm = reader.readTimeWithoutTag();
+    return mktime(&tm);
 }
 
 int64_t readRefAsInt(Reader &reader) {

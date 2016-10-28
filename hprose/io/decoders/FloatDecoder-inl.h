@@ -13,7 +13,7 @@
  *                                                        *
  * hprose float decoder for cpp.                          *
  *                                                        *
- * LastModified: Oct 27, 2016                             *
+ * LastModified: Oct 28, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -59,7 +59,8 @@ typename std::enable_if<
     T
 >::type
 readDateTimeAsFloat(Reader &reader) {
-    return 0;
+    auto tm = reader.readDateTimeWithoutTag();
+    return mktime(&tm);
 }
 
 template<class T>
@@ -68,7 +69,8 @@ typename std::enable_if<
     T
 >::type
 readTimeAsFloat(Reader &reader) {
-    return 0;
+    auto tm = reader.readTimeWithoutTag();
+    return mktime(&tm);
 }
 
 template<class T>

@@ -26,6 +26,7 @@
 #include <hprose/io/decoders/FloatDecoder.h>
 #include <hprose/util/Util.h>
 
+#include <ctime>
 #include <istream>
 #include <sstream>
 #include <memory>
@@ -216,11 +217,46 @@ public:
             tm.tm_sec = read2Digit();
             tag = stream.get();
             if (tag == tags::TagPoint) {
+                do {
+                    tag = stream.get();
+                } while ((tag >= '0') && (tag <= '9'));
             }
         } else {
             tm.tm_hour = 0;
             tm.tm_min = 0;
             tm.tm_sec = 0;
+        }
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+
+#else
+        if (tag == tags::TagUTC) {
+            tm.tm_gmtoff = 0;
+        } else {
+            std::time_t t = time(0);
+            std::tm temp;
+            localtime_r(&t, &temp);
+            tm.tm_isdst = temp.tm_isdst;
+            tm.tm_gmtoff = temp.tm_gmtoff;
+            tm.tm_zone = temp.tm_zone;
+            mktime(&tm);
+        }
+#endif
+        return tm;
+    }
+
+    std::tm readTimeWithoutTag() {
+        std::tm tm;
+        tm.tm_year = 70;
+        tm.tm_mon = 0;
+        tm.tm_mday = 1;
+        tm.tm_hour = read2Digit();
+        tm.tm_min = read2Digit();
+        tm.tm_sec = read2Digit();
+        auto tag = stream.get();
+        if (tag == tags::TagPoint) {
+            do {
+                tag = stream.get();
+            } while ((tag >= '0') && (tag <= '9'));
         }
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 
