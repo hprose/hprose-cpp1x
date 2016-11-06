@@ -56,16 +56,20 @@ public:
     const std::tm &getTime() const &;
 
 private:
+    template<class T> struct GetAddrImpl;
+
+    template<class T> T*       getAddress() noexcept;
+    template<class T> T const* getAddress() const noexcept;
 
     void destroy() noexcept;
 
     Type type;
 
     union Data {
-        explicit Data() : nul(nullptr) {}
+        explicit Data() : null(nullptr) {}
         ~Data() {}
 
-        void *nul;
+        void *null;
         std::shared_ptr<std::string> string;
         std::shared_ptr<std::tm> time;
     } data;

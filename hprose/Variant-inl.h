@@ -22,6 +22,15 @@
 
 namespace hprose {
 
+namespace detail {
+
+struct Destroy {
+    template<class T>
+    static void destroy(T *t) { t->~T(); }
+};
+
+} // hprose::detail
+
 inline Variant::Variant(std::string v) : type(String) {
     new (&data.string) std::shared_ptr<std::string>(new std::string(std::move(v)));
 }
@@ -57,5 +66,34 @@ inline const std::string &Variant::getString() const & {
 inline const std::tm &Variant::getTime() const & {
     return *data.time;
 }
+
+template<class T>
+T *Variant::getAddress() noexcept {
+    return GetAddrImpl<T>::get(data);
+}
+
+template<class T>
+T const *Variant::getAddress() const noexcept {
+    return const_cast<Variant *>(this)->getAddress<T>();
+}
+
+template<class T>
+struct Variant::GetAddrImpl {
+};
+
+template<>
+struct Variant::GetAddrImpl<void *> {
+    static void **get(Data &d) noexcept { return &d.null; }
+};
+
+template<>
+struct Variant::GetAddrImpl<std::shared_ptr<std::string> > {
+    static std::shared_ptr<std::string> *get(Data &d) noexcept { return &d.string; }
+};
+
+template<>
+struct Variant::GetAddrImpl<std::shared_ptr<std::tm> > {
+    static std::shared_ptr<std::tm> *get(Data &d) noexcept { return &d.time; }
+};
 
 } // hprose

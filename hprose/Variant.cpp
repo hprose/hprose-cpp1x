@@ -22,6 +22,23 @@
 
 namespace hprose {
 
+#define HP_DYNAMIC_APPLY(type, apply)        \
+  do {                                       \
+    switch ((type)) {                        \
+      case Null:                             \
+        apply(void*);                        \
+        break;                               \
+      case String:                           \
+        apply(std::shared_ptr<std::string>); \
+        break;                               \
+      case Time:                             \
+        apply(std::shared_ptr<std::tm>);     \
+        break;                               \
+      default:                               \
+        abort();                             \
+    }                                        \
+  } while (0)
+
 const char *Variant::typeName() const {
     switch (type) {
         case Null:
@@ -36,31 +53,33 @@ const char *Variant::typeName() const {
 }
 
 Variant &Variant::operator=(const Variant &o) {
-
+    if (&o != this) {
+        if (type == o.type) {
+#define HP_X(T) *getAddress<T>() = *o.getAddress<T>()
+            HP_DYNAMIC_APPLY(type, HP_X);
+#undef HP_X
+        } else {
+            destroy();
+#define HP_X(T) new (getAddress<T>()) T(*o.getAddress<T>())
+            HP_DYNAMIC_APPLY(o.type, HP_X);
+#undef HP_X
+            type = o.type;
+        }
+    }
     return *this;
 }
 
 Variant &Variant::operator=(Variant &&o) noexcept {
     if (&o != this) {
         if (type == o.type) {
-            switch (type) {
-                case String:
-                    new (&data.string) std::shared_ptr<std::string>(o.data.string);
-                    break;
-                case Time:
-                    new (&data.time) std::shared_ptr<std::tm>(o.data.time);
-                    break;
-            }
+#define HP_X(T) *getAddress<T>() = std::move(*o.getAddress<T>())
+            HP_DYNAMIC_APPLY(type, HP_X);
+#undef HP_X
         } else {
             destroy();
-            switch (o.type) {
-                case String:
-                    new (&data.string) std::shared_ptr<std::string>(std::move(o.data.string));
-                    break;
-                case Time:
-                    new (&data.time) std::shared_ptr<std::tm>(std::move(o.data.time));
-                    break;
-            }
+#define HP_X(T) new (getAddress<T>()) T(std::move(*o.getAddress<T>()))
+            HP_DYNAMIC_APPLY(o.type, HP_X);
+#undef HP_X
             type = o.type;
         }
     }
@@ -69,14 +88,11 @@ Variant &Variant::operator=(Variant &&o) noexcept {
 
 void Variant::destroy() noexcept {
     if (type == Null) return;
-    switch (type) {
-        case String:
-            data.string.~shared_ptr();
-            break;
-        case Time:
-            data.time.~shared_ptr();
-            break;
-    }
+#define HP_X(T) detail::Destroy::destroy(getAddress<T>())
+  HP_DYNAMIC_APPLY(type, HP_X);
+#undef HP_X
+    type = Null;
+    data.null = nullptr;
 }
 
 } // hprose
