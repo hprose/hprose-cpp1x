@@ -47,15 +47,14 @@ public:
     Variant &operator=(const Variant &o);
     Variant &operator=(Variant &&o) noexcept;
 
-    inline bool isString() const {
-        return type == String;
-    }
+    bool isString() const;
+    bool isTime() const;
 
     const char *typeName() const;
 
-    const std::string &getString() const &{
-        return *data.string;
-    }
+    const std::string &getString() const &;
+    const std::tm &getTime() const &;
+
 
 private:
 

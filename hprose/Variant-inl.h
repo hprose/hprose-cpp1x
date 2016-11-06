@@ -42,4 +42,20 @@ inline Variant::~Variant() noexcept {
     destroy();
 }
 
+inline bool Variant::isString() const {
+    return type == String;
+}
+
+inline bool Variant::isTime() const {
+    return type == Time;
+}
+
+inline const std::string &Variant::getString() const & {
+    return *data.string;
+}
+
+inline const std::tm &Variant::getTime() const & {
+    return *data.time;
+}
+
 } // hprose

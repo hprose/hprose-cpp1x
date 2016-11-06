@@ -4,7 +4,7 @@
  *                                                        *
  * hprose int decoder for cpp.                            *
  *                                                        *
- * LastModified: Oct 28, 2016                             *
+ * LastModified: Nov 6, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -43,7 +43,15 @@ int64_t readTimeAsInt(Reader &reader) {
 }
 
 int64_t readRefAsInt(Reader &reader) {
-    return 0;
+    const auto &var = reader.readRef();
+    if (var.isString()) {
+        return std::stoll(var.getString());
+    }
+    if (var.isTime()) {
+        auto tm = var.getTime();
+        return mktime(&tm);
+    }
+    throw std::runtime_error(std::string("value of type ") + var.typeName() + " cannot be converted to type int");
 }
 
 int64_t IntDecode(Reader &reader, char tag) {
