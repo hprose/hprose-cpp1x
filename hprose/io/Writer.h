@@ -21,6 +21,7 @@
 #pragma once
 
 #include <hprose/io/Tags.h>
+#include <hprose/io/ClassManager.h>
 #include <hprose/util/Util.h>
 
 #include <ostream>
@@ -39,6 +40,7 @@
 #include <bitset>
 #include <unordered_map>
 #include <type_traits>
+#include <typeindex>
 
 namespace hprose {
 namespace io {
@@ -408,6 +410,32 @@ public:
         writeMapFooter();
     }
 
+    template<class T>
+    void writeObject(const T &o) {
+        if (!classRefs) {
+            classRefs = std::unique_ptr<std::unordered_map<std::type_index, int> >(
+                new std::unordered_map<std::type_index, int>()
+            );
+        }
+        auto type = std::type_index(typeid(T));
+        auto iter = classRefs->find(type);
+        auto index = 0;
+        if (iter == classRefs->end()) {
+            const auto &classCache = ClassManager::SharedInstance().getClassCache<T>();
+            stream << classCache.data;
+            index = classRefs->size();
+            (*classRefs)[type] = index;
+        } else {
+            index = iter->second;
+        }
+        if (writeRef(reinterpret_cast<uintptr_t>(&o))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&o));
+        stream << tags::TagObject << index << tags::TagOpenbrace;
+        stream << tags::TagClosebrace;
+    }
+
     inline bool writeRef(uintptr_t ptr) {
         return refer ? refer->write(stream, ptr) : false;
     }
@@ -484,6 +512,7 @@ private:
     }
 
     std::unique_ptr<internal::WriterRefer> refer;
+    std::unique_ptr<std::unordered_map<std::type_index, int> > classRefs;
 };
 
 }
