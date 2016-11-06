@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Oct 27, 2016                             *
+ * LastModified: Nov 6, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -25,6 +25,7 @@
 #include <hprose/io/decoders/IntDecoder.h>
 #include <hprose/io/decoders/FloatDecoder.h>
 #include <hprose/util/Util.h>
+#include <hprose/Variant.h>
 
 #include <ctime>
 #include <istream>
@@ -32,7 +33,9 @@
 #include <memory>
 #include <numeric>
 #include <limits>
+#include <typeindex>
 #include <type_traits>
+#include <vector>
 
 namespace hprose {
 namespace io {
@@ -41,7 +44,28 @@ namespace internal {
 
 std::string TagToString(char tag);
 
+struct Ref {
+    uintptr_t ptr;
+    std::type_index type;
+};
+
 class ReaderRefer {
+public:
+    template<class T>
+    inline void set(const T &v) {
+        refs.push_back(Variant(v));
+    }
+
+    inline const Variant &read(size_t index) {
+        return refs[index];
+    }
+
+    inline void reset() {
+        refs.clear();
+    }
+
+private:
+    std::vector<Variant> refs;
 };
 
 } // hprose::io::internal
@@ -114,6 +138,10 @@ public:
             }
         }
         return i;
+    }
+
+    inline int readInt() {
+        return readArithmetic<int>(tags::TagSemicolon);
     }
 
     inline int readLength() {
@@ -202,7 +230,9 @@ public:
     }
 
     std::string readStringWithoutTag() {
-        return readString();
+        std::string s = readString();
+        setRef(s);
+        return s;
     }
 
     std::tm readDateTimeWithoutTag() {
@@ -241,6 +271,7 @@ public:
             mktime(&tm);
         }
 #endif
+        setRef(tm);
         return tm;
     }
 
@@ -273,7 +304,20 @@ public:
             mktime(&tm);
         }
 #endif
+        setRef(tm);
         return tm;
+    }
+
+    const Variant &readRef() {
+        if (!refer) {
+            throw std::runtime_error("reference unserialization can't support in simple mode");
+        }
+        return refer->read(readInt());
+    }
+
+    template<class T>
+    inline void setRef(const T &v) {
+        if (refer) refer->set(v);
     }
 
 private:
