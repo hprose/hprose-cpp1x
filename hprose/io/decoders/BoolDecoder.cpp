@@ -49,11 +49,11 @@ inline bool readStringAsBool(Reader &reader) {
 }
 
 bool readRefAsBool(Reader &reader) {
-    auto &var = reader.readRef();
+    const auto &var = reader.readRef();
     if (var.isString()) {
         return parseBool(var.getString());
     }
-    return false;
+    throw std::runtime_error(std::string("value of type ") + var.typeName() + " cannot be converted to type bool");
 }
 
 bool BoolDecode(Reader &reader, char tag) {

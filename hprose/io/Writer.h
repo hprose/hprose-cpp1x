@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Oct 28, 2016                             *
+ * LastModified: Nov 6, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -249,7 +249,10 @@ public:
     }
 
     void writeTime(const std::tm &t) {
-        setRef(0);
+        if (writeRef(reinterpret_cast<uintptr_t>(&t))) {
+            return;
+        }
+        setRef(reinterpret_cast<uintptr_t>(&t));
         if (t.tm_hour == 0 && t.tm_min == 0 && t.tm_sec == 0) {
             writeDate(1900 + t.tm_year, t.tm_mon + 1, t.tm_mday);
         } else if (t.tm_year == 70 && t.tm_mon == 0 && t.tm_mday == 1) {

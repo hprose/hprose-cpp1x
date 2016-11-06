@@ -20,7 +20,11 @@
 
 #pragma once
 
+#include <cstdlib>
+#include <ctime>
 #include <string>
+#include <memory>
+#include <type_traits>
 
 namespace hprose {
 
@@ -46,6 +50,8 @@ public:
     inline bool isString() const {
         return type == String;
     }
+
+    const char *typeName() const;
 
     const std::string &getString() const &{
         return *data.string;

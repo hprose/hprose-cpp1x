@@ -22,6 +22,19 @@
 
 namespace hprose {
 
+const char *Variant::typeName() const {
+    switch (type) {
+        case Null:
+            return "void *";
+        case String:
+            return "std::string";
+        case Time:
+            return "std::tm";
+        default:
+            abort();
+    }
+}
+
 Variant &Variant::operator=(const Variant &o) {
 
     return *this;
