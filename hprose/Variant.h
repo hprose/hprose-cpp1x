@@ -55,7 +55,6 @@ public:
     const std::string &getString() const &;
     const std::tm &getTime() const &;
 
-
 private:
 
     void destroy() noexcept;
@@ -64,7 +63,6 @@ private:
 
     union Data {
         explicit Data() : nul(nullptr) {}
-
         ~Data() {}
 
         void *nul;

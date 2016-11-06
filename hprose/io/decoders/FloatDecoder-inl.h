@@ -13,7 +13,7 @@
  *                                                        *
  * hprose float decoder for cpp.                          *
  *                                                        *
- * LastModified: Oct 28, 2016                             *
+ * LastModified: Nov 6, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -79,7 +79,15 @@ typename std::enable_if<
     T
 >::type
 readRefAsFloat(Reader &reader) {
-    return 0;
+    const auto &var = reader.readRef();
+    if (var.isString()) {
+        return util::StringToFloat<T>(var.getString());
+    }
+    if (var.isTime()) {
+        auto tm = var.getTime();
+        return mktime(&tm);
+    }
+    throw std::runtime_error(std::string("value of type ") + var.typeName() + " cannot be converted to type float");
 }
 
 template<class T>
