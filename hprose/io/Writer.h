@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Nov 6, 2016                              *
+ * LastModified: Nov 8, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -412,6 +412,7 @@ public:
 
     template<class T>
     void writeObject(const T &o) {
+        const auto &cache = ClassManager::SharedInstance().getClassCache<T>();
         if (!classRefs) {
             classRefs = std::unique_ptr<std::unordered_map<std::type_index, int> >(
                 new std::unordered_map<std::type_index, int>()
@@ -421,8 +422,7 @@ public:
         auto iter = classRefs->find(type);
         auto index = 0;
         if (iter == classRefs->end()) {
-            const auto &classCache = ClassManager::SharedInstance().getClassCache<T>();
-            stream << classCache.data;
+            stream << cache.data;
             index = classRefs->size();
             (*classRefs)[type] = index;
         } else {
@@ -433,6 +433,10 @@ public:
         }
         setRef(reinterpret_cast<uintptr_t>(&o));
         stream << tags::TagObject << index << tags::TagOpenbrace;
+        auto fields = cache.fields;
+        for (auto &&field : fields) {
+            field.encode(&o, *this);
+        }
         stream << tags::TagClosebrace;
     }
 

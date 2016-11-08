@@ -52,7 +52,7 @@ void initClassCache<Class>(ClassCache &classCache) {               \
     stream << tags::TagClass;                                      \
     util::WriteInt(stream, util::UTF16Length(Alias));              \
     stream << tags::TagQuote << Alias << tags::TagQuote;           \
-    if (count > 0) stream << count;                                \
+    if (count > 0) util::WriteInt(stream, count);                  \
     stream << tags::TagOpenbrace;                                  \
     for (auto &&field : fields) {                                  \
         stream << tags::TagString;                                 \
@@ -73,16 +73,25 @@ inline void encode(const Class &v, Writer &writer) {               \
 #define HPROSE_REG_CLASS(Class, ...) HPROSE_PP_OVERLOAD(HPROSE_REG_CLASS_,__VA_ARGS__)(Class, __VA_ARGS__)
 
 #define HPROSE_REG_FIELD_1(Class, Field) HPROSE_REG_FIELD_2(Class, Field, #Field)
-#define HPROSE_REG_FIELD_2(Class, Field, Alias)                    \
-    fields.push_back(FieldCache { Alias } );                       \
+#define HPROSE_REG_FIELD_2(Class, Field, Alias) {                  \
+    FieldCache fieldCache;                                         \
+    fieldCache.alias = Alias;                                      \
+    fieldCache.encode = [](const void *obj, Writer &writer) {      \
+        writer.writeValue(static_cast<const Class *>(obj)->Field); \
+    };                                                             \
+    fields.push_back(std::move(fieldCache));                       \
+}
 
 #define HPROSE_REG_FIELD(Class, ...) HPROSE_PP_OVERLOAD(HPROSE_REG_FIELD_, __VA_ARGS__)(Class, __VA_ARGS__)
 
 namespace hprose {
 namespace io {
 
+class Writer;
+
 struct FieldCache {
     std::string alias;
+    std::function<void(const void *, Writer &)> encode;
 };
 
 struct ClassCache {
