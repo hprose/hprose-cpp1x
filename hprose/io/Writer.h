@@ -49,6 +49,10 @@ namespace internal {
 
 class WriterRefer {
 public:
+    inline void addCount(int count) {
+        lastref += count;
+    }
+
     inline void set(uintptr_t ptr) {
         ref[ptr] = lastref++;
     }
@@ -423,6 +427,9 @@ public:
         auto index = 0;
         if (iter == classRefs->end()) {
             stream << cache.data;
+            if (refer) {
+                refer->addCount(cache.fields.size());
+            }
             index = classRefs->size();
             (*classRefs)[type] = index;
         } else {

@@ -286,6 +286,56 @@ TEST(Writer, SerializeMap) {
     T(map, "m3{1d1.09;4d4.13;9d9.24;}");
 }
 
+struct TestStruct {
+    int ID;
+};
+
+struct TestStruct1 : TestStruct {
+    std::string Name; 
+    int *Age;  
+};
+
+struct TestStruct2 : TestStruct1 {
+    bool OOXX;
+    TestStruct2 *TestStruct2;
+    TestStruct Test;
+    std::tm birthday;
+};
+
+HPROSE_REG_CLASS(TestStruct, "Test", {
+    HPROSE_REG_FIELD(TestStruct, ID, "id");
+})
+
+HPROSE_REG_CLASS(TestStruct1, "Test1", {
+    HPROSE_REG_FIELD(TestStruct1, ID, "id");
+    HPROSE_REG_FIELD(TestStruct1, Name, "name");
+    HPROSE_REG_FIELD(TestStruct1, Age, "age");
+})
+
+HPROSE_REG_CLASS(TestStruct2, "Test2", {
+    HPROSE_REG_FIELD(TestStruct2, OOXX, "ooxx");
+    HPROSE_REG_FIELD(TestStruct2, TestStruct2, "testStruct2");
+    HPROSE_REG_FIELD(TestStruct2, ID, "id");
+    HPROSE_REG_FIELD(TestStruct2, Name, "name");
+    HPROSE_REG_FIELD(TestStruct2, Age, "age");
+    HPROSE_REG_FIELD(TestStruct2, Test, "test");
+})
+
+TEST(Writer, SerializeStruct) {
+    TestStruct2 st;
+    st.TestStruct2 = &st;
+    st.ID = 100;
+    st.Name = "Tom";
+    auto age = 18;
+    st.Age = &age;
+    st.OOXX = false;
+    st.Test.ID = 200;
+     std::ostringstream stream;
+    hprose::io::Writer writer(stream, false);
+    writer.serialize(st);
+    EXPECT_EQ(stream.str(), R"(c5"Test2"6{s4"ooxx"s11"testStruct2"s2"id"s4"name"s3"age"s4"test"}o0{fr6;i100;s3"Tom"i18;c4"Test"1{s2"id"}o1{i200;}})");
+}
+
 int main(int argc, char *argv[]) {
   testing::InitGoogleTest(&argc, argv);
   return RUN_ALL_TESTS();

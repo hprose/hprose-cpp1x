@@ -13,7 +13,7 @@
  *                                                        *
  * hprose encode funtions for cpp.                        *
  *                                                        *
- * LastModified: Oct 27, 2016                             *
+ * LastModified: Nov 8, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -84,6 +84,14 @@ inline void encode(const std::tm &v, Writer &writer) {
 template<class Clock, class Duration>
 inline void encode(const std::chrono::time_point<Clock, Duration> &v, Writer &writer) {
     writer.writeTime(v);
+}
+
+template<class T>
+inline typename std::enable_if<
+    std::is_pointer<T>::value
+>::type
+encode(const T &v, Writer &writer) {
+    writer.writeValue(*v);
 }
 
 template<class T>
