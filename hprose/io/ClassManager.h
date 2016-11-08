@@ -13,7 +13,7 @@
  *                                                        *
  * hprose class manager for cpp.                          *
  *                                                        *
- * LastModified: Nov 6, 2016                              *
+ * LastModified: Nov 8, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -21,6 +21,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <unordered_map>
 #include <typeindex>
 
@@ -32,38 +33,68 @@
 
 #define HPROSE_PP_OVERLOAD(prefix, ...) HPROSE_PP_CAT(prefix, HPROSE_PP_VARIADIC_SIZE(__VA_ARGS__))
 
-#define HPROSE_REGISTER_1(Class) HPROSE_REGISTER_2(Class, #Class)
-#define HPROSE_REGISTER_2(Class, Alias)                      \
-namespace hprose { namespace io {                            \
-                                                             \
-template<>                                                   \
-std::string getClassCacheData<Class>() {                     \
-    std::stringstream stream;                                \
-    stream << tags::TagClass;                                \
-    util::WriteInt(stream, util::UTF16Length(Alias));        \
-    stream << tags::TagQuote << Alias << tags::TagQuote;     \
-    stream << tags::TagOpenbrace;                            \
-    stream << tags::TagClosebrace;                           \
-    return stream.str();                                     \
-}                                                            \
-                                                             \
-inline void encode(const Class &v, Writer &writer) {         \
-    writer.writeObject(v);                                   \
-}                                                            \
-                                                             \
+#define HPROSE_REG_CLASS_1(Class, Body) HPROSE_REG_CLASS_2(Class, #Class, Body)
+#define HPROSE_REG_CLASS_2(Class, Alias, Body)                     \
+namespace hprose { namespace io {                                  \
+                                                                   \
+template<>                                                         \
+std::vector<FieldCache> getClassFields<Class>() {                  \
+    std::vector<FieldCache> fields;                                \
+    Body                                                           \
+    return fields;                                                 \
+}                                                                  \
+                                                                   \
+template<>                                                         \
+void initClassCache<Class>(ClassCache &classCache) {               \
+    auto fields = getClassFields<Class>();                         \
+    auto count = fields.size();                                    \
+    std::stringstream stream;                                      \
+    stream << tags::TagClass;                                      \
+    util::WriteInt(stream, util::UTF16Length(Alias));              \
+    stream << tags::TagQuote << Alias << tags::TagQuote;           \
+    if (count > 0) stream << count;                                \
+    stream << tags::TagOpenbrace;                                  \
+    for (auto &&field : fields) {                                  \
+        stream << tags::TagString;                                 \
+        util::WriteInt(stream, util::UTF16Length(field.alias));    \
+        stream << tags::TagQuote << field.alias << tags::TagQuote; \
+    }                                                              \
+    stream << tags::TagClosebrace;                                 \
+    classCache.fields = std::move(fields);                         \
+    classCache.data = stream.str();                                \
+}                                                                  \
+                                                                   \
+inline void encode(const Class &v, Writer &writer) {               \
+    writer.writeObject(v);                                         \
+}                                                                  \
+                                                                   \
 } } // hprose::io
 
-#define HPROSE_REGISTER(...) HPROSE_PP_OVERLOAD(HPROSE_REGISTER_,__VA_ARGS__)(__VA_ARGS__)
+#define HPROSE_REG_CLASS(Class, ...) HPROSE_PP_OVERLOAD(HPROSE_REG_CLASS_,__VA_ARGS__)(Class, __VA_ARGS__)
+
+#define HPROSE_REG_FIELD_1(Class, Field) HPROSE_REG_FIELD_2(Class, Field, #Field)
+#define HPROSE_REG_FIELD_2(Class, Field, Alias)                    \
+    fields.push_back(FieldCache { Alias } );                       \
+
+#define HPROSE_REG_FIELD(Class, ...) HPROSE_PP_OVERLOAD(HPROSE_REG_FIELD_, __VA_ARGS__)(Class, __VA_ARGS__)
 
 namespace hprose {
 namespace io {
 
+struct FieldCache {
+    std::string alias;
+};
+
 struct ClassCache {
+    std::vector<FieldCache> fields;
     std::string data;
 };
 
 template<class T>
-std::string getClassCacheData();
+std::vector<FieldCache> getClassFields();
+
+template<class T>
+void initClassCache(ClassCache &classCache);
 
 class ClassManager {
 public:
@@ -78,7 +109,7 @@ public:
         auto iter = cache.find(type);
         if (iter == cache.end()) {
             ClassCache classCache;
-            classCache.data = getClassCacheData<T>();
+            initClassCache<T>(classCache);
             cache[type] = classCache;
             return cache[type];
         } else {
