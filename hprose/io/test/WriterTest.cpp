@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Oct 28, 2016                             *
+ * LastModified: Nov 8, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -303,22 +303,22 @@ struct TestStruct2 : TestStruct1 {
 };
 
 HPROSE_REG_CLASS(TestStruct, "Test", {
-    HPROSE_REG_FIELD(TestStruct, ID, "id");
+    HPROSE_REG_FIELD(ID, "id");
 })
 
 HPROSE_REG_CLASS(TestStruct1, "Test1", {
-    HPROSE_REG_FIELD(TestStruct1, ID, "id");
-    HPROSE_REG_FIELD(TestStruct1, Name, "name");
-    HPROSE_REG_FIELD(TestStruct1, Age, "age");
+    HPROSE_REG_FIELD(ID, "id");
+    HPROSE_REG_FIELD(Name, "name");
+    HPROSE_REG_FIELD(Age, "age");
 })
 
 HPROSE_REG_CLASS(TestStruct2, "Test2", {
-    HPROSE_REG_FIELD(TestStruct2, OOXX, "ooxx");
-    HPROSE_REG_FIELD(TestStruct2, TestStruct2, "testStruct2");
-    HPROSE_REG_FIELD(TestStruct2, ID, "id");
-    HPROSE_REG_FIELD(TestStruct2, Name, "name");
-    HPROSE_REG_FIELD(TestStruct2, Age, "age");
-    HPROSE_REG_FIELD(TestStruct2, Test, "test");
+    HPROSE_REG_FIELD(OOXX, "ooxx");
+    HPROSE_REG_FIELD(TestStruct2, "testStruct2");
+    HPROSE_REG_FIELD(ID, "id");
+    HPROSE_REG_FIELD(Name, "name");
+    HPROSE_REG_FIELD(Age, "age");
+    HPROSE_REG_FIELD(Test, "test");
 })
 
 TEST(Writer, SerializeStruct) {

@@ -39,6 +39,7 @@ namespace hprose { namespace io {                                  \
                                                                    \
 template<>                                                         \
 std::vector<FieldCache> getClassFields<Class>() {                  \
+    typedef const Class * ClassPointer;                            \
     std::vector<FieldCache> fields;                                \
     Body                                                           \
     return fields;                                                 \
@@ -72,17 +73,17 @@ inline void encode(const Class &v, Writer &writer) {               \
 
 #define HPROSE_REG_CLASS(Class, ...) HPROSE_PP_OVERLOAD(HPROSE_REG_CLASS_,__VA_ARGS__)(Class, __VA_ARGS__)
 
-#define HPROSE_REG_FIELD_1(Class, Field) HPROSE_REG_FIELD_2(Class, Field, #Field)
-#define HPROSE_REG_FIELD_2(Class, Field, Alias) {                  \
+#define HPROSE_REG_FIELD_1(Field) HPROSE_REG_FIELD_2(Field, #Field)
+#define HPROSE_REG_FIELD_2(Field, Alias) {                  \
     FieldCache fieldCache;                                         \
     fieldCache.alias = Alias;                                      \
     fieldCache.encode = [](const void *obj, Writer &writer) {      \
-        writer.writeValue(static_cast<const Class *>(obj)->Field); \
+        writer.writeValue(static_cast<ClassPointer>(obj)->Field); \
     };                                                             \
     fields.push_back(std::move(fieldCache));                       \
 }
 
-#define HPROSE_REG_FIELD(Class, ...) HPROSE_PP_OVERLOAD(HPROSE_REG_FIELD_, __VA_ARGS__)(Class, __VA_ARGS__)
+#define HPROSE_REG_FIELD(...) HPROSE_PP_OVERLOAD(HPROSE_REG_FIELD_, __VA_ARGS__)(__VA_ARGS__)
 
 namespace hprose {
 namespace io {
