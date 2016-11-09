@@ -149,6 +149,15 @@ inline void encode(const std::shared_ptr<T> &v, Writer &writer) {
 }
 
 template<class T>
+inline void encode(const std::weak_ptr<T> &v, Writer &writer) {
+    if (auto spt = v.lock()) {
+        writer.writeValue(*spt);
+    } else {
+        throw std::runtime_error("the weak pointer has expired");
+    }
+}
+
+template<class T>
 inline typename std::enable_if<
     std::is_array<T>::value
 >::type

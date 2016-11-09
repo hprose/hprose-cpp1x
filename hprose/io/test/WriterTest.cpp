@@ -268,20 +268,31 @@ TEST(Writer, SerializeTime) {
 }
 
 TEST(Writer, SerializePointer) {
-    int *ptr = nullptr;
-    T(ptr, "n");
+    int *p = nullptr;
+    T(p, "n");
 
     int i = 123;
-    ptr = &i;
-    T(ptr, "i123;");
+    p = &i;
+    T(p, "i123;");
 
-    std::unique_ptr<int> uptr(new int(123));
-    T(uptr, "i123;");
+    std::unique_ptr<int> up(new int(123));
+    T(up, "i123;");
 
-    std::shared_ptr<int> sptr1(new int(123));
-    std::shared_ptr<int> sptr2(sptr1);
-    T(sptr1, "i123;");
-    T(sptr2, "i123;");
+    std::weak_ptr<int> wp;
+
+    {
+        std::shared_ptr<int> sp1(new int(123));
+        std::shared_ptr<int> sp2(sp1);
+        T(sp1, "i123;");
+        T(sp2, "i123;");
+
+        wp = sp1;
+        T(wp, "i123;");
+    }
+
+    std::ostringstream stream;
+    hprose::io::Writer writer(stream, true);
+    EXPECT_THROW(writer.serialize(wp), std::runtime_error);
 }
 
 TEST(Writer, SerializeList) {
