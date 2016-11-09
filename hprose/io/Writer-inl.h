@@ -73,19 +73,35 @@ inline void encode(const std::ratio<N, D> &v, Writer &writer) {
 }
 
 inline void encode(const char *v, Writer &writer) {
-    writer.writeString(v);
+    if (v) {
+        writer.writeString(v);
+    } else {
+        writer.writeNull();
+    }
 }
 
 inline void encode(const wchar_t *v, Writer &writer) {
-    writer.writeString(v);
+    if (v) {
+        writer.writeString(v);
+    } else {
+        writer.writeNull();
+    }
 }
 
 inline void encode(const char16_t *v, Writer &writer) {
-    writer.writeString(v);
+    if (v) {
+        writer.writeString(v);
+    } else {
+        writer.writeNull();
+    }
 }
 
 inline void encode(const char32_t *v, Writer &writer) {
-    writer.writeString(v);
+    if (v) {
+        writer.writeString(v);
+    } else {
+        writer.writeNull();
+    }
 }
 
 template<class Element, class Traits, class Allocator>
@@ -107,7 +123,29 @@ inline typename std::enable_if<
     std::is_pointer<T>::value
 >::type
 encode(const T &v, Writer &writer) {
-    writer.writeValue(*v);
+    if (v) {
+        writer.writeValue(*v);
+    } else {
+        writer.writeNull();
+    }
+}
+
+template<class T, class Deleter>
+inline void encode(const std::unique_ptr<T, Deleter> &v, Writer &writer) {
+    if (v) {
+        writer.writeValue(*v);
+    } else {
+        writer.writeNull();
+    }
+}
+
+template<class T>
+inline void encode(const std::shared_ptr<T> &v, Writer &writer) {
+    if (v) {
+        writer.writeValue(*v);
+    } else {
+        writer.writeNull();
+    }
 }
 
 template<class T>

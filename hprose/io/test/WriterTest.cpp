@@ -267,6 +267,23 @@ TEST(Writer, SerializeTime) {
 #endif
 }
 
+TEST(Writer, SerializePointer) {
+    int *ptr = nullptr;
+    T(ptr, "n");
+
+    int i = 123;
+    ptr = &i;
+    T(ptr, "i123;");
+
+    std::unique_ptr<int> uptr(new int(123));
+    T(uptr, "i123;");
+
+    std::shared_ptr<int> sptr1(new int(123));
+    std::shared_ptr<int> sptr2(sptr1);
+    T(sptr1, "i123;");
+    T(sptr2, "i123;");
+}
+
 TEST(Writer, SerializeList) {
     int a1[] = {1, 2, 3};
     uint8_t a2[] = {'h', 'e', 'l', 'l', 'o'};
