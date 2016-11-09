@@ -34,6 +34,8 @@
 #include <memory>
 #include <numeric>
 #include <limits>
+#include <locale>
+#include <codecvt>
 #include <typeindex>
 #include <type_traits>
 #include <vector>
@@ -240,8 +242,43 @@ public:
         return decoders::FloatDecode<T>(*this, static_cast<char>(stream.get()));
     }
 
-    void readString(std::string &s) {
-        s = decoders::StringDecode(*this, static_cast<char>(stream.get()));
+    template<class T>
+    inline typename std::enable_if<
+        std::is_same<T, std::string>::value,
+        T
+    >::type
+    readString() {
+        return decoders::StringDecode(*this, static_cast<char>(stream.get()));
+    }
+
+    template<class T>
+    inline typename std::enable_if<
+        std::is_same<T, std::wstring>::value,
+        T
+    >::type
+    readString() {
+        std::wstring_convert<std::codecvt_utf8<wchar_t> > conv;
+        return conv.from_bytes(readString<std::string>());
+    }
+
+    template<class T>
+    inline typename std::enable_if<
+        std::is_same<T, std::u16string>::value,
+        T
+    >::type
+    readString() {
+        std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
+        return conv.from_bytes(readString<std::string>());
+    }
+
+    template<class T>
+    inline typename std::enable_if<
+        std::is_same<T, std::u32string>::value,
+        T
+    >::type
+    readString() {
+        std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+        return conv.from_bytes(readString<std::string>());
     }
 
     std::string readStringWithoutTag() {

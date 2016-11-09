@@ -46,7 +46,7 @@ decode(T &v, Reader &reader) {
 
 template<class Element, class Traits, class Allocator>
 inline void decode(std::basic_string<Element, Traits, Allocator> &v, Reader &reader) {
-    reader.readString(v);
+    v = reader.readString<std::basic_string<Element, Traits, Allocator> >();
 }
 
 }
