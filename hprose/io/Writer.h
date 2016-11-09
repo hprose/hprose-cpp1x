@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Nov 8, 2016                              *
+ * LastModified: Nov 9, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -191,7 +191,7 @@ public:
             writeFloat(c.real());
             return;
         }
-        setRef(0);
+        skipRef();
         writeListHeader(2);
         writeFloat(c.real());
         writeFloat(c.imag());
@@ -204,7 +204,7 @@ public:
             writeInteger(r.num);
             return;
         }
-        setRef(0);
+        skipRef();
         std::string s = std::to_string(r.num) + "/" + std::to_string(r.den);
         writeString(s, s.length());
     }
@@ -218,10 +218,8 @@ public:
         } else if (length < 0) {
             writeBytes(reinterpret_cast<const uint8_t *>(str.data()), str.length());
         } else {
-            if (writeRef(reinterpret_cast<uintptr_t>(&str))) {
-                return;
-            }
-            setRef(reinterpret_cast<uintptr_t>(&str));
+            if (writeRef(str)) return;
+            setRef(str);
             writeString(str, length);
         }
     }
@@ -242,7 +240,7 @@ public:
     }
 
     void writeBytes(const uint8_t *data, size_t count) {
-        setRef(0);
+        skipRef();
         if (count == 0) {
             stream << tags::TagBytes << tags::TagQuote << tags::TagQuote;
             return;
@@ -255,10 +253,8 @@ public:
     }
 
     void writeTime(const std::tm &t) {
-        if (writeRef(reinterpret_cast<uintptr_t>(&t))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&t));
+        if (writeRef(t)) return;
+        setRef(t);
         if (t.tm_hour == 0 && t.tm_min == 0 && t.tm_sec == 0) {
             writeDate(1900 + t.tm_year, t.tm_mon + 1, t.tm_mday);
         } else if (t.tm_year == 70 && t.tm_mon == 0 && t.tm_mday == 1) {
@@ -281,10 +277,8 @@ public:
 
     template<class T>
     void writeList(const T &lst) {
-        if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&lst));
+        if (writeRef(lst)) return;
+        setRef(lst);
         size_t count = lst.size();
         if (count == 0) {
             writeEmptyList();
@@ -314,7 +308,7 @@ public:
 
     template<class T, size_t N>
     void writeList(const T (&v)[N]) {
-        setRef(0);
+        skipRef();
         if (N == 0) {
             writeEmptyList();
             return;
@@ -328,10 +322,8 @@ public:
 
     template<class Allocator>
     void writeList(const std::vector<bool, Allocator> &lst) {
-        if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&lst));
+        if (writeRef(lst)) return;
+        setRef(lst);
         size_t count = lst.size();
         if (count == 0) {
             writeEmptyList();
@@ -346,10 +338,8 @@ public:
 
     template<class T>
     void writeList(const std::forward_list<T> &lst) {
-        if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&lst));
+        if (writeRef(lst)) return;
+        setRef(lst);
         size_t count = std::distance(std::begin(lst), std::end(lst));
         if (count == 0) {
             writeEmptyList();
@@ -364,10 +354,8 @@ public:
 
     template<size_t N>
     void writeList(const std::bitset<N> &b) {
-        if (writeRef(reinterpret_cast<uintptr_t>(&b))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&b));
+        if (writeRef(b)) return;
+        setRef(b);
         if (N == 0) {
             writeEmptyList();
             return;
@@ -381,10 +369,8 @@ public:
 
     template<class... Type>
     void writeList(const std::tuple<Type...> &lst) {
-        if (writeRef(reinterpret_cast<uintptr_t>(&lst))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&lst));
+        if (writeRef(lst)) return;
+        setRef(lst);
         size_t count = std::tuple_size<std::tuple<Type...> >::value;
         if (count == 0) {
             writeEmptyList();
@@ -397,10 +383,8 @@ public:
 
     template<class T>
     void writeMap(const T &map) {
-        if (writeRef(reinterpret_cast<uintptr_t>(&map))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&map));
+        if (writeRef(map)) return;
+        setRef(map);
         size_t count = map.size();
         if (count == 0) {
             writeEmptyMap();
@@ -435,10 +419,8 @@ public:
         } else {
             index = iter->second;
         }
-        if (writeRef(reinterpret_cast<uintptr_t>(&o))) {
-            return;
-        }
-        setRef(reinterpret_cast<uintptr_t>(&o));
+        if (writeRef(o)) return;
+        setRef(o);
         stream << tags::TagObject << index << tags::TagOpenbrace;
         auto fields = cache.fields;
         for (auto &&field : fields) {
@@ -447,15 +429,22 @@ public:
         stream << tags::TagClosebrace;
     }
 
-    inline bool writeRef(uintptr_t ptr) {
-        return refer ? refer->write(stream, ptr) : false;
+    template<class T>
+    inline bool writeRef(const T &v) {
+        return refer ? refer->write(stream, reinterpret_cast<uintptr_t>(&v)) : false;
     }
 
-    inline void setRef(uintptr_t ptr) {
-        if (refer) refer->set(ptr);
+    template<class T>
+    inline void setRef(const T &v) {
+        if (refer) refer->set(reinterpret_cast<uintptr_t>(&v));
+    }
+
+    inline void skipRef() {
+        if (refer) refer->set(0);
     }
 
     inline void reset() {
+        if (classRefs) classRefs->clear();
         if (refer) refer->reset();
     }
 
