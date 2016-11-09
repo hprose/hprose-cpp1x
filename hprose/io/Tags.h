@@ -13,7 +13,7 @@
  *                                                        *
  * hprose tags constants for cpp.                         *
  *                                                        *
- * LastModified: Oct 14, 2016                             *
+ * LastModified: Nov 9, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -40,7 +40,7 @@ const char TagUTC         = 'Z';
 const char TagBytes       = 'b';
 const char TagUTF8Char    = 'u';
 const char TagString      = 's';
-const char TagGuid        = 'g';
+const char TagGUID        = 'g';
 const char TagList        = 'a';
 const char TagMap         = 'm';
 const char TagClass       = 'c';

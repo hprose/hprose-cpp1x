@@ -13,7 +13,7 @@
  *                                                        *
  * variant type for cpp.                                  *
  *                                                        *
- * LastModified: Nov 6, 2016                              *
+ * LastModified: Nov 9, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -58,8 +58,8 @@ public:
 private:
     template<class T> struct GetAddrImpl;
 
-    template<class T> T*       getAddress() noexcept;
-    template<class T> T const* getAddress() const noexcept;
+    template<class T> T       *getAddress() noexcept;
+    template<class T> T const *getAddress() const noexcept;
 
     void destroy() noexcept;
 

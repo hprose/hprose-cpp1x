@@ -9,9 +9,9 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/io/Reader-inl.h                                 *
+ * hprose/io/decoders/StringDecoder.h                     *
  *                                                        *
- * hprose decode funtions for cpp.                        *
+ * hprose string decoder for cpp.                         *
  *                                                        *
  * LastModified: Nov 9, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
@@ -20,34 +20,17 @@
 
 #pragma once
 
+#include <string>
+
 namespace hprose {
 namespace io {
 
-inline void decode(bool &b, Reader &reader) {
-    b = reader.readBool();
-}
+class Reader;
 
-template<class T>
-inline typename std::enable_if<
-    std::is_integral<T>::value &&
-    !std::is_same<T, bool>::value
->::type
-decode(T &v, Reader &reader) {
-    v = reader.readInteger<T>();
-}
+namespace decoders {
 
-template<class T>
-inline typename std::enable_if<
-    std::is_floating_point<T>::value
->::type
-decode(T &v, Reader &reader) {
-    v = reader.readFloat<T>();
-}
-
-template<class Element, class Traits, class Allocator>
-inline void decode(std::basic_string<Element, Traits, Allocator> &v, Reader &reader) {
-    reader.readString(v);
-}
+std::string StringDecode(Reader &reader, char tag);
 
 }
-} // hprose::io
+}
+} // hprose::io::decoders

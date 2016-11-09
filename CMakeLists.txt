@@ -11,6 +11,7 @@ set(SOURCE_FILES
     hprose/io/Reader.cpp
     hprose/io/decoders/BoolDecoder.cpp
     hprose/io/decoders/IntDecoder.cpp
+    hprose/io/decoders/StringDecoder.cpp
     hprose/util/Util.cpp
     hprose/Variant.cpp)
 

@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Nov 6, 2016                              *
+ * LastModified: Nov 9, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -24,6 +24,7 @@
 #include <hprose/io/decoders/BoolDecoder.h>
 #include <hprose/io/decoders/IntDecoder.h>
 #include <hprose/io/decoders/FloatDecoder.h>
+#include <hprose/io/decoders/StringDecoder.h>
 #include <hprose/util/Util.h>
 #include <hprose/Variant.h>
 
@@ -166,6 +167,16 @@ public:
         return util::StringToFloat<T>(readUntil(tags::TagSemicolon));
     }
 
+    std::string read(size_t count) {
+        std::string s;
+        s.resize(count);
+        stream.read(const_cast<char *>(s.data()), count);
+        if (stream.gcount() != count) {
+            throw std::runtime_error("unexpected end of stream");
+        }
+        return s;
+    }
+
     std::string readUntil(char tag) {
         std::string s;
         std::getline(stream, s, tag);
@@ -229,8 +240,12 @@ public:
         return decoders::FloatDecode<T>(*this, static_cast<char>(stream.get()));
     }
 
+    void readString(std::string &s) {
+        s = decoders::StringDecode(*this, static_cast<char>(stream.get()));
+    }
+
     std::string readStringWithoutTag() {
-        std::string s = readString();
+        std::string s = ByteReader::readString();
         setRef(s);
         return s;
     }
