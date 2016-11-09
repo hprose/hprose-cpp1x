@@ -13,7 +13,7 @@
  *                                                        *
  * hprose encode funtions for cpp.                        *
  *                                                        *
- * LastModified: Nov 8, 2016                              *
+ * LastModified: Nov 9, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -70,6 +70,22 @@ inline void encode(const std::complex<T> &v, Writer &writer) {
 template<intmax_t N, intmax_t D>
 inline void encode(const std::ratio<N, D> &v, Writer &writer) {
     writer.writeRatio(v);
+}
+
+inline void encode(const char *v, Writer &writer) {
+    writer.writeString(v);
+}
+
+inline void encode(const wchar_t *v, Writer &writer) {
+    writer.writeString(v);
+}
+
+inline void encode(const char16_t *v, Writer &writer) {
+    writer.writeString(v);
+}
+
+inline void encode(const char32_t *v, Writer &writer) {
+    writer.writeString(v);
 }
 
 template<class Element, class Traits, class Allocator>
