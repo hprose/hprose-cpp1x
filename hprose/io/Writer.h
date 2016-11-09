@@ -25,6 +25,7 @@
 #include <hprose/util/Util.h>
 
 #include <ostream>
+#include <memory>
 #include <numeric>
 #include <limits>
 #include <complex>
