@@ -13,7 +13,7 @@
  *                                                        *
  * variant type for cpp.                                  *
  *                                                        *
- * LastModified: Nov 9, 2016                              *
+ * LastModified: Nov 10, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -32,10 +32,18 @@ class Variant {
 public:
     enum Type {
         Null,
+        Bool,
+        Int64,
+        Double,
         String,
+        Bytes,
         Time
     };
 
+    Variant();
+    Variant(std::nullptr_t);
+
+    Variant(const char *v);
     Variant(std::string v);
 
     Variant(std::tm v);
@@ -47,6 +55,10 @@ public:
     Variant &operator=(const Variant &o);
     Variant &operator=(Variant &&o) noexcept;
 
+    bool isNull() const;
+    bool isBool() const;
+    bool isInt64() const;
+    bool isDouble() const;
     bool isString() const;
     bool isTime() const;
 
@@ -66,12 +78,15 @@ private:
     Type type;
 
     union Data {
-        explicit Data() : null(nullptr) {}
+        explicit Data() : vNull(nullptr) {}
         ~Data() {}
 
-        void *null;
-        std::shared_ptr<std::string> string;
-        std::shared_ptr<std::tm> time;
+        void *vNull;
+        bool vBool;
+        int64_t vInt64;
+        double vDouble;
+        std::shared_ptr<std::string> vString;
+        std::shared_ptr<std::tm> vTime;
     } data;
 };
 

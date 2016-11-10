@@ -19,6 +19,6 @@ include_directories(".")
 
 add_library(hprose STATIC ${SOURCE_FILES})
 
-add_executable(IOTest.out hprose/io/test/WriterTest.cpp hprose/io/test/ReaderTest.cpp)
+add_executable(IOTest.out hprose/io/test/WriterTest.cpp hprose/io/test/ReaderTest.cpp hprose/test/VariantTest.cpp)
 target_include_directories(IOTest.out PUBLIC "${GTEST_DIR}/include")
 target_link_libraries(IOTest.out hprose pthread "${GTEST_DIR}/libgtest.a")

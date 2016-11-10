@@ -13,7 +13,7 @@
  *                                                        *
  * variant type for cpp.                                  *
  *                                                        *
- * LastModified: Nov 6, 2016                              *
+ * LastModified: Nov 10, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -92,7 +92,7 @@ void Variant::destroy() noexcept {
   HP_DYNAMIC_APPLY(type, HP_X);
 #undef HP_X
     type = Null;
-    data.null = nullptr;
+    data.vNull = nullptr;
 }
 
 } // hprose

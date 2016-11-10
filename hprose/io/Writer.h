@@ -50,7 +50,7 @@ namespace internal {
 
 class WriterRefer {
 public:
-    inline void addCount(int count) {
+    inline void addCount(size_t count) {
         lastref += count;
     }
 
