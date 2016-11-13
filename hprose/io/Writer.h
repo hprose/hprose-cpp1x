@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Nov 9, 2016                              *
+ * LastModified: Nov 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -286,7 +286,7 @@ public:
             return;
         }
         writeListHeader(count);
-        for (auto &&e : lst) {
+        for (const auto &e : lst) {
             writeValue(e);
         }
         writeListFooter();
@@ -331,7 +331,7 @@ public:
             return;
         }
         writeListHeader(count);
-        for (auto &&e : lst) {
+        for (const auto &e : lst) {
             writeBool(e);
         }
         writeListFooter();
@@ -347,7 +347,7 @@ public:
             return;
         }
         writeListHeader(count);
-        for (auto &&e : lst) {
+        for (const auto &e : lst) {
             writeValue(e);
         }
         writeListFooter();
@@ -392,7 +392,7 @@ public:
             return;
         }
         writeMapHeader(count);
-        for (auto &&e : map) {
+        for (const auto &e : map) {
             writeValue(e.first);
             writeValue(e.second);
         }
@@ -424,7 +424,7 @@ public:
         setRef(o);
         stream << tags::TagObject << index << tags::TagOpenbrace;
         auto fields = cache.fields;
-        for (auto &&field : fields) {
+        for (const auto &field : fields) {
             field.encode(&o, *this);
         }
         stream << tags::TagClosebrace;

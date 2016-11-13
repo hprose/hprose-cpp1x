@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Nov 9, 2016                              *
+ * LastModified: Nov 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -25,6 +25,7 @@
 #include <hprose/io/decoders/IntDecoder.h>
 #include <hprose/io/decoders/FloatDecoder.h>
 #include <hprose/io/decoders/StringDecoder.h>
+#include <hprose/io/decoders/ListDecoder.h>
 #include <hprose/util/Util.h>
 #include <hprose/Variant.h>
 
@@ -281,6 +282,11 @@ public:
         return conv.from_bytes(readString<std::string>());
     }
 
+    template<class T>
+    void readList(T &v) {
+        decoders::ListDecode(v, *this, static_cast<char>(stream.get()));
+    }
+
     std::string readStringWithoutTag() {
         std::string s = ByteReader::readString();
         setRef(s);
@@ -360,6 +366,10 @@ public:
         return tm;
     }
 
+    int readCount() {
+        return readArithmetic<int>(tags::TagOpenbrace);
+    }
+
     const Variant &readRef() {
         if (!refer) {
             throw std::runtime_error("reference unserialization can't support in simple mode");
@@ -380,4 +390,5 @@ private:
 } // hprose::io
 
 #include <hprose/io/decoders/FloatDecoder-inl.h>
+#include <hprose/io/decoders/ListDecoder-inl.h>
 #include <hprose/io/Reader-inl.h>
