@@ -20,6 +20,10 @@
 
 #pragma once
 
+#include <deque>
+#include <forward_list>
+#include <list>
+
 namespace hprose {
 namespace io {
 
@@ -51,6 +55,21 @@ inline void decode(std::basic_string<Element, Traits, Allocator> &v, Reader &rea
 
 template<class T, class Allocator>
 inline void decode(std::vector<T, Allocator> &v, Reader &reader) {
+    reader.readList(v);
+}
+
+template<class T, class Allocator>
+inline void decode(std::deque<T, Allocator> &v, Reader &reader) {
+    reader.readList(v);
+}
+
+template<class T, class Allocator>
+inline void decode(std::forward_list<T, Allocator> &v, Reader &reader) {
+    reader.readList(v);
+}
+
+template<class T, class Allocator>
+inline void decode(std::list<T, Allocator> &v, Reader &reader) {
     reader.readList(v);
 }
 
