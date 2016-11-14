@@ -23,8 +23,6 @@
 #include <deque>
 #include <forward_list>
 #include <list>
-#include <set>
-#include <unordered_set>
 #include <map>
 
 namespace hprose {
@@ -86,6 +84,26 @@ inline void decode(std::forward_list<T, Allocator> &v, Reader &reader) {
 
 template<class T, class Allocator>
 inline void decode(std::list<T, Allocator> &v, Reader &reader) {
+    reader.readList(v);
+}
+
+template<class Key, class Compare, class Allocator>
+inline void decode(std::set<Key, Compare, Allocator> &v, Reader &reader) {
+    reader.readList(v);
+}
+
+template<class Key, class Compare, class Allocator>
+inline void decode(std::multiset<Key, Compare, Allocator> &v, Reader &reader) {
+    reader.readList(v);
+}
+
+template<class Key, class Hash, class KeyEqual, class Allocator>
+inline void decode(std::unordered_set<Key, Hash, KeyEqual, Allocator> &v, Reader &reader) {
+    reader.readList(v);
+}
+
+template<class Key, class Hash, class KeyEqual, class Allocator>
+inline void decode(std::unordered_multiset<Key, Hash, KeyEqual, Allocator> &v, Reader &reader) {
     reader.readList(v);
 }
 

@@ -22,6 +22,8 @@
 
 #include <array>
 #include <vector>
+#include <set>
+#include <unordered_set>
 
 namespace hprose {
 namespace io {
@@ -59,6 +61,37 @@ void readList(T &v, Reader &reader) {
         reader.readValue(e);
     }
     reader.stream.ignore();
+}
+
+template<class T>
+void readListAsSet(T &v, Reader &reader) {
+    auto count = reader.readCount();
+    for(auto i = 0; i < count; ++i) {
+        typename T::key_type key;
+        reader.readValue(key);
+        v.insert(std::move(key));
+    }
+    reader.stream.ignore();
+}
+
+template<class Key, class Compare, class Allocator>
+inline void readList(std::set<Key, Compare, Allocator> &v, Reader &reader) {
+    readListAsSet(v, reader);
+}
+
+template<class Key, class Compare, class Allocator>
+inline void readList(std::multiset<Key, Compare, Allocator> &v, Reader &reader) {
+    readListAsSet(v, reader);
+}
+
+template<class Key, class Hash, class KeyEqual, class Allocator>
+inline void readList(std::unordered_set<Key, Hash, KeyEqual, Allocator> &v, Reader &reader) {
+    readListAsSet(v, reader);
+}
+
+template<class Key, class Hash, class KeyEqual, class Allocator>
+inline void readList(std::unordered_multiset<Key, Hash, KeyEqual, Allocator> &v, Reader &reader) {
+    readListAsSet(v, reader);
 }
 
 template<class T>
