@@ -4,7 +4,7 @@
  *                                                        *
  * hprose bool decoder for cpp.                           *
  *                                                        *
- * LastModified: Nov 9, 2016                              *
+ * LastModified: Nov 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -61,7 +61,7 @@ bool BoolDecode(Reader &reader, char tag) {
         case '0':
         case tags::TagNull:
         case tags::TagEmpty:
-        case tags::TagFalse: return false;
+        case tags::TagFalse:    return false;
         case '1':
         case '2':
         case '3':
@@ -72,15 +72,15 @@ bool BoolDecode(Reader &reader, char tag) {
         case '8':
         case '9':
         case tags::TagTrue:
-        case tags::TagNaN: return true;
+        case tags::TagNaN:      return true;
         case tags::TagInteger:
         case tags::TagLong:
-        case tags::TagDouble: return readNumberAsBool(reader);
+        case tags::TagDouble:   return readNumberAsBool(reader);
         case tags::TagInfinity: return readInfinityAsBool(reader);
         case tags::TagUTF8Char: return readUTF8CharAsBool(reader);
-        case tags::TagString: return readStringAsBool(reader);
-        case tags::TagRef: return readRefAsBool(reader);
-        default: throw CastError<bool>(tag);
+        case tags::TagString:   return readStringAsBool(reader);
+        case tags::TagRef:      return readRefAsBool(reader);
+        default:                throw  CastError<bool>(tag);
     }
 }
 

@@ -9,11 +9,11 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/io/decoders/StringDecoder.h                     *
+ * hprose/io/decoders/StringDecoder.cpp                   *
  *                                                        *
  * hprose string decoder for cpp.                         *
  *                                                        *
- * LastModified: Nov 9, 2016                              *
+ * LastModified: Nov 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -76,32 +76,32 @@ std::string readRefAsString(Reader &reader) {
 
 std::string StringDecode(Reader &reader, char tag) {
     switch (tag) {
-        case '0': return "0";
-        case '1': return "1";
-        case '2': return "2";
-        case '3': return "3";
-        case '4': return "4";
-        case '5': return "5";
-        case '6': return "6";
-        case '7': return "7";
-        case '8': return "8";
-        case '9': return "9";
+        case '0':               return "0";
+        case '1':               return "1";
+        case '2':               return "2";
+        case '3':               return "3";
+        case '4':               return "4";
+        case '5':               return "5";
+        case '6':               return "6";
+        case '7':               return "7";
+        case '8':               return "8";
+        case '9':               return "9";
         case tags::TagNull:
-        case tags::TagEmpty: return "";
-        case tags::TagFalse: return "false";
-        case tags::TagTrue: return "true";
+        case tags::TagEmpty:    return "";
+        case tags::TagFalse:    return "false";
+        case tags::TagTrue:     return "true";
         case tags::TagInfinity: return readInfAsString(reader);
         case tags::TagInteger:
         case tags::TagLong:
-        case tags::TagDouble: return readNumberAsString(reader);
+        case tags::TagDouble:   return readNumberAsString(reader);
         case tags::TagUTF8Char: return readUTF8CharAsString(reader);
-        case tags::TagString: return reader.readStringWithoutTag();
-        case tags::TagBytes: return readBytesAsString(reader);
-        case tags::TagGUID: return readGUIDAsString(reader);
-        case tags::TagDate: return readDateTimeAsString(reader);
-        case tags::TagTime: return readTimeAsString(reader);
-        case tags::TagRef: return readRefAsString(reader);
-        default: throw CastError<std::string>(tag);
+        case tags::TagString:   return reader.readStringWithoutTag();
+        case tags::TagBytes:    return readBytesAsString(reader);
+        case tags::TagGUID:     return readGUIDAsString(reader);
+        case tags::TagDate:     return readDateTimeAsString(reader);
+        case tags::TagTime:     return readTimeAsString(reader);
+        case tags::TagRef:      return readRefAsString(reader);
+        default:                throw  CastError<std::string>(tag);
     }
 }
 

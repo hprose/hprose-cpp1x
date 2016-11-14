@@ -13,7 +13,7 @@
  *                                                        *
  * hprose list decoder for cpp.                           *
  *                                                        *
- * LastModified: Nov 14, 2016                             *
+ * LastModified: Nov 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -50,7 +50,7 @@ void ListDecode(T &v, Reader &reader, char tag) {
         case tags::TagBytes: readBytesAsList(v, reader); break;
         case tags::TagList:  readList(v, reader);        break;
         case tags::TagRef:   readRefAsList(v, reader);   break;
-        default: throw CastError<T>(tag);
+        default:             throw CastError<T>(tag);
     }
 }
 
