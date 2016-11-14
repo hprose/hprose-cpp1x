@@ -20,14 +20,12 @@
 
 #pragma once
 
+#include <array>
+#include <vector>
+
 namespace hprose {
 namespace io {
 namespace decoders {
-
-template<class T>
-void readBytesAsList(T &v, Reader &reader) {
-    auto len = reader.readLength();
-}
 
 template<class T>
 inline void checkSize(T &v, int count) {
@@ -45,6 +43,15 @@ inline void checkSize(std::array<T, N> &v, int count) {
 }
 
 template<class T>
+void readBytes(T &v, Reader &reader) {
+    auto len = reader.readLength();
+    auto str = reader.read(len);
+    checkSize(v, len);
+    std::copy(str.cbegin(), str.cend(), &v[0]); // Todo: avoid copy
+    reader.stream.ignore();
+}
+
+template<class T>
 void readList(T &v, Reader &reader) {
     auto count = reader.readCount();
     checkSize(v, count);
@@ -59,14 +66,52 @@ void readRefAsList(T &v, Reader &reader) {
     
 }
 
+namespace detail {
+
 template<class T>
 void ListDecode(T &v, Reader &reader, char tag) {
     switch (tag) {
-        case tags::TagBytes: readBytesAsList(v, reader); break;
-        case tags::TagList:  readList(v, reader);        break;
-        case tags::TagRef:   readRefAsList(v, reader);   break;
+        case tags::TagList:  readList(v, reader);      break;
+        case tags::TagRef:   readRefAsList(v, reader); break;
         default:             throw CastError<T>(tag);
     }
+}
+
+template<size_t N>
+void ListDecode(uint8_t (&v)[N], Reader &reader, char tag) {
+    switch (tag) {
+        case tags::TagBytes: readBytes(v, reader);     break;
+        case tags::TagList:  readList(v, reader);      break;
+        case tags::TagRef:   readRefAsList(v, reader); break;
+        default:             throw CastError<uint8_t[N]>(tag);
+    }
+}
+
+template<size_t N>
+void ListDecode(std::array<uint8_t, N> &v, Reader &reader, char tag) {
+    switch (tag) {
+        case tags::TagBytes: readBytes(v, reader);     break;
+        case tags::TagList:  readList(v, reader);      break;
+        case tags::TagRef:   readRefAsList(v, reader); break;
+        default:             throw CastError<std::array<uint8_t, N> >(tag);
+    }
+}
+
+template<class Allocator>
+void ListDecode(std::vector<uint8_t, Allocator> &v, Reader &reader, char tag) {
+    switch (tag) {
+        case tags::TagBytes: readBytes(v, reader);     break;
+        case tags::TagList:  readList(v, reader);      break;
+        case tags::TagRef:   readRefAsList(v, reader); break;
+        default:             throw CastError<std::vector<uint8_t, Allocator> >(tag);
+    }
+}
+
+} // detail
+
+template<class T>
+inline void ListDecode(T &v, Reader &reader, char tag) {
+    detail::ListDecode(v, reader, tag);
 }
 
 }

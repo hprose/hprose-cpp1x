@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Nov 14, 2016                             *
+ * LastModified: Nov 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -171,13 +171,13 @@ public:
     }
 
     std::string read(size_t count) {
-        std::string s;
-        s.resize(count);
-        stream.read(const_cast<char *>(s.data()), count);
+        std::string str;
+        str.resize(count);
+        stream.read(const_cast<char *>(str.data()), count);
         if (stream.gcount() != count) {
             throw std::runtime_error("unexpected end of stream");
         }
-        return s;
+        return str;
     }
 
     std::string readUntil(char tag) {
