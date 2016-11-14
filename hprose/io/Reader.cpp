@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader unit for cpp.                            *
  *                                                        *
- * LastModified: Nov 9, 2016                             *
+ * LastModified: Nov 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -104,6 +104,7 @@ std::string ByteReader::readUTF8String(int length) {
                 ss << static_cast<char>(stream.get());
                 ss << static_cast<char>(stream.get());
                 i++;
+                break;
             }
             default:
                 throw std::runtime_error("bad utf-8 encode");

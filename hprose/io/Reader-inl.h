@@ -13,7 +13,7 @@
  *                                                        *
  * hprose decode funtions for cpp.                        *
  *                                                        *
- * LastModified: Nov 15, 2016                             *
+ * LastModified: Nov 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -23,6 +23,9 @@
 #include <deque>
 #include <forward_list>
 #include <list>
+#include <set>
+#include <unordered_set>
+#include <map>
 
 namespace hprose {
 namespace io {
@@ -84,6 +87,26 @@ inline void decode(std::forward_list<T, Allocator> &v, Reader &reader) {
 template<class T, class Allocator>
 inline void decode(std::list<T, Allocator> &v, Reader &reader) {
     reader.readList(v);
+}
+
+template<class Key, class T, class Compare, class Allocator>
+inline void decode(std::map<Key, T, Compare, Allocator> &v, Reader &reader) {
+    reader.readMap(v);
+}
+
+template<class Key, class T, class Compare, class Allocator>
+inline void decode(std::multimap<Key, T, Compare, Allocator> &v, Reader &reader) {
+    reader.readMap(v);
+}
+
+template<class Key, class T, class Hash, class KeyEqual, class Allocator>
+inline void decode(std::unordered_map<Key, T, Hash, KeyEqual, Allocator> &v, Reader &reader) {
+    reader.readMap(v);
+}
+
+template<class Key, class T, class Hash, class KeyEqual, class Allocator>
+inline void decode(std::unordered_multimap<Key, T, Hash, KeyEqual, Allocator> &v, Reader &reader) {
+    reader.readMap(v);
 }
 
 }

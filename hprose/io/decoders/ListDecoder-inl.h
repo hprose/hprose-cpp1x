@@ -13,7 +13,7 @@
  *                                                        *
  * hprose list decoder for cpp.                           *
  *                                                        *
- * LastModified: Nov 15, 2016                             *
+ * LastModified: Nov 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/

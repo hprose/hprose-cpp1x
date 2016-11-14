@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Nov 15, 2016                             *
+ * LastModified: Nov 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -26,6 +26,7 @@
 #include <hprose/io/decoders/FloatDecoder.h>
 #include <hprose/io/decoders/StringDecoder.h>
 #include <hprose/io/decoders/ListDecoder.h>
+#include <hprose/io/decoders/MapDecoder.h>
 #include <hprose/util/Util.h>
 #include <hprose/Variant.h>
 
@@ -40,6 +41,7 @@
 #include <typeindex>
 #include <type_traits>
 #include <vector>
+#include <unordered_map>
 
 namespace hprose {
 namespace io {
@@ -287,6 +289,11 @@ public:
         decoders::ListDecode(v, *this, static_cast<char>(stream.get()));
     }
 
+    template<class T>
+    void readMap(T &v) {
+        decoders::MapDecode(v, *this, static_cast<char>(stream.get()));
+    }
+
     std::string readStringWithoutTag() {
         std::string s = ByteReader::readString();
         setRef(s);
@@ -391,4 +398,5 @@ private:
 
 #include <hprose/io/decoders/FloatDecoder-inl.h>
 #include <hprose/io/decoders/ListDecoder-inl.h>
+#include <hprose/io/decoders/MapDecoder-inl.h>
 #include <hprose/io/Reader-inl.h>
