@@ -30,9 +30,24 @@ void readBytesAsList(T &v, Reader &reader) {
 }
 
 template<class T>
+inline void checkSize(T &v, int count) {
+    v.resize(count);
+}
+
+template<class T, size_t N>
+inline void checkSize(T (&v)[N], int count) {
+    if (N != count) throw std::runtime_error("expected array size " + std::to_string(count) + ", actual size " + std::to_string(N));
+}
+
+template<class T, size_t N>
+inline void checkSize(std::array<T, N> &v, int count) {
+    if (N != count) throw std::runtime_error("expected array size " + std::to_string(count) + ", actual size " + std::to_string(N));
+}
+
+template<class T>
 void readList(T &v, Reader &reader) {
     auto count = reader.readCount();
-    v.resize(count);
+    checkSize(v, count);
     for(auto &e : v) {
         reader.readValue(e);
     }
