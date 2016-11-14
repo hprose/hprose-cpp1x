@@ -23,19 +23,22 @@
 
 #include <gtest/gtest.h>
 
+using hprose::io::Writer;
+using hprose::io::Reader;
+
 #define T(Type, value, expected) { \
     std::stringstream stream; \
-    hprose::io::Writer writer(stream, true); \
+    Writer writer(stream, true); \
     writer.serialize(value); \
-    hprose::io::Reader reader(stream, true); \
+    Reader reader(stream, true); \
     EXPECT_EQ(reader.unserialize<Type>(), expected); \
 }
 
 #define T_R(Type, value, expected) { \
     std::stringstream stream; \
-    hprose::io::Writer writer(stream, false); \
+    Writer writer(stream, false); \
     writer.serialize(value).serialize(value); \
-    hprose::io::Reader reader(stream, false); \
+    Reader reader(stream, false); \
     EXPECT_EQ(reader.unserialize<Type>(), expected); \
     EXPECT_EQ(reader.unserialize<Type>(), expected); \
 }
@@ -114,4 +117,47 @@ TEST(Reader, UnserializeDouble) {
     T(double, "1", 1.0);
     T(double, "9", 9.0);
     T_R(double, doubleValue, 3.14159);
+}
+
+TEST(Reader, UnserializeList) {
+    int a[] = {1, 2, 3, 4, 5};
+    uint8_t b[] = {'h', 'e', 'l', 'l', 'o'};
+    std::stringstream stream;
+    Writer writer(stream, false);
+    writer
+        .serialize(a)
+        .serialize(b)
+        .serialize(nullptr)
+        .serialize("");
+    Reader reader(stream, false);
+
+    int a1[5];
+    reader.unserialize(a1);
+    EXPECT_EQ(a1[0], 1);
+    EXPECT_EQ(a1[1], 2);
+    EXPECT_EQ(a1[2], 3);
+    EXPECT_EQ(a1[3], 4);
+    EXPECT_EQ(a1[4], 5);
+
+    uint8_t b1[5];
+    reader.unserialize(b1);
+    EXPECT_EQ(b1[0], 'h');
+    EXPECT_EQ(b1[1], 'e');
+    EXPECT_EQ(b1[2], 'l');
+    EXPECT_EQ(b1[3], 'l');
+    EXPECT_EQ(b1[4], 'o');
+}
+
+TEST(Reader, UnserializeMap) {
+    std::unordered_map<std::string, std::string> map {
+        {"name", "Tom"},
+        {"国家", "🇨🇳"}
+    };
+    std::stringstream stream;
+    Writer writer(stream, false); 
+    writer.serialize(map);
+    Reader reader(stream, false);
+    std::unordered_map<std::string, std::string> map1;
+    reader.unserialize(map1);
+    EXPECT_EQ(map, map1);
 }
