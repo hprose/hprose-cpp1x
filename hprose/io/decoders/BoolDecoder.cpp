@@ -27,16 +27,16 @@ bool parseBool(const std::string &s) {
 }
 
 bool readNumberAsBool(Reader &reader) {
-    std::string s = reader.readUntil(tags::TagSemicolon);
-    if (s.length() == 1) {
-        return s[0] != '0';
+    std::string str = reader.readUntil(tags::TagSemicolon);
+    if (str.length() == 1) {
+        return str.at(0) != '0';
     } else {
         return true;
     }
 }
 
 inline bool readInfinityAsBool(Reader &reader) {
-    reader.readInfinity<float>();
+    reader.stream.ignore();
     return true;
 }
 
