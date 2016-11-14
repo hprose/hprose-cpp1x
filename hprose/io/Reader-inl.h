@@ -107,6 +107,11 @@ inline void decode(std::unordered_multiset<Key, Hash, KeyEqual, Allocator> &v, R
     reader.readList(v);
 }
 
+template<size_t N>
+inline void decode(std::bitset<N> &v, Reader &reader) {
+    reader.readList(v);
+};
+
 template<class Key, class T, class Compare, class Allocator>
 inline void decode(std::map<Key, T, Compare, Allocator> &v, Reader &reader) {
     reader.readMap(v);

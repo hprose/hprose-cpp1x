@@ -29,26 +29,30 @@ namespace hprose {
 namespace io {
 namespace decoders {
 
+inline void checkSize(size_t actual, int expected) {
+    if (expected != actual) throw std::runtime_error("expected array size " + std::to_string(expected) + ", actual size " + std::to_string(expected));    
+}
+
 template<class T>
-inline void checkSize(T &v, int count) {
+inline void makeSize(T &v, int count) {
     v.resize(count);
 }
 
 template<class T, size_t N>
-inline void checkSize(T (&v)[N], int count) {
-    if (N != count) throw std::runtime_error("expected array size " + std::to_string(count) + ", actual size " + std::to_string(N));
+inline void makeSize(T (&v)[N], int count) {
+    checkSize(N, count);
 }
 
 template<class T, size_t N>
-inline void checkSize(std::array<T, N> &v, int count) {
-    if (N != count) throw std::runtime_error("expected array size " + std::to_string(count) + ", actual size " + std::to_string(N));
+inline void makeSize(std::array<T, N> &v, int count) {
+    checkSize(N, count);
 }
 
 template<class T>
 void readBytes(T &v, Reader &reader) {
     auto len = reader.readLength();
     auto str = reader.read(len);
-    checkSize(v, len);
+    makeSize(v, len);
     std::copy(str.cbegin(), str.cend(), &v[0]); // Todo: avoid copy
     reader.stream.ignore();
 }
@@ -56,7 +60,7 @@ void readBytes(T &v, Reader &reader) {
 template<class T>
 void readList(T &v, Reader &reader) {
     auto count = reader.readCount();
-    checkSize(v, count);
+    makeSize(v, count);
     for(auto &e : v) {
         reader.readValue(e);
     }
@@ -93,6 +97,16 @@ template<class Key, class Hash, class KeyEqual, class Allocator>
 inline void readList(std::unordered_multiset<Key, Hash, KeyEqual, Allocator> &v, Reader &reader) {
     readListAsSet(v, reader);
 }
+
+template<size_t N>
+inline void readList(std::bitset<N> &v, Reader &reader) {
+    auto count = reader.readCount();
+    checkSize(N, count);
+    for(auto i = 0; i < count; ++i) {
+        v.set(i, reader.unserialize<bool>());
+    }
+    reader.stream.ignore();   
+};
 
 template<class T>
 void readRefAsList(T &v, Reader &reader) {
