@@ -24,6 +24,8 @@
 #include <vector>
 #include <set>
 #include <unordered_set>
+#include <bitset>
+#include <tuple>
 
 namespace hprose {
 namespace io {
@@ -107,6 +109,30 @@ inline void readList(std::bitset<N> &v, Reader &reader) {
     }
     reader.stream.ignore();   
 };
+
+template<std::size_t Index = 0, class... Tuple>
+inline typename std::enable_if<
+    Index == sizeof...(Tuple)
+>::type
+readTupleElement(std::tuple<Tuple...> &, Reader &reader) {
+}
+
+template<std::size_t Index = 0, class... Tuple>
+inline typename std::enable_if<
+    Index < sizeof...(Tuple)
+>::type
+readTupleElement(std::tuple<Tuple...> &tuple, Reader &reader) {
+    reader.readValue(std::get<Index>(tuple));
+    readTupleElement<Index + 1, Tuple...>(tuple, reader);
+}
+
+template<class... Type>
+void readList(std::tuple<Type...> &lst, Reader &reader) {
+    auto count = reader.readCount();
+    checkSize(std::tuple_size<std::tuple<Type...> >::value, count);
+    readTupleElement(lst, reader);
+    reader.stream.ignore(); 
+}
 
 template<class T>
 void readRefAsList(T &v, Reader &reader) {
