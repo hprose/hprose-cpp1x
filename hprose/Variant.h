@@ -13,18 +13,22 @@
  *                                                        *
  * variant type for cpp.                                  *
  *                                                        *
- * LastModified: Nov 10, 2016                             *
+ * LastModified: Dec 4, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #pragma once
 
+#include <hprose/Any.h>
+
 #include <cstdlib>
 #include <ctime>
 #include <string>
+#include <vector>
 #include <memory>
 #include <type_traits>
+#include <typeindex>
 
 namespace hprose {
 
@@ -37,7 +41,9 @@ public:
         Double,
         String,
         Bytes,
-        Time
+        Time,
+        Array,
+        Other
     };
 
     Variant();
@@ -47,6 +53,9 @@ public:
     Variant(std::string v);
 
     Variant(std::tm v);
+
+    template<class T>
+    Variant(const T &v);
 
     Variant(const Variant &o);
     Variant(Variant &&o) noexcept;
@@ -87,6 +96,8 @@ private:
         double vDouble;
         std::shared_ptr<std::string> vString;
         std::shared_ptr<std::tm> vTime;
+        std::shared_ptr<std::vector<Variant> > vArray;
+        std::shared_ptr<Any> vOther;
     } data;
 };
 

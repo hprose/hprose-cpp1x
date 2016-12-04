@@ -13,7 +13,7 @@
  *                                                        *
  * variant type for cpp.                                  *
  *                                                        *
- * LastModified: Nov 10, 2016                             *
+ * LastModified: Dec 4, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -33,6 +33,9 @@ namespace hprose {
         break;                               \
       case Time:                             \
         apply(std::shared_ptr<std::tm>);     \
+        break;                               \
+      case Other:                            \
+        apply(std::shared_ptr<Any>);         \
         break;                               \
       default:                               \
         abort();                             \

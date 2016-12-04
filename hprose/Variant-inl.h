@@ -13,7 +13,7 @@
  *                                                        *
  * variant type for cpp.                                  *
  *                                                        *
- * LastModified: Nov 10, 2016                             *
+ * LastModified: Dec 4, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -43,6 +43,11 @@ inline Variant::Variant(std::string v) : type(String) {
 
 inline Variant::Variant(std::tm v) : type(Time) {
     new (&data.vTime) std::shared_ptr<std::tm>(new std::tm(std::move(v)));
+}
+
+template<class T>
+Variant::Variant(const T &v) : type(Other) {
+    new (&data.vOther) std::shared_ptr<Any>(new Any(v));
 }
 
 inline Variant::Variant(const Variant &o) : type(Null) {
@@ -99,6 +104,11 @@ struct Variant::GetAddrImpl<std::shared_ptr<std::string> > {
 template<>
 struct Variant::GetAddrImpl<std::shared_ptr<std::tm> > {
     static std::shared_ptr<std::tm> *get(Data &d) noexcept { return &d.vTime; }
+};
+
+template<>
+struct Variant::GetAddrImpl<std::shared_ptr<Any> > {
+    static std::shared_ptr<Any> *get(Data &d) noexcept { return &d.vOther; }
 };
 
 } // hprose

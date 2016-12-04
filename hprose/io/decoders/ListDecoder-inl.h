@@ -13,7 +13,7 @@
  *                                                        *
  * hprose list decoder for cpp.                           *
  *                                                        *
- * LastModified: Nov 14, 2016                             *
+ * LastModified: Dec 4, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -66,6 +66,7 @@ void readList(T &v, Reader &reader) {
     for(auto &e : v) {
         reader.readValue(e);
     }
+    reader.setRef(v);
     reader.stream.ignore();
 }
 

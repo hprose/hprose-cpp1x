@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader test for cpp.                            *
  *                                                        *
- * LastModified: Nov 14, 2016                             *
+ * LastModified: Dec 4, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -127,6 +127,8 @@ TEST(Reader, UnserializeList) {
     writer
         .serialize(a)
         .serialize(b)
+        .serialize(a)
+        .serialize(b)
         .serialize(nullptr)
         .serialize("");
     Reader reader(stream, false);
@@ -146,6 +148,14 @@ TEST(Reader, UnserializeList) {
     EXPECT_EQ(b1[2], 'l');
     EXPECT_EQ(b1[3], 'l');
     EXPECT_EQ(b1[4], 'o');
+
+    std::tuple<int, int, int, int, int> s;
+    reader.unserialize(s);    
+    EXPECT_EQ(std::get<0>(s), 1);
+    EXPECT_EQ(std::get<1>(s), 2);
+    EXPECT_EQ(std::get<2>(s), 3);
+    EXPECT_EQ(std::get<3>(s), 4);
+    EXPECT_EQ(std::get<4>(s), 5);
 }
 
 TEST(Reader, UnserializeMap) {
