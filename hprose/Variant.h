@@ -70,11 +70,13 @@ public:
     bool isDouble() const;
     bool isString() const;
     bool isTime() const;
+    bool isOther() const;
 
     const char *typeName() const;
 
     const std::string &getString() const &;
     const std::tm &getTime() const &;
+    const Any &getOther() const &;
 
 private:
     template<class T> struct GetAddrImpl;

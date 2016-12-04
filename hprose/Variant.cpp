@@ -50,6 +50,8 @@ const char *Variant::typeName() const {
             return "std::string";
         case Time:
             return "std::tm";
+        case Other:
+            return "Any";
         default:
             abort();
     }

@@ -119,7 +119,7 @@ TEST(Reader, UnserializeDouble) {
     T_R(double, doubleValue, 3.14159);
 }
 
-TEST(Reader, UnserializeList) {
+TEST(Reader, UnserializeArray) {
     int a[] = {1, 2, 3, 4, 5};
     uint8_t b[] = {'h', 'e', 'l', 'l', 'o'};
     std::stringstream stream;
@@ -156,6 +156,51 @@ TEST(Reader, UnserializeList) {
     EXPECT_EQ(std::get<2>(s), 3);
     EXPECT_EQ(std::get<3>(s), 4);
     EXPECT_EQ(std::get<4>(s), 5);
+}
+
+TEST(Reader, UnserializeList) {
+    std::vector<int> a{1, 2, 3, 4, 5};
+    std::vector<uint8_t> b{'h', 'e', 'l', 'l', 'o'};
+    std::stringstream stream;
+    Writer writer(stream, false);
+    writer
+        .serialize(a)
+        .serialize(b)
+        .serialize(a)
+        .serialize(b);
+    Reader reader(stream, false);
+
+    std::vector<int> v1;
+    reader.unserialize(v1);
+    EXPECT_EQ(v1[0], 1);
+    EXPECT_EQ(v1[1], 2);
+    EXPECT_EQ(v1[2], 3);
+    EXPECT_EQ(v1[3], 4);
+    EXPECT_EQ(v1[4], 5);
+
+    std::vector<uint8_t> v2;
+    reader.unserialize(v2);
+    EXPECT_EQ(v2[0], 'h');
+    EXPECT_EQ(v2[1], 'e');
+    EXPECT_EQ(v2[2], 'l');
+    EXPECT_EQ(v2[3], 'l');
+    EXPECT_EQ(v2[4], 'o');
+
+    std::vector<int> v3;
+    reader.unserialize(v3);
+    EXPECT_EQ(v3[0], 1);
+    EXPECT_EQ(v3[1], 2);
+    EXPECT_EQ(v3[2], 3);
+    EXPECT_EQ(v3[3], 4);
+    EXPECT_EQ(v3[4], 5);
+
+    std::vector<uint8_t> v4;
+    reader.unserialize(v4);
+    EXPECT_EQ(v4[0], 'h');
+    EXPECT_EQ(v4[1], 'e');
+    EXPECT_EQ(v4[2], 'l');
+    EXPECT_EQ(v4[3], 'l');
+    EXPECT_EQ(v4[4], 'o');
 }
 
 TEST(Reader, UnserializeMap) {

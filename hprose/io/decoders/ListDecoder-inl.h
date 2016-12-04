@@ -137,7 +137,16 @@ void readList(std::tuple<Type...> &lst, Reader &reader) {
 
 template<class T>
 void readRefAsList(T &v, Reader &reader) {
-    
+    const auto &var = reader.readRef();
+    if (var.isOther()) {
+        const Any &any = var.getOther();
+        if (typeid(T) == any.type()) {
+            v = Any::cast<T>(any);
+            return;
+        }
+        throw std::runtime_error(std::string("value of type ") + any.type().name() + " cannot be converted to type " + typeid(T).name());
+    }
+    throw std::runtime_error(std::string("value of type ") + var.typeName() + " cannot be converted to type list");
 }
 
 namespace detail {
@@ -151,12 +160,19 @@ void ListDecode(T &v, Reader &reader, char tag) {
     }
 }
 
+template<class T, size_t N>
+void ListDecode(T (&v)[N], Reader &reader, char tag) {
+    switch (tag) {
+        case tags::TagList:  readList(v, reader);      break;
+        default:             throw CastError<uint8_t[N]>(tag);
+    }
+}
+
 template<size_t N>
 void ListDecode(uint8_t (&v)[N], Reader &reader, char tag) {
     switch (tag) {
         case tags::TagBytes: readBytes(v, reader);     break;
         case tags::TagList:  readList(v, reader);      break;
-        case tags::TagRef:   readRefAsList(v, reader); break;
         default:             throw CastError<uint8_t[N]>(tag);
     }
 }

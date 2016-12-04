@@ -68,6 +68,7 @@ inline bool Variant::isInt64() const { return type == Int64; }
 inline bool Variant::isDouble() const { return type == Double; }
 inline bool Variant::isString() const { return type == String; }
 inline bool Variant::isTime() const { return type == Time; }
+inline bool Variant::isOther() const { return type == Other; }
 
 inline const std::string &Variant::getString() const & {
     return *data.vString;
@@ -75,6 +76,10 @@ inline const std::string &Variant::getString() const & {
 
 inline const std::tm &Variant::getTime() const & {
     return *data.vTime;
+}
+
+inline const Any &Variant::getOther() const & {
+    return *data.vOther;
 }
 
 template<class T>
