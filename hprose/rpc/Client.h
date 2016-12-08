@@ -75,6 +75,8 @@ protected:
 
     virtual std::string sendAndReceive(const std::string &request, const ClientContext &context) = 0;
 
+    std::string uri;
+
 private:
     ClientContext getContext(const InvokeSettings *settings);
 
@@ -97,7 +99,6 @@ private:
         return stream.str();
     }
 
-    std::string uri;
     std::vector<std::string> uriList;
     int retry;
     int timeout;

@@ -24,7 +24,24 @@ namespace hprose {
 namespace rpc {
 namespace asio {
 
-std::string HttpClient::sendAndReceive(const std::string &request, const ClientContext &context) {
+namespace http {
+
+Response http::HttpClient::execute(const Request &request) {
+    Response response;
+    return response;
+}
+
+} // http
+
+std::string HttpClient::sendAndReceive(const std::string &data, const ClientContext &context) {
+    http::Request req;
+    req.method = "POST";
+    req.url = uri;
+    req.body = data;
+    req.contentLength = data.size();
+    req.header["Content-Type"] = "application/hprose";
+    client.timeout = context.settings.timeout;
+    client.execute(req);
     return std::string();
 }
 

@@ -17,8 +17,9 @@ set(SOURCE_FILES
         hprose/util/Util.cpp
         hprose/Variant.cpp)
 
-include_directories(".")
+include_directories("/usr/local/include" ".")
 
+add_definitions(-DASIO_STANDALONE)
 add_library(hprose STATIC ${SOURCE_FILES})
 
 set(TEST_FILES
