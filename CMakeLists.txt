@@ -12,6 +12,7 @@ set(SOURCE_FILES
     hprose/io/decoders/BoolDecoder.cpp
     hprose/io/decoders/IntDecoder.cpp
     hprose/io/decoders/StringDecoder.cpp
+    hprose/rpc/Client.cpp
     hprose/util/Util.cpp
     hprose/Variant.cpp)
 
@@ -19,6 +20,12 @@ include_directories(".")
 
 add_library(hprose STATIC ${SOURCE_FILES})
 
-add_executable(IOTest.out hprose/io/test/WriterTest.cpp hprose/io/test/ReaderTest.cpp hprose/test/VariantTest.cpp)
+set(TEST_FILES
+    hprose/test/VariantTest.cpp
+    hprose/io/test/WriterTest.cpp
+    hprose/io/test/ReaderTest.cpp
+    hprose/rpc/asio/test/HttpClientTest.cpp)
+
+add_executable(IOTest.out ${TEST_FILES})
 target_include_directories(IOTest.out PUBLIC "${GTEST_DIR}/include")
 target_link_libraries(IOTest.out hprose pthread "${GTEST_DIR}/libgtest.a")

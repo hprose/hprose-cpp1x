@@ -28,7 +28,6 @@ namespace hprose {
 
 class Any {
 public:
-
     Any() noexcept
         : content(0) {
     }
@@ -59,7 +58,6 @@ public:
     }
 
 public:
-
     Any &swap(Any &rhs) {
         std::swap(content, rhs.content);
         return *this;
@@ -84,7 +82,6 @@ public:
     }
 
 public:
-
     bool empty() const noexcept {
         return !content;
     }
@@ -171,8 +168,7 @@ public:
 
     template<typename T>
     inline static T cast(const Any &operand) {
-        typedef typename std
-        ::remove_reference<T>::type nonref;
+        typedef typename std::remove_reference<T>::type nonref;
         return cast<const nonref &>(const_cast<Any &>(operand));
     }
 
