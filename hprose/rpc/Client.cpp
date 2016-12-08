@@ -40,5 +40,9 @@ ClientContext Client::getContext(const InvokeSettings *settings) {
     return context;
 }
 
+std::string Client::sendRequest(const std::string &request, const ClientContext &context) {
+    return sendAndReceive(request, context);
+}
+
 }
 } // hprose::rpc

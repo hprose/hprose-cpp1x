@@ -20,6 +20,7 @@
 
 #pragma once
 
+#include <hprose/io/Writer.h>
 #include <hprose/rpc/Context.h>
 
 #include <string>
@@ -63,6 +64,8 @@ public:
     template<class T>
     void invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
         auto context = getContext(settings);
+        auto request = encode(name, args, context);
+        auto response = sendRequest(request, context);
     }
 
 protected:
@@ -70,8 +73,29 @@ protected:
         : uri(uri), retry(10), timeout(30) {
     }
 
+    virtual std::string sendAndReceive(const std::string &request, const ClientContext &context) = 0;
+
 private:
     ClientContext getContext(const InvokeSettings *settings);
+
+    std::string sendRequest(const std::string &request, const ClientContext &context);
+
+    template<class T>
+    std::string encode(const std::string &name, const std::vector<T> &args, const ClientContext &context) {
+        std::stringstream stream;
+        io::Writer writer(stream, context.settings.simple);
+        writer.stream << io::tags::TagCall;
+        writer.writeString(name);
+        if (args.size() > 0 || context.settings.byref) {
+            writer.reset();
+            writer.writeList(args);
+            if (context.settings.byref) {
+                writer.writeBool(true);
+            }
+        }
+        writer.stream << io::tags::TagEnd;
+        return stream.str();
+    }
 
     std::string uri;
     std::vector<std::string> uriList;

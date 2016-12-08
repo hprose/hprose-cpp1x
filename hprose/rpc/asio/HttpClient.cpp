@@ -9,7 +9,7 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/rpc/asio/HttpClient.h                           *
+ * hprose/rpc/asio/HttpClient.cpp                         *
  *                                                        *
  * hprose asio http client for cpp.                       *
  *                                                        *
@@ -18,24 +18,15 @@
  *                                                        *
 \**********************************************************/
 
-#pragma once
-
-#include <hprose/rpc/Client.h>
+#include <hprose/rpc/asio/HttpClient.h>
 
 namespace hprose {
 namespace rpc {
 namespace asio {
 
-class HttpClient : public Client {
-public:
-    HttpClient(const std::string &uri)
-        : Client(uri) {
-    }
-
-protected:
-    std::string sendAndReceive(const std::string &request, const ClientContext &context);
-
-};
+std::string HttpClient::sendAndReceive(const std::string &request, const ClientContext &context) {
+    return std::string();
+}
 
 }
 }
