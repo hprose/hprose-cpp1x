@@ -29,7 +29,7 @@ matrix:
         - cd googletest-release-1.8.0/googletest && cmake . && make && cd .. && cd ..
         - curl -sSLo asio-1.10.8.tar.gz https://superb-sea2.dl.sourceforge.net/project/asio/asio/1.10.8%20%28Stable%29/asio-1.10.8.tar.gz
         - tar xzf asio-1.10.8.tar.gz
-        - cd asio-1.10.8 &&  ./configure --without-boost && make && make install && cd ..
+        - cd asio-1.10.8 &&  ./configure --without-boost && make && sudo make install && cd ..
     - os: linux
       dist: trusty
       sudo: required
@@ -47,5 +47,5 @@ matrix:
         - cd googletest-release-1.8.0/googletest && cmake -DCMAKE_CXX_FLAGS="-I/usr/include/c++/v1 -stdlib=libc++ -lc++abi" . && make && cd .. && cd ..
         - curl -sSLo asio-1.10.8.tar.gz https://superb-sea2.dl.sourceforge.net/project/asio/asio/1.10.8%20%28Stable%29/asio-1.10.8.tar.gz
         - tar xzf asio-1.10.8.tar.gz
-        - cd asio-1.10.8 &&  ./configure --without-boost && make && make install && cd ..
+        - cd asio-1.10.8 &&  ./configure --without-boost && make && sudo make install && cd ..
 script: sh ./travis.sh
