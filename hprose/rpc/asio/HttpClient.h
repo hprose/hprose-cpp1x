@@ -37,8 +37,15 @@ namespace http {
 typedef std::unordered_map<std::string, std::string> Header;
 
 struct Request {
-    explicit Request(const std::string uri)
+    explicit Request(const std::string &uri)
         : uri(Uri(uri)) {
+        if (this->uri.getPort() == -1) {
+            if (this->uri.getScheme() == "http") {
+                this->uri.setPort(80);
+            } else if (this->uri.getScheme() == "http") {
+                this->uri.setPort(443);
+            }
+        }
     }
 
     std::string method;

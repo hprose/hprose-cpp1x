@@ -20,68 +20,70 @@
 
 #include <hprose/Uri.h>
 
+#include <algorithm>
+#include <regex>
+
 namespace hprose {
 
-Uri::Uri(const std::string &str) {
-    std::string surl;
-    std::string::size_type x, y;
-    scheme = "http";
-    username = "";
-    password = "";
-    port = 80;
-    x = str.find("://");
-    if (x != std::string::npos) {
-        scheme = str.substr(0, x);
-        surl = str.substr(x + 3);
-    } else {
-        surl = str;
+std::string submatch(const std::smatch &m, size_t idx) {
+    auto &sub = m[idx];
+    return std::string(sub.first, sub.second);
+}
+
+Uri::Uri(const std::string &str) : port(-1) {
+    static const std::regex uriRegex(
+        "([a-zA-Z][a-zA-Z0-9+.-]*):"  // scheme:
+        "([^?#]*)"                    // authority and path
+        "(?:\\?([^#]*))?"             // ?query
+        "(?:#(.*))?");                // #fragment
+
+    static const std::regex authorityAndPathRegex("//([^/]*)(/.*)?");
+
+    std::smatch match;
+    if (!std::regex_match(str.begin(), str.end(), match, uriRegex)) {
+        throw std::invalid_argument(std::string("invalid URI ") + str);
     }
+
+    scheme = submatch(match, 1);
     std::transform(scheme.begin(), scheme.end(), scheme.begin(), tolower);
-    if (scheme == "https") {
-        port = 443;
-    }
-    x = surl.find('@');
-    y = surl.find('/');
-    if ((x != std::string::npos) && ((x < y) || (y == std::string::npos))) {
-        username = surl.substr(0, x);
-        surl.erase(0, x + 1);
-        x = username.find(':');
-        if (x != std::string::npos) {
-            password = username.substr(x + 1);
-            username.erase(x);
-        }
-    }
-    x = surl.find('/');
-    if (x != std::string::npos) {
-        host = surl.substr(0, x);
-        surl.erase(0, x + 1);
+
+    const std::string authorityAndPath(match[2].first, match[2].second);
+    std::smatch authorityAndPathMatch;
+    if (!std::regex_match(authorityAndPath.begin(),
+                          authorityAndPath.end(),
+                          authorityAndPathMatch,
+                          authorityAndPathRegex)) {
+        // Does not start with //, doesn't have authority
+        path = authorityAndPath;
     } else {
-        host = surl;
-        surl = "";
-    }
-    bool ipv6 = host[0] == '[';
-    if (ipv6) {
-        x = host.find(']');
-        if ((x + 1 < host.size()) && (host[x + 1] == ':')) {
-            port = (uint16_t) std::stoi(host.substr(x + 2));
+        static const std::regex authorityRegex(
+            "(?:([^@:]*)(?::([^@]*))?@)?"  // username, password
+            "(\\[[^\\]]*\\]|[^\\[:]*)"     // host (IP-literal (e.g. '['+IPv6+']',
+            // dotted-IPv4, or named host)
+            "(?::(\\d*))?");               // port
+
+        auto authority = authorityAndPathMatch[1];
+        std::smatch authorityMatch;
+        if (!std::regex_match(authority.first,
+                              authority.second,
+                              authorityMatch,
+                              authorityRegex)) {
+            throw std::invalid_argument(std::string("invalid URI authority ") + std::string(authority.first, authority.second));
         }
-        host = host.substr(1, x - 1);
-    } else {
-        x = host.find(':');
-        if (x != std::string::npos) {
-            port = (uint16_t) std::stoi(host.substr(x + 1));
-            host.erase(x);
+
+        const std::string port(authorityMatch[4].first, authorityMatch[4].second);
+        if (!port.empty()) {
+            this->port = std::stoi(port);
         }
+
+        username = submatch(authorityMatch, 1);
+        password = submatch(authorityMatch, 2);
+        host = submatch(authorityMatch, 3);
+        path = submatch(authorityAndPathMatch, 2);
     }
-    x = surl.find('?');
-    if (x != std::string::npos) {
-        path = '/' + surl.substr(0, x);
-    } else {
-        path = '/' + surl;
-    }
-    if (host == "") {
-        host = "localhost";
-    }
+
+    query = submatch(match, 3);
+    fragment = submatch(match, 4);
 }
 
 std::string Uri::hostname() const {

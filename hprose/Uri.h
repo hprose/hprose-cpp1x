@@ -36,7 +36,9 @@ public:
 
     const std::string &getHost() const { return host; }
 
-    uint16_t getPort() const { return port; }
+    int getPort() const { return port; }
+
+    void setPort(int port) { this->port = port; };
 
     const std::string &getPath() const { return path; }
 
@@ -53,7 +55,7 @@ private:
     std::string username;
     std::string password;
     std::string host;
-    uint16_t port;
+    int port;
     std::string path;
     std::string query;
     std::string fragment;
