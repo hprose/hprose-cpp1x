@@ -13,7 +13,7 @@
  *                                                        *
  * hprose rpc client header for cpp.                      *
  *                                                        *
- * LastModified: Dec 8, 2016                              *
+ * LastModified: Dec 9, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -21,6 +21,7 @@
 #pragma once
 
 #include <hprose/io/Writer.h>
+#include <hprose/io/Reader.h>
 #include <hprose/rpc/Context.h>
 
 #include <string>
@@ -31,7 +32,15 @@ namespace rpc {
 
 class Client;
 
+enum ResultMode {
+    Normal,
+    Serialized,
+    Raw,
+    RawWithEndTag
+};
+
 struct InvokeSettings {
+    ResultMode mode;
     bool async;
     bool byref;
     bool simple;
@@ -61,11 +70,12 @@ private:
 
 class Client {
 public:
-    template<class T>
-    void invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
+    template<class R, class T>
+    R invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
         auto context = getContext(settings);
         auto request = encode(name, args, context);
         auto response = sendRequest(request, context);
+        return decode<R>(response, args, context);
     }
 
 protected:
@@ -97,6 +107,22 @@ private:
         }
         writer.stream << io::tags::TagEnd;
         return stream.str();
+    }
+
+    template<class R, class T>
+    R decode(const std::string &data, const std::vector<T> &args, const ClientContext &context) {
+        std::stringstream stream(data);
+        io::Reader reader(stream);
+        auto tag = reader.stream.get();
+        R result;
+        if (tag == io::tags::TagResult) {
+            reader.unserialize(result);
+            tag = reader.stream.get();
+            if (tag == io::tags::TagArgument) {
+
+            }
+        }
+        return result;
     }
 
     std::vector<std::string> uriList;

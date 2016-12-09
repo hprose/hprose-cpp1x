@@ -27,5 +27,6 @@ using hprose::rpc::asio::HttpClient;
 
 TEST(HttpClient, Basic) {
     HttpClient client("http://hprose.com/example/");
-    client.invoke("hello", std::vector<std::string>({"world"}));
+    auto result = client.invoke<std::string>("hello", std::vector<std::string>({"world"}));
+    EXPECT_EQ(result, "Hello world");
 }
