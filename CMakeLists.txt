@@ -15,6 +15,7 @@ set(SOURCE_FILES
         hprose/rpc/Client.cpp
         hprose/rpc/asio/HttpClient.cpp
         hprose/util/Util.cpp
+        hprose/Uri.cpp
         hprose/Variant.cpp)
 
 include_directories("/usr/local/include" ".")

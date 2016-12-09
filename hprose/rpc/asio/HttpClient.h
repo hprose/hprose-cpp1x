@@ -13,16 +13,20 @@
  *                                                        *
  * hprose asio http client for cpp.                       *
  *                                                        *
- * LastModified: Dec 8, 2016                              *
+ * LastModified: Dec 9, 2016                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #pragma once
 
+#include <hprose/Uri.h>
 #include <hprose/rpc/Client.h>
 
 #include <asio.hpp>
+
+#include <sstream>
+
 
 namespace hprose {
 namespace rpc {
@@ -33,10 +37,13 @@ namespace http {
 typedef std::unordered_map<std::string, std::string> Header;
 
 struct Request {
+    explicit Request(const std::string uri)
+        : uri(Uri(uri)) {
+    }
+
     std::string method;
-    std::string url;
+    Uri uri;
     std::string proto;
-    std::string host;
     Header header;
     std::string body;
     size_t contentLength;
