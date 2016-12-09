@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <regex>
+#include <sstream>
 
 namespace hprose {
 
@@ -30,7 +31,8 @@ std::string submatch(const std::smatch &m, size_t idx) {
     return std::string(sub.first, sub.second);
 }
 
-Uri::Uri(const std::string &str) : port(-1) {
+Uri::Uri(const std::string &str)
+    : port(0) {
     static const std::regex uriRegex(
         "([a-zA-Z][a-zA-Z0-9+.-]*):"  // scheme:
         "([^?#]*)"                    // authority and path
@@ -68,12 +70,13 @@ Uri::Uri(const std::string &str) : port(-1) {
                               authority.second,
                               authorityMatch,
                               authorityRegex)) {
-            throw std::invalid_argument(std::string("invalid URI authority ") + std::string(authority.first, authority.second));
+            throw std::invalid_argument(
+                std::string("invalid URI authority ") + std::string(authority.first, authority.second));
         }
 
         const std::string port(authorityMatch[4].first, authorityMatch[4].second);
         if (!port.empty()) {
-            this->port = std::stoi(port);
+            this->port = static_cast<uint16_t>(std::stoi(port));
         }
 
         username = submatch(authorityMatch, 1);
@@ -86,15 +89,45 @@ Uri::Uri(const std::string &str) : port(-1) {
     fragment = submatch(match, 4);
 }
 
-std::string Uri::hostname() const {
+std::string Uri::getHostname() const {
     if (host.size() > 0 && host[0] == '[') {
         return host.substr(1, host.size() - 2);
     }
     return host;
 }
 
+std::string Uri::getAuthority() const {
+    std::stringstream ss;
+    if (!username.empty() || !password.empty()) {
+        ss << username;
+        if (!password.empty()) {
+            ss << ':' << password;
+        }
+        ss << '@';
+    }
+    ss << host;
+    if (port != 0) {
+        ss << ':' << port;
+    }
+    return ss.str();
+}
+
 std::string Uri::str() const {
-    return std::string();
+    std::stringstream ss;
+    auto authority = getAuthority();
+    if (!authority.empty()) {
+        ss << scheme << "://" << authority;
+    } else {
+        ss << scheme << ':';
+    }
+    ss << path;
+    if (!query.empty()) {
+        ss << '?' << query;
+    }
+    if (!fragment.empty()) {
+        ss << '#' << fragment;
+    }
+    return ss.str();
 }
 
 } // hprose
