@@ -43,7 +43,7 @@ Response Transport::sendRequest(const Request &req) {
                  << ((req.uri.getPort() == 0) ? std::string() : (':' + std::to_string(req.uri.getPort())))
                  << "\r\n";
     for (auto iter = req.header.cbegin(); iter != req.header.cend(); iter++) {
-        headerStream << iter->first << ": " << iter->second << "\r\n";
+        headerStream << iter->first << ": " << iter->second[0] << "\r\n";
     }
 //    std::string cookie = CookieManager::SharedInstance()->GetCookie(aliveHost, path, secure);
 //    if (!cookie.empty()) {

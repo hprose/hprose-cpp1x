@@ -50,7 +50,7 @@ public:
 
     Response post(std::string url, std::string bodyType, std::string body) {
         Request req("POST", url, body);
-        req.header["Content-Type"] = bodyType;
+        req.header.set("Content-Type", bodyType);
         return doFollowingRedirects(req, internal::shouldRedirectPost);
     }
 
