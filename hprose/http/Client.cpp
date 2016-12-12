@@ -9,48 +9,45 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/http/Request.h                                  *
+ * hprose/http/Client.h                                   *
  *                                                        *
- * hprose http request for cpp.                           *
+ * hprose http client for cpp.                            *
  *                                                        *
  * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
-#pragma once
-
-#include <hprose/Uri.h>
-#include <hprose/http/Header.h>
-#include <hprose/http/Cookie.h>
-
-#include <string>
+#include <hprose/http/Client.h>
+#include <hprose/http/Status.h>
 
 namespace hprose {
 namespace http {
 
-struct Request {
-    explicit Request(const std::string &uri)
-        : method("GET"), uri(Uri(uri)), proto("HTTP/1.1"), contentLength(0) {
+namespace internal {
+
+bool shouldRedirectGet(int statusCode) {
+    switch (statusCode) {
+        case StatusMovedPermanently:
+        case StatusFound:
+        case StatusSeeOther:
+        case StatusTemporaryRedirect:
+            return true;
     }
+    return false;
+}
 
-    explicit Request(std::string method, const std::string &uri)
-        : method(std::move(method)), uri(Uri(uri)), proto("HTTP/1.1"), contentLength(0) {
+
+bool shouldRedirectPost(int statusCode) {
+    switch (statusCode) {
+        case StatusFound:
+        case StatusSeeOther:
+            return true;
     }
+    return false;
+}
 
-    explicit Request(std::string method, const std::string &uri, std::string body)
-        : method(std::move(method)), uri(Uri(uri)), proto("HTTP/1.1"), body(std::move(body)), contentLength(this->body.size()) {
-    }
-
-    void addCookie(const Cookie &cookie);
-
-    std::string method;
-    Uri uri;
-    std::string proto;
-    Header header;
-    std::string body;
-    size_t contentLength;
-};
+} // internal
 
 }
 } // hprose::http

@@ -25,10 +25,8 @@ namespace rpc {
 namespace asio {
 
 std::string HttpClient::sendAndReceive(const std::string &data, const ClientContext &context) {
-    http::Request req("POST", uri);
-    req.body = data;
+    http::Request req("POST", uri, data);
     req.header.insert(header.begin(), header.end());
-    req.contentLength = data.size();
     req.header["Content-Type"] = "application/hprose";
     client.timeout = context.settings.timeout;
     auto response = client.execute(req);
