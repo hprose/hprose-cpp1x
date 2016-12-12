@@ -23,15 +23,15 @@
 namespace hprose {
 namespace http {
 
-const MethodGet     = "GET";
-const MethodHead    = "HEAD";
-const MethodPost    = "POST";
-const MethodPut     = "PUT";
-const MethodPatch   = "PATCH";
-const MethodDelete  = "DELETE";
-const MethodConnect = "CONNECT";
-const MethodOptions = "OPTIONS";
-const MethodTrace   = "TRACE";
+const char *MethodGet     = "GET";
+const char *MethodHead    = "HEAD";
+const char *MethodPost    = "POST";
+const char *MethodPut     = "PUT";
+const char *MethodPatch   = "PATCH";
+const char *MethodDelete  = "DELETE";
+const char *MethodConnect = "CONNECT";
+const char *MethodOptions = "OPTIONS";
+const char *MethodTrace   = "TRACE";
 
 }
 } // hprose::http
