@@ -13,7 +13,7 @@
  *                                                        *
  * hprose tags constants for cpp.                         *
  *                                                        *
- * LastModified: Nov 9, 2016                              *
+ * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -22,7 +22,6 @@
 
 namespace hprose {
 namespace io {
-namespace tags {
 
 /* Serialize Tags */
 const char TagInteger     = 'i';
@@ -63,5 +62,4 @@ const char TagError       = 'E';
 const char TagEnd         = 'z';
 
 }
-}
-} // hprose::io::tags
+} // hprose::io

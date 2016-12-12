@@ -13,7 +13,7 @@
  *                                                        *
  * hprose map decoder for cpp.                            *
  *                                                        *
- * LastModified: Nov 14, 2016                             *
+ * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -83,12 +83,12 @@ void readRefAsMap(T &v, Reader &reader) {
 template<class T>
 inline void MapDecode(T &v, Reader &reader, char tag) {
     switch (tag) {
-        case tags::TagList:   readListAsMap(v, reader); break;
-        case tags::TagMap:    readMap(v, reader);       break;
-        case tags::TagClass:  readClass(v, reader);     break;
-        case tags::TagObject: readObject(v, reader);    break;
-        case tags::TagRef:    readRefAsList(v, reader); break;
-        default:              throw CastError<T>(tag);
+        case TagList:   readListAsMap(v, reader); break;
+        case TagMap:    readMap(v, reader);       break;
+        case TagClass:  readClass(v, reader);     break;
+        case TagObject: readObject(v, reader);    break;
+        case TagRef:    readRefAsList(v, reader); break;
+        default:        throw CastError<T>(tag);
     }
 }
 

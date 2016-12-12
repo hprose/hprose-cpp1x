@@ -13,7 +13,7 @@
  *                                                        *
  * hprose rpc client header for cpp.                      *
  *                                                        *
- * LastModified: Dec 9, 2016                              *
+ * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -96,7 +96,7 @@ private:
     std::string encode(const std::string &name, const std::vector<T> &args, const ClientContext &context) {
         std::stringstream stream;
         io::Writer writer(stream, context.settings.simple);
-        writer.stream << io::tags::TagCall;
+        writer.stream << io::TagCall;
         writer.writeString(name);
         if (args.size() > 0 || context.settings.byref) {
             writer.reset();
@@ -105,7 +105,7 @@ private:
                 writer.writeBool(true);
             }
         }
-        writer.stream << io::tags::TagEnd;
+        writer.stream << io::TagEnd;
         return stream.str();
     }
 
@@ -115,10 +115,10 @@ private:
         io::Reader reader(stream);
         auto tag = reader.stream.get();
         R result;
-        if (tag == io::tags::TagResult) {
+        if (tag == io::TagResult) {
             reader.unserialize(result);
             tag = reader.stream.get();
-            if (tag == io::tags::TagArgument) {
+            if (tag == io::TagArgument) {
 
             }
         }

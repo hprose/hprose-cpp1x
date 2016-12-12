@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader unit for cpp.                            *
  *                                                        *
- * LastModified: Nov 14, 2016                             *
+ * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -37,27 +37,27 @@ std::string TagToString(char tag) {
         case '7':
         case '8':
         case '9':
-        case tags::TagInteger:  return "int";
-        case tags::TagLong:     return "long long";
-        case tags::TagDouble:   return "double";
-        case tags::TagNull:     return "null";
-        case tags::TagEmpty:    return "empty string";
-        case tags::TagTrue:     return "true";
-        case tags::TagFalse:    return "false";
-        case tags::TagNaN:      return "nan";
-        case tags::TagInfinity: return "infinity";
-        case tags::TagDate:
-        case tags::TagTime:     return "time";
-        case tags::TagBytes:    return "bytes";
-        case tags::TagUTF8Char:
-        case tags::TagString:   return "string";
-        case tags::TagGUID:     return "uuid";
-        case tags::TagList:     return "list";
-        case tags::TagMap:      return "map";
-        case tags::TagClass:    return "class";
-        case tags::TagObject:   return "object";
-        case tags::TagRef:      return "reference";
-        default:                throw  UnexpectedTag(tag);
+        case TagInteger:  return "int";
+        case TagLong:     return "long long";
+        case TagDouble:   return "double";
+        case TagNull:     return "null";
+        case TagEmpty:    return "empty string";
+        case TagTrue:     return "true";
+        case TagFalse:    return "false";
+        case TagNaN:      return "nan";
+        case TagInfinity: return "infinity";
+        case TagDate:
+        case TagTime:     return "time";
+        case TagBytes:    return "bytes";
+        case TagUTF8Char:
+        case TagString:   return "string";
+        case TagGUID:     return "uuid";
+        case TagList:     return "list";
+        case TagMap:      return "map";
+        case TagClass:    return "class";
+        case TagObject:   return "object";
+        case TagRef:      return "reference";
+        default:          throw  UnexpectedTag(tag);
     }
 
 }

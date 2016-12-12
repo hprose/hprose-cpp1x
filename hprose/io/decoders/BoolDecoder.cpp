@@ -4,7 +4,7 @@
  *                                                        *
  * hprose bool decoder for cpp.                           *
  *                                                        *
- * LastModified: Nov 14, 2016                             *
+ * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -27,7 +27,7 @@ bool parseBool(const std::string &s) {
 }
 
 bool readNumberAsBool(Reader &reader) {
-    std::string str = reader.readUntil(tags::TagSemicolon);
+    std::string str = reader.readUntil(TagSemicolon);
     if (str.length() == 1) {
         return str.at(0) != '0';
     } else {
@@ -59,9 +59,9 @@ bool readRefAsBool(Reader &reader) {
 bool BoolDecode(Reader &reader, char tag) {
     switch (tag) {
         case '0':
-        case tags::TagNull:
-        case tags::TagEmpty:
-        case tags::TagFalse:    return false;
+        case TagNull:
+        case TagEmpty:
+        case TagFalse:    return false;
         case '1':
         case '2':
         case '3':
@@ -71,16 +71,16 @@ bool BoolDecode(Reader &reader, char tag) {
         case '7':
         case '8':
         case '9':
-        case tags::TagTrue:
-        case tags::TagNaN:      return true;
-        case tags::TagInteger:
-        case tags::TagLong:
-        case tags::TagDouble:   return readNumberAsBool(reader);
-        case tags::TagInfinity: return readInfinityAsBool(reader);
-        case tags::TagUTF8Char: return readUTF8CharAsBool(reader);
-        case tags::TagString:   return readStringAsBool(reader);
-        case tags::TagRef:      return readRefAsBool(reader);
-        default:                throw  CastError<bool>(tag);
+        case TagTrue:
+        case TagNaN:      return true;
+        case TagInteger:
+        case TagLong:
+        case TagDouble:   return readNumberAsBool(reader);
+        case TagInfinity: return readInfinityAsBool(reader);
+        case TagUTF8Char: return readUTF8CharAsBool(reader);
+        case TagString:   return readStringAsBool(reader);
+        case TagRef:      return readRefAsBool(reader);
+        default:          throw  CastError<bool>(tag);
     }
 }
 

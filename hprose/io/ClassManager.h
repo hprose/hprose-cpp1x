@@ -13,7 +13,7 @@
  *                                                        *
  * hprose class manager for cpp.                          *
  *                                                        *
- * LastModified: Nov 8, 2016                              *
+ * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -51,17 +51,17 @@ void initClassCache<Class>(ClassCache &classCache) {               \
     auto fields = getClassFields<Class>();                         \
     auto count = fields.size();                                    \
     std::stringstream stream;                                      \
-    stream << tags::TagClass;                                      \
+    stream << TagClass;                                            \
     util::WriteInt(stream, util::UTF16Length(Alias));              \
-    stream << tags::TagQuote << Alias << tags::TagQuote;           \
+    stream << TagQuote << Alias << TagQuote;                       \
     if (count > 0) util::WriteInt(stream, count);                  \
-    stream << tags::TagOpenbrace;                                  \
+    stream << TagOpenbrace;                                        \
     for (auto &&field : fields) {                                  \
-        stream << tags::TagString;                                 \
+        stream << TagString;                                       \
         util::WriteInt(stream, util::UTF16Length(field.alias));    \
-        stream << tags::TagQuote << field.alias << tags::TagQuote; \
+        stream << TagQuote << field.alias << TagQuote;             \
     }                                                              \
-    stream << tags::TagClosebrace;                                 \
+    stream << TagClosebrace;                                       \
     classCache.fields = std::move(fields);                         \
     classCache.data = stream.str();                                \
 }                                                                  \
@@ -75,11 +75,11 @@ inline void encode(const Class &v, Writer &writer) {               \
 #define HPROSE_REG_CLASS(Class, ...) HPROSE_PP_OVERLOAD(HPROSE_REG_CLASS_,__VA_ARGS__)(Class, __VA_ARGS__)
 
 #define HPROSE_REG_FIELD_1(Field) HPROSE_REG_FIELD_2(Field, #Field)
-#define HPROSE_REG_FIELD_2(Field, Alias) {                  \
+#define HPROSE_REG_FIELD_2(Field, Alias) {                         \
     FieldCache fieldCache;                                         \
     fieldCache.alias = Alias;                                      \
     fieldCache.encode = [](const void *obj, Writer &writer) {      \
-        writer.writeValue(static_cast<ClassPointer>(obj)->Field); \
+        writer.writeValue(static_cast<ClassPointer>(obj)->Field);  \
     };                                                             \
     fields.push_back(std::move(fieldCache));                       \
 }

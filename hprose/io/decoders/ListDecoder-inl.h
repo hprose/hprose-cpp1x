@@ -13,7 +13,7 @@
  *                                                        *
  * hprose list decoder for cpp.                           *
  *                                                        *
- * LastModified: Dec 4, 2016                              *
+ * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -154,46 +154,46 @@ namespace detail {
 template<class T>
 void ListDecode(T &v, Reader &reader, char tag) {
     switch (tag) {
-        case tags::TagList:  readList(v, reader);      break;
-        case tags::TagRef:   readRefAsList(v, reader); break;
-        default:             throw CastError<T>(tag);
+        case TagList:  readList(v, reader);      break;
+        case TagRef:   readRefAsList(v, reader); break;
+        default:       throw CastError<T>(tag);
     }
 }
 
 template<class T, size_t N>
 void ListDecode(T (&v)[N], Reader &reader, char tag) {
     switch (tag) {
-        case tags::TagList:  readList(v, reader);      break;
-        default:             throw CastError<uint8_t[N]>(tag);
+        case TagList:  readList(v, reader);      break;
+        default:       throw CastError<uint8_t[N]>(tag);
     }
 }
 
 template<size_t N>
 void ListDecode(uint8_t (&v)[N], Reader &reader, char tag) {
     switch (tag) {
-        case tags::TagBytes: readBytes(v, reader);     break;
-        case tags::TagList:  readList(v, reader);      break;
-        default:             throw CastError<uint8_t[N]>(tag);
+        case TagBytes: readBytes(v, reader);     break;
+        case TagList:  readList(v, reader);      break;
+        default:       throw CastError<uint8_t[N]>(tag);
     }
 }
 
 template<size_t N>
 void ListDecode(std::array<uint8_t, N> &v, Reader &reader, char tag) {
     switch (tag) {
-        case tags::TagBytes: readBytes(v, reader);     break;
-        case tags::TagList:  readList(v, reader);      break;
-        case tags::TagRef:   readRefAsList(v, reader); break;
-        default:             throw CastError<std::array<uint8_t, N> >(tag);
+        case TagBytes: readBytes(v, reader);     break;
+        case TagList:  readList(v, reader);      break;
+        case TagRef:   readRefAsList(v, reader); break;
+        default:       throw CastError<std::array<uint8_t, N> >(tag);
     }
 }
 
 template<class Allocator>
 void ListDecode(std::vector<uint8_t, Allocator> &v, Reader &reader, char tag) {
     switch (tag) {
-        case tags::TagBytes: readBytes(v, reader);     break;
-        case tags::TagList:  readList(v, reader);      break;
-        case tags::TagRef:   readRefAsList(v, reader); break;
-        default:             throw CastError<std::vector<uint8_t, Allocator> >(tag);
+        case TagBytes: readBytes(v, reader);     break;
+        case TagList:  readList(v, reader);      break;
+        case TagRef:   readRefAsList(v, reader); break;
+        default:       throw CastError<std::vector<uint8_t, Allocator> >(tag);
     }
 }
 

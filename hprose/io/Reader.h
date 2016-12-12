@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Nov 14, 2016                             *
+ * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -147,11 +147,11 @@ public:
     }
 
     inline int readInt() {
-        return readArithmetic<int>(tags::TagSemicolon);
+        return readArithmetic<int>(TagSemicolon);
     }
 
     inline int readLength() {
-        return readArithmetic<int>(tags::TagQuote);
+        return readArithmetic<int>(TagQuote);
     }
 
     template<class T>
@@ -160,7 +160,7 @@ public:
         T
     >::type
     readInfinity() {
-        return stream.get() == tags::TagPos ? std::numeric_limits<T>::infinity() : -std::numeric_limits<T>::infinity();
+        return stream.get() == TagPos ? std::numeric_limits<T>::infinity() : -std::numeric_limits<T>::infinity();
     }
 
     template<class T>
@@ -169,7 +169,7 @@ public:
         T
     >::type
     readFloat() {
-        return util::StringToFloat<T>(readUntil(tags::TagSemicolon));
+        return util::StringToFloat<T>(readUntil(TagSemicolon));
     }
 
     std::string read(size_t count) {
@@ -306,12 +306,12 @@ public:
         tm.tm_mon = read2Digit() - 1;
         tm.tm_mday = read2Digit();
         auto tag = stream.get();
-        if (tag == tags::TagTime) {
+        if (tag == TagTime) {
             tm.tm_hour = read2Digit();
             tm.tm_min = read2Digit();
             tm.tm_sec = read2Digit();
             tag = stream.get();
-            if (tag == tags::TagPoint) {
+            if (tag == TagPoint) {
                 do {
                     tag = stream.get();
                 } while ((tag >= '0') && (tag <= '9'));
@@ -324,7 +324,7 @@ public:
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 
 #else
-        if (tag == tags::TagUTC) {
+        if (tag == TagUTC) {
             tm.tm_gmtoff = 0;
         } else {
             std::time_t t = time(0);
@@ -349,7 +349,7 @@ public:
         tm.tm_min = read2Digit();
         tm.tm_sec = read2Digit();
         auto tag = stream.get();
-        if (tag == tags::TagPoint) {
+        if (tag == TagPoint) {
             do {
                 tag = stream.get();
             } while ((tag >= '0') && (tag <= '9'));
@@ -357,7 +357,7 @@ public:
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 
 #else
-        if (tag == tags::TagUTC) {
+        if (tag == TagUTC) {
             tm.tm_gmtoff = 0;
         } else {
             std::time_t t = time(0);
@@ -374,7 +374,7 @@ public:
     }
 
     int readCount() {
-        return readArithmetic<int>(tags::TagOpenbrace);
+        return readArithmetic<int>(TagOpenbrace);
     }
 
     const Variant &readRef() {

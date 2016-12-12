@@ -90,11 +90,11 @@ public:
     }
 
     inline void writeNull() {
-        stream << tags::TagNull;
+        stream << TagNull;
     }
 
     inline void writeBool(bool b) {
-        stream << (b ? tags::TagTrue : tags::TagFalse);
+        stream << (b ? TagTrue : TagFalse);
     }
 
     template<class T>
@@ -108,9 +108,9 @@ public:
             stream << static_cast<char>('0' + i);
             return;
         }
-        stream << tags::TagInteger;
+        stream << TagInteger;
         util::WriteInt(stream, i);
-        stream << tags::TagSemicolon;
+        stream << TagSemicolon;
     }
 
     template<class T>
@@ -125,12 +125,12 @@ public:
             return;
         }
         if (i >= std::numeric_limits<int32_t>::min() && i <= std::numeric_limits<int32_t>::max()) {
-            stream << tags::TagInteger;
+            stream << TagInteger;
         } else {
-            stream << tags::TagLong;
+            stream << TagLong;
         }
         util::WriteInt(stream, i);
-        stream << tags::TagSemicolon;
+        stream << TagSemicolon;
     }
 
     template<class T>
@@ -144,9 +144,9 @@ public:
             stream << static_cast<char>('0' + u);
             return;
         }
-        stream << tags::TagInteger;
+        stream << TagInteger;
         util::WriteUint(stream, u);
-        stream << tags::TagSemicolon;
+        stream << TagSemicolon;
     }
 
     template<class T>
@@ -161,12 +161,12 @@ public:
             return;
         }
         if (u <= std::numeric_limits<int32_t>::max()) {
-            stream << tags::TagInteger;
+            stream << TagInteger;
         } else {
-            stream << tags::TagLong;
+            stream << TagLong;
         }
         util::WriteUint(stream, u);
-        stream << tags::TagSemicolon;
+        stream << TagSemicolon;
     }
 
     template<class T>
@@ -175,14 +175,14 @@ public:
     >::type
     writeFloat(T f) {
         if (f != f) {
-            stream << tags::TagNaN;
+            stream << TagNaN;
         } else if (f == std::numeric_limits<T>::infinity()) {
-            stream << tags::TagInfinity << tags::TagPos;
+            stream << TagInfinity << TagPos;
         } else if (f == -std::numeric_limits<T>::infinity()) {
-            stream << tags::TagInfinity << tags::TagNeg;
+            stream << TagInfinity << TagNeg;
         } else {
             stream.precision(std::numeric_limits<T>::digits10);
-            stream << tags::TagDouble << f << tags::TagSemicolon;
+            stream << TagDouble << f << TagSemicolon;
         }
     }
 
@@ -213,9 +213,9 @@ public:
     void writeString(const std::string &str) {
         int length = util::UTF16Length(str);
         if (length == 0) {
-            stream << tags::TagEmpty;
+            stream << TagEmpty;
         } else if (length == 1) {
-            stream << tags::TagUTF8Char << str;
+            stream << TagUTF8Char << str;
         } else if (length < 0) {
             writeBytes(reinterpret_cast<const uint8_t *>(str.data()), str.length());
         } else {
@@ -243,14 +243,14 @@ public:
     void writeBytes(const uint8_t *data, size_t count) {
         skipRef();
         if (count == 0) {
-            stream << tags::TagBytes << tags::TagQuote << tags::TagQuote;
+            stream << TagBytes << TagQuote << TagQuote;
             return;
         }
-        stream << tags::TagBytes;
+        stream << TagBytes;
         util::WriteUint(stream, count);
-        stream << tags::TagQuote;
+        stream << TagQuote;
         stream.write(reinterpret_cast<const char *>(data), count);
-        stream << tags::TagQuote;
+        stream << TagQuote;
     }
 
     void writeTime(const std::tm &t) {
@@ -265,9 +265,9 @@ public:
             writeTime(t.tm_hour, t.tm_min, t.tm_sec, 0);
         }
 #if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
-        stream << tags::TagSemicolon;
+        stream << TagSemicolon;
 #else
-        stream << (t.tm_gmtoff == 0 ? tags::TagUTC : tags::TagSemicolon);
+        stream << (t.tm_gmtoff == 0 ? TagUTC : TagSemicolon);
 #endif
     }
 
@@ -422,12 +422,12 @@ public:
         }
         if (writeRef(o)) return;
         setRef(o);
-        stream << tags::TagObject << index << tags::TagOpenbrace;
+        stream << TagObject << index << TagOpenbrace;
         auto fields = cache.fields;
         for (const auto &field : fields) {
             field.encode(&o, *this);
         }
-        stream << tags::TagClosebrace;
+        stream << TagClosebrace;
     }
 
     template<class T>
@@ -453,33 +453,33 @@ public:
 
 private:
     void writeString(const std::string &str, int length) {
-        stream << tags::TagString;
+        stream << TagString;
         util::WriteInt(stream, length);
-        stream << tags::TagQuote << str << tags::TagQuote;
+        stream << TagQuote << str << TagQuote;
     }
 
     inline void writeDate(int year, int month, int day) {
-        stream << tags::TagDate;
+        stream << TagDate;
         util::WriteDate(stream, year, month, day);
     }
 
     inline void writeTime(int hour, int min, int sec, int nsec) {
-        stream << tags::TagTime;
+        stream << TagTime;
         util::WriteTime(stream, hour, min, sec);
     }
 
     void writeListHeader(size_t count) {
-        stream << tags::TagList;
+        stream << TagList;
         util::WriteUint(stream, count);
-        stream << tags::TagOpenbrace;
+        stream << TagOpenbrace;
     }
 
     inline void writeListFooter() {
-        stream << tags::TagClosebrace;
+        stream << TagClosebrace;
     }
 
     inline void writeEmptyList() {
-        stream << tags::TagList << tags::TagOpenbrace << tags::TagClosebrace;
+        stream << TagList << TagOpenbrace << TagClosebrace;
     }
 
     template<std::size_t Index = 0, class... Tuple>
@@ -499,17 +499,17 @@ private:
     }
 
     void writeMapHeader(size_t count) {
-        stream << tags::TagMap;
+        stream << TagMap;
         util::WriteUint(stream, count);
-        stream << tags::TagOpenbrace;
+        stream << TagOpenbrace;
     }
 
     inline void writeMapFooter() {
-        stream << tags::TagClosebrace;
+        stream << TagClosebrace;
     }
 
     inline void writeEmptyMap() {
-        stream << tags::TagMap << tags::TagOpenbrace << tags::TagClosebrace;
+        stream << TagMap << TagOpenbrace << TagClosebrace;
     }
 
     std::unique_ptr<internal::WriterRefer> refer;
