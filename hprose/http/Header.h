@@ -9,9 +9,9 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/rpc/asio/HttpClient.h                           *
+ * hprose/http/Header.h                                   *
  *                                                        *
- * hprose asio http client for cpp.                       *
+ * hprose http header for cpp.                            *
  *                                                        *
  * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
@@ -20,35 +20,13 @@
 
 #pragma once
 
-#include <hprose/Uri.h>
-#include <hprose/http/Client.h>
-#include <hprose/http/asio/Transport.h>
-#include <hprose/rpc/Client.h>
-
-#include <asio.hpp>
-
-#include <sstream>
-
+#include <string>
+#include <unordered_map>
 
 namespace hprose {
-namespace rpc {
-namespace asio {
+namespace http {
 
-class HttpClient : public Client {
-public:
-    HttpClient(const std::string &uri)
-        : Client(uri) {
-    }
-
-    http::Header header;
-
-protected:
-    std::string sendAndReceive(const std::string &data, const ClientContext &context);
-
-private:
-    http::Client<http::asio::Transport> client;
-};
+typedef std::unordered_map<std::string, std::string> Header;
 
 }
-}
-} // hprose::rpc::asio
+} // hprose::http

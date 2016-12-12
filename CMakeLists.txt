@@ -14,6 +14,7 @@ set(SOURCE_FILES
         hprose/io/decoders/StringDecoder.cpp
         hprose/rpc/Client.cpp
         hprose/rpc/asio/HttpClient.cpp
+        hprose/http/asio/Transport.cpp
         hprose/util/Util.cpp
         hprose/Uri.cpp
         hprose/Variant.cpp)

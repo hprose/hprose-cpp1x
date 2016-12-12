@@ -9,9 +9,9 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/rpc/asio/HttpClient.h                           *
+ * hprose/http/Response.h                                 *
  *                                                        *
- * hprose asio http client for cpp.                       *
+ * hprose http response for cpp.                          *
  *                                                        *
  * LastModified: Dec 12, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
@@ -20,35 +20,17 @@
 
 #pragma once
 
-#include <hprose/Uri.h>
-#include <hprose/http/Client.h>
-#include <hprose/http/asio/Transport.h>
-#include <hprose/rpc/Client.h>
-
-#include <asio.hpp>
-
-#include <sstream>
-
+#include <string>
 
 namespace hprose {
-namespace rpc {
-namespace asio {
+namespace http {
 
-class HttpClient : public Client {
-public:
-    HttpClient(const std::string &uri)
-        : Client(uri) {
-    }
-
-    http::Header header;
-
-protected:
-    std::string sendAndReceive(const std::string &data, const ClientContext &context);
-
-private:
-    http::Client<http::asio::Transport> client;
+struct Response {
+    std::string status;
+    int statusCode;
+    Header header;
+    std::string body;
 };
 
 }
-}
-} // hprose::rpc::asio
+} // hprose::http
