@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http request for cpp.                           *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 13, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -39,7 +39,8 @@ struct Request {
     }
 
     explicit Request(std::string method, const std::string &uri, std::string body)
-        : method(std::move(method)), uri(Uri(uri)), proto("HTTP/1.1"), body(std::move(body)), contentLength(this->body.size()) {
+        : method(std::move(method)), uri(Uri(uri)), proto("HTTP/1.1"), body(std::move(body)),
+          contentLength(this->body.size()) {
     }
 
     void addCookie(const Cookie &cookie);
@@ -49,7 +50,7 @@ struct Request {
     std::string proto;
     Header header;
     std::string body;
-    size_t contentLength;
+    int64_t contentLength;
 };
 
 }

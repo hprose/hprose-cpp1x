@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http response for cpp.                          *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 13, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -28,8 +28,10 @@ namespace http {
 struct Response {
     std::string status;
     int statusCode;
+    std::string proto;
     Header header;
     std::string body;
+    int64_t contentLength;
 };
 
 }
