@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http header for cpp.                            *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 13, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -27,8 +27,32 @@
 namespace hprose {
 namespace http {
 
+namespace internal {
+
+struct UniHash {
+    size_t operator()(const std::string &str) const {
+        std::string lowerStr(str.size(), 0);
+        std::transform(str.begin(), str.end(), lowerStr.begin(), std::tolower);
+        std::hash<std::string> hash;
+        return hash(lowerStr);
+    }
+};
+
+struct UniEqual {
+    bool operator()(const std::string &left, const std::string &right) const {
+        return left.size() == right.size()
+               && std::equal(left.begin(), left.end(), right.begin(),
+                             [](char a, char b) {
+                                 return tolower(a) == tolower(b);
+                             }
+        );
+    }
+};
+
+} // internal
+
 class Header
-    : public std::unordered_map<std::string, std::vector<std::string> > {
+    : public std::unordered_map<std::string, std::vector<std::string>, internal::UniHash, internal::UniEqual> {
 public:
     void add(std::string key, std::string value) {
         auto search = find(key);
