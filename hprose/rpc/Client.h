@@ -151,16 +151,39 @@ private:
 
     template<class R, class T>
     R decode(const std::string &data, const std::vector<T> &args, const ClientContext &context) {
+        R result;
+        if (context.settings.oneway) {
+            return result;
+        }
+        if (data.empty()) {
+            throw std::runtime_error("unexpected eof");
+        }
+        if (*(data.end() - 1) != io::TagEnd) {
+            throw std::runtime_error("wrong response: \r\n" + data);
+        }
+        if (context.settings.mode == RawWithEndTag) {
+
+        } else if (context.settings.mode == Raw) {
+
+        }
         std::stringstream stream(data);
         io::Reader reader(stream);
         auto tag = reader.stream.get();
-        R result;
         if (tag == io::TagResult) {
-            reader.unserialize(result);
+            if (context.settings.mode == Normal) {
+                reader.unserialize(result);
+            } else if (context.settings.mode == Serialized) {
+
+            }
             tag = reader.stream.get();
             if (tag == io::TagArgument) {
 
             }
+        } else if (tag == io::TagError) {
+            throw std::runtime_error(reader.readString<std::string>());
+        }
+        if (tag != io::TagEnd) {
+            throw std::runtime_error("wrong response: \r\n" + data);
         }
         return result;
     }
