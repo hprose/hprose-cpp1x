@@ -30,22 +30,22 @@ matrix:
         - curl -sSLo asio-1.10.8.tar.gz https://superb-sea2.dl.sourceforge.net/project/asio/asio/1.10.8%20%28Stable%29/asio-1.10.8.tar.gz
         - tar xzf asio-1.10.8.tar.gz
         - cd asio-1.10.8 &&  ./configure --without-boost && make && sudo make install && cd ..
-    - os: linux
-      dist: trusty
-      sudo: required
-      env: COMPILER_NAME=clang CXX=clang++-3.8 CC=clang-3.8
-      addons:
-        apt:
-          packages:
-            - clang-3.8
-            - libc++-dev
-            - libc++abi-dev
-          sources: *sources
-      before_install:
-        - curl -sSLo googletest-release-1.8.0.tar.gz https://github.com/google/googletest/archive/release-1.8.0.tar.gz
-        - tar xzf googletest-release-1.8.0.tar.gz
-        - cd googletest-release-1.8.0/googletest && cmake -DCMAKE_CXX_FLAGS="-I/usr/include/c++/v1 -stdlib=libc++ -lc++abi" . && make && cd .. && cd ..
-        - curl -sSLo asio-1.10.8.tar.gz https://superb-sea2.dl.sourceforge.net/project/asio/asio/1.10.8%20%28Stable%29/asio-1.10.8.tar.gz
-        - tar xzf asio-1.10.8.tar.gz
-        - cd asio-1.10.8 &&  ./configure --without-boost && make && sudo make install && cd ..
+#    - os: linux
+#      dist: trusty
+#      sudo: required
+#      env: COMPILER_NAME=clang CXX=clang++-3.8 CC=clang-3.8
+#      addons:
+#        apt:
+#          packages:
+#            - clang-3.8
+#            - libc++-dev
+#            - libc++abi-dev
+#          sources: *sources
+#      before_install:
+#        - curl -sSLo googletest-release-1.8.0.tar.gz https://github.com/google/googletest/archive/release-1.8.0.tar.gz
+#        - tar xzf googletest-release-1.8.0.tar.gz
+#        - cd googletest-release-1.8.0/googletest && cmake -DCMAKE_CXX_FLAGS="-I/usr/include/c++/v1 -stdlib=libc++ -lc++abi" . && make && cd .. && cd ..
+#        - curl -sSLo asio-1.10.8.tar.gz https://superb-sea2.dl.sourceforge.net/project/asio/asio/1.10.8%20%28Stable%29/asio-1.10.8.tar.gz
+#        - tar xzf asio-1.10.8.tar.gz
+#        - cd asio-1.10.8 &&  ./configure --without-boost && make && sudo make install && cd ..
 script: sh ./travis.sh

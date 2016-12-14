@@ -21,6 +21,7 @@
 #pragma once
 
 #include <algorithm>
+#include <locale>
 #include <string>
 #include <vector>
 #include <unordered_map>
