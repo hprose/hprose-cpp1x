@@ -84,14 +84,16 @@ public:
         return uriList;
     }
 
-    void setUriList(const std::vector<std::string> &uriList) {
-        this->uriList = uriList;
-        std::random_device rd;
-        std::mt19937 g(rd());
-        std::shuffle(this->uriList.begin(), this->uriList.end(), g);
+    void setUriList(std::vector<std::string> uriList) {
+        if (uriList.size() > 1) {
+            std::random_device rd;
+            std::mt19937 g(rd());
+            std::shuffle(uriList.begin(), uriList.end(), g);
+        }
         index = 0;
         failround = 0;
-        uri = this->uriList[0];
+        uri = uriList[0];
+        this->uriList = std::move(uriList);
     }
 
     inline int getFailround() const {

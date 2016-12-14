@@ -34,7 +34,7 @@ namespace internal {
 struct UniHash {
     size_t operator()(const std::string &str) const {
         std::string lowerStr(str.size(), 0);
-        std::transform(str.begin(), str.end(), lowerStr.begin(), std::tolower);
+        std::transform(str.begin(), str.end(), lowerStr.begin(), tolower);
         std::hash<std::string> hash;
         return hash(lowerStr);
     }

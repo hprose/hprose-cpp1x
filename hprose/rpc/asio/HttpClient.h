@@ -41,19 +41,19 @@ public:
         : Client(uriList) {
     }
 
-    inline bool keepAlive() const {
+    inline bool getKeepAlive() const {
         return client.transport.keepAlive;
     }
 
-    inline void keepAlive(bool enable) {
+    inline void setKeepAlive(bool enable) {
         client.transport.keepAlive = enable;
     }
 
-    inline bool compression() const {
+    inline bool getCompression() const {
         return client.transport.compression;
     }
 
-    inline void compression(bool enable) {
+    inline void setCompression(bool enable) {
         client.transport.compression = enable;
     }
 
