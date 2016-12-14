@@ -27,8 +27,6 @@
 
 #include <asio.hpp>
 
-#include <sstream>
-
 namespace hprose {
 namespace rpc {
 namespace asio {
@@ -37,6 +35,10 @@ class HttpClient : public Client {
 public:
     HttpClient(const std::string &uri)
         : Client(uri) {
+    }
+
+    HttpClient(const std::vector<std::string> &uriList)
+        : Client(uriList) {
     }
 
     inline bool keepAlive() const {

@@ -13,7 +13,7 @@
  *                                                        *
  * hprose rpc client header for cpp.                      *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -24,8 +24,10 @@
 #include <hprose/io/Reader.h>
 #include <hprose/rpc/Context.h>
 
+#include <algorithm>
 #include <string>
 #include <vector>
+#include <random>
 
 namespace hprose {
 namespace rpc {
@@ -70,6 +72,32 @@ private:
 
 class Client {
 public:
+    inline const std::string &getUri() const {
+        return uri;
+    }
+
+    inline void setUri(const std::string &uri) {
+        setUriList({uri});
+    }
+
+    inline const std::vector<std::string> &getUriList() const {
+        return uriList;
+    }
+
+    void setUriList(const std::vector<std::string> &uriList) {
+        this->uriList = uriList;
+        std::random_device rd;
+        std::mt19937 g(rd());
+        std::shuffle(this->uriList.begin(), this->uriList.end(), g);
+        index = 0;
+        failround = 0;
+        uri = this->uriList[0];
+    }
+
+    inline int getFailround() const {
+        return failround;
+    }
+
     template<class R, class T>
     R invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
         auto context = getContext(settings);
@@ -78,14 +106,24 @@ public:
         return decode<R>(response, args, context);
     }
 
+    int retry;
+    int timeout;
+
 protected:
-    Client(const std::string uri)
-        : uri(uri), retry(10), timeout(30) {
+    Client(const std::string &uri)
+        : retry(10), timeout(30) {
+        setUri(uri);
+    }
+
+    Client(const std::vector<std::string> &uriList)
+        : retry(10), timeout(30) {
+        setUriList(uriList);
     }
 
     virtual std::string sendAndReceive(const std::string &request, const ClientContext &context) = 0;
 
     std::string uri;
+    std::vector<std::string> uriList;
 
 private:
     ClientContext getContext(const InvokeSettings *settings);
@@ -125,9 +163,8 @@ private:
         return result;
     }
 
-    std::vector<std::string> uriList;
-    int retry;
-    int timeout;
+    int index;
+    int failround;
 };
 
 }
