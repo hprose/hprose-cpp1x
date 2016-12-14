@@ -23,6 +23,7 @@
 #include <hprose/io/Writer.h>
 #include <hprose/io/Reader.h>
 #include <hprose/rpc/Context.h>
+#include <hprose/rpc/Filter.h>
 
 #include <algorithm>
 #include <string>
@@ -101,11 +102,29 @@ public:
     }
 
     template<class R, class T>
-    R invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
+    typename std::enable_if<
+        !std::is_void<R>::value,
+        R
+    >::type
+    invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
         auto context = getContext(settings);
+        if (context.settings.oneway) {
+            throw std::runtime_error("oneway must return void type");
+        }
         auto request = encode(name, args, context);
         auto response = sendRequest(request, context);
         return decode<R>(response, args, context);
+    }
+
+    template<class R, class T>
+    typename std::enable_if<
+        std::is_void<R>::value,
+        void
+    >::type
+    invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
+        auto context = getContext(settings);
+        auto request = encode(name, args, context);
+        sendRequest(request, context);
     }
 
     int retry;
@@ -126,6 +145,7 @@ protected:
 
     std::string uri;
     std::vector<std::string> uriList;
+    std::vector<Filter> filters;
 
 private:
     ClientContext getContext(const InvokeSettings *settings);
@@ -138,7 +158,7 @@ private:
         io::Writer writer(stream, context.settings.simple);
         writer.stream << io::TagCall;
         writer.writeString(name);
-        if (args.size() > 0 || context.settings.byref) {
+        if (!args.empty() || context.settings.byref) {
             writer.reset();
             writer.writeList(args);
             if (context.settings.byref) {
@@ -150,22 +170,49 @@ private:
     }
 
     template<class R, class T>
-    R decode(const std::string &data, const std::vector<T> &args, const ClientContext &context) {
+    typename std::enable_if<
+        !std::is_same<R, std::string>::value,
+        R
+    >::type
+    decode(const std::string &data, const std::vector<T> &args, const ClientContext &context) {
+        checkData(data);
+        if (context.settings.mode != Normal) {
+            throw std::runtime_error("only normal mode can return non string type");
+        }
+
         R result;
-        if (context.settings.oneway) {
-            return result;
+        std::stringstream stream(data);
+        io::Reader reader(stream);
+        auto tag = reader.stream.get();
+        if (tag == io::TagResult) {
+            reader.unserialize(result);
+            tag = reader.stream.get();
+            if (tag == io::TagArgument) {
+
+            }
+        } else if (tag == io::TagError) {
+            throw std::runtime_error(reader.readString<std::string>());
         }
-        if (data.empty()) {
-            throw std::runtime_error("unexpected eof");
-        }
-        if (*(data.end() - 1) != io::TagEnd) {
+        if (tag != io::TagEnd) {
             throw std::runtime_error("wrong response: \r\n" + data);
         }
+        return result;
+    }
+
+    template<class R, class T>
+    typename std::enable_if<
+        std::is_same<R, std::string>::value,
+        std::string
+    >::type
+    decode(const std::string &data, const std::vector<T> &args, const ClientContext &context) {
+        checkData(data);
         if (context.settings.mode == RawWithEndTag) {
-
+            return data;
         } else if (context.settings.mode == Raw) {
-
+            return data.substr(0, data.size() - 1);
         }
+
+        std::string result;
         std::stringstream stream(data);
         io::Reader reader(stream);
         auto tag = reader.stream.get();
@@ -186,6 +233,15 @@ private:
             throw std::runtime_error("wrong response: \r\n" + data);
         }
         return result;
+    }
+
+    void checkData(const std::string &data) {
+        if (data.empty()) {
+            throw std::runtime_error("unexpected eof");
+        }
+        if (data[data.size() - 1] != io::TagEnd) {
+            throw std::runtime_error("wrong response: \r\n" + data);
+        }
     }
 
     int index;
