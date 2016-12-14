@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http transport for cpp.                         *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -28,8 +28,15 @@ namespace http {
 
 class Transport {
 public:
+    Transport()
+        : keepAlive(true), compression(false) {
+    }
+
     virtual Response sendRequest(const Request &req) = 0;
 
+    bool keepAlive;
+
+    bool compression;
 };
 
 }

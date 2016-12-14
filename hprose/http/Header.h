@@ -13,13 +13,14 @@
  *                                                        *
  * hprose http header for cpp.                            *
  *                                                        *
- * LastModified: Dec 13, 2016                             *
+ * LastModified: Dec 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <vector>
 #include <unordered_map>

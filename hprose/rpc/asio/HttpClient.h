@@ -13,7 +13,7 @@
  *                                                        *
  * hprose asio http client for cpp.                       *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 14, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -29,7 +29,6 @@
 
 #include <sstream>
 
-
 namespace hprose {
 namespace rpc {
 namespace asio {
@@ -38,6 +37,22 @@ class HttpClient : public Client {
 public:
     HttpClient(const std::string &uri)
         : Client(uri) {
+    }
+
+    inline bool keepAlive() const {
+        return client.transport.keepAlive;
+    }
+
+    inline void keepAlive(bool enable) {
+        client.transport.keepAlive = enable;
+    }
+
+    inline bool compression() const {
+        return client.transport.compression;
+    }
+
+    inline void compression(bool enable) {
+        client.transport.compression = enable;
     }
 
     http::Header header;
