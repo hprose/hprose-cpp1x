@@ -13,7 +13,7 @@
  *                                                        *
  * hprose encode funtions for cpp.                        *
  *                                                        *
- * LastModified: Nov 9, 2016                              *
+ * LastModified: Dec 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -29,11 +29,11 @@
 namespace hprose {
 namespace io {
 
-inline void encode(const std::nullptr_t &v, Writer &writer) {
+inline void encode(std::nullptr_t, Writer &writer) {
     writer.writeNull();
 }
 
-inline void encode(const bool &v, Writer &writer) {
+inline void encode(bool v, Writer &writer) {
     writer.writeBool(v);
 }
 
@@ -42,7 +42,7 @@ inline typename std::enable_if<
     std::is_integral<T>::value &&
     !std::is_same<T, bool>::value
 >::type
-encode(const T &v, Writer &writer) {
+encode(T v, Writer &writer) {
     writer.writeInteger(v);
 }
 
@@ -50,7 +50,7 @@ template<class T>
 inline typename std::enable_if<
     std::is_enum<T>::value
 >::type
-encode(const T &v, Writer &writer) {
+encode(T v, Writer &writer) {
     writer.writeInteger(static_cast<int>(v));
 }
 
@@ -58,7 +58,7 @@ template<class T>
 inline typename std::enable_if<
     std::is_floating_point<T>::value
 >::type
-encode(const T &v, Writer &writer) {
+encode(T v, Writer &writer) {
     writer.writeFloat(v);
 }
 
@@ -72,31 +72,15 @@ inline void encode(const std::ratio<N, D> &v, Writer &writer) {
     writer.writeRatio(v);
 }
 
-inline void encode(const char *v, Writer &writer) {
-    if (v) {
-        writer.writeString(v);
-    } else {
-        writer.writeNull();
-    }
-}
-
-inline void encode(const wchar_t *v, Writer &writer) {
-    if (v) {
-        writer.writeString(v);
-    } else {
-        writer.writeNull();
-    }
-}
-
-inline void encode(const char16_t *v, Writer &writer) {
-    if (v) {
-        writer.writeString(v);
-    } else {
-        writer.writeNull();
-    }
-}
-
-inline void encode(const char32_t *v, Writer &writer) {
+template<class T>
+inline typename std::enable_if<
+    std::is_same<T, char>::value ||
+    std::is_same<T, wchar_t>::value ||
+    std::is_same<T, char16_t>::value ||
+    std::is_same<T, char32_t>::value,
+    void
+>::type
+encode(const T *v, Writer &writer) {
     if (v) {
         writer.writeString(v);
     } else {
