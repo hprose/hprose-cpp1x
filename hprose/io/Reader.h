@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -21,6 +21,7 @@
 #pragma once
 
 #include <hprose/io/Tags.h>
+#include <hprose/io/ByteReader.h>
 #include <hprose/io/decoders/BoolDecoder.h>
 #include <hprose/io/decoders/IntDecoder.h>
 #include <hprose/io/decoders/FloatDecoder.h>
@@ -93,111 +94,6 @@ struct CastError : std::runtime_error {
 
 template<class T>
 struct Decoder;
-
-class ByteReader {
-public:
-    ByteReader(std::istream &stream)
-        : stream(stream) {
-    }
-
-    int read2Digit() {
-        auto n = stream.get() - '0';
-        return n * 10 + (stream.get() - '0');
-    }
-
-    int read4Digit() {
-        auto n = stream.get() - '0';
-        n = n * 10 + (stream.get() - '0');
-        n = n * 10 + (stream.get() - '0');
-        return n * 10 + (stream.get() - '0');
-    }
-
-    template<class T>
-    typename std::enable_if<
-        std::is_arithmetic<T>::value,
-        T
-    >::type
-    readArithmetic(char tag) {
-        auto b = stream.get();
-        if (b == tag) {
-            return 0;
-        }
-        T i = 0;
-        auto neg = false;
-        switch (b) {
-            case '-':
-                neg = true;
-            case '+':
-                b = stream.get();
-            default:
-                break;
-        }
-        if (neg) {
-            while (b != tag) {
-                i = i * 10 - (b - '0');
-                b = stream.get();
-            }
-        } else {
-            while (b != tag) {
-                i = i * 10 + (b - '0');
-                b = stream.get();
-            }
-        }
-        return i;
-    }
-
-    inline int readInt() {
-        return readArithmetic<int>(TagSemicolon);
-    }
-
-    inline int readLength() {
-        return readArithmetic<int>(TagQuote);
-    }
-
-    template<class T>
-    typename std::enable_if<
-        std::is_floating_point<T>::value,
-        T
-    >::type
-    readInfinity() {
-        return stream.get() == TagPos ? std::numeric_limits<T>::infinity() : -std::numeric_limits<T>::infinity();
-    }
-
-    template<class T>
-    typename std::enable_if<
-        std::is_floating_point<T>::value,
-        T
-    >::type
-    readFloat() {
-        return util::StringToFloat<T>(readUntil(TagSemicolon));
-    }
-
-    std::string read(size_t count) {
-        std::string str;
-        str.resize(count);
-        stream.read(const_cast<char *>(str.data()), count);
-        if (stream.gcount() != count) {
-            throw std::runtime_error("unexpected end of stream");
-        }
-        return str;
-    }
-
-    std::string readUntil(char tag) {
-        std::string s;
-        std::getline(stream, s, tag);
-        return s;
-    }
-
-    std::string readUTF8String(int length);
-
-    inline std::string readString() {
-        std::string s = readUTF8String(readLength());
-        stream.get();
-        return s;
-    }
-
-    std::istream &stream;
-};
 
 class Reader : public ByteReader {
 public:

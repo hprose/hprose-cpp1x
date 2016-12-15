@@ -64,54 +64,5 @@ std::string TagToString(char tag) {
 
 }  // internal
 
-std::string ByteReader::readUTF8String(int length) {
-    if (length == 0) {
-        return "";
-    }
-    std::ostringstream ss;
-    for (auto i = 0; i < length; i++) {
-        auto c = stream.get();
-        switch (c >> 4) {
-            case 0:
-            case 1:
-            case 2:
-            case 3:
-            case 4:
-            case 5:
-            case 6:
-            case 7: {
-                ss << static_cast<char>(c);
-                break;
-            }
-            case 12:
-            case 13: {
-                ss << static_cast<char>(c);
-                ss << static_cast<char>(stream.get());
-                break;
-            }
-            case 14: {
-                ss << static_cast<char>(c);
-                ss << static_cast<char>(stream.get());
-                ss << static_cast<char>(stream.get());
-                break;
-            }
-            case 15: {
-                if ((c & 8) == 8) {
-                    throw std::runtime_error("bad utf-8 encode");
-                }
-                ss << static_cast<char>(c);
-                ss << static_cast<char>(stream.get());
-                ss << static_cast<char>(stream.get());
-                ss << static_cast<char>(stream.get());
-                i++;
-                break;
-            }
-            default:
-                throw std::runtime_error("bad utf-8 encode");
-        };
-    }
-    return ss.str();
-}
-
 }
 } // hprose::io

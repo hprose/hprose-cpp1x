@@ -9,6 +9,7 @@ endif ()
 set(SOURCE_FILES
         hprose/io/Writer.cpp
         hprose/io/Reader.cpp
+        hprose/io/ByteReader.cpp
         hprose/io/decoders/BoolDecoder.cpp
         hprose/io/decoders/IntDecoder.cpp
         hprose/io/decoders/StringDecoder.cpp
