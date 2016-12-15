@@ -24,6 +24,7 @@
 #include <hprose/util/Util.h>
 
 #include <istream>
+#include <limits>
 #include <string>
 #include <type_traits>
 

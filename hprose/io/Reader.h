@@ -33,7 +33,6 @@
 #include <sstream>
 #include <memory>
 #include <numeric>
-#include <limits>
 #include <locale>
 #include <codecvt>
 #include <typeindex>
