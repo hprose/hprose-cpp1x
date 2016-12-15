@@ -20,19 +20,16 @@
 
 #pragma once
 
-#include <hprose/io/Tags.h>
-#include <hprose/io/ByteReader.h>
+#include <hprose/io/RawReader.h>
 #include <hprose/io/decoders/BoolDecoder.h>
 #include <hprose/io/decoders/IntDecoder.h>
 #include <hprose/io/decoders/FloatDecoder.h>
 #include <hprose/io/decoders/StringDecoder.h>
 #include <hprose/io/decoders/ListDecoder.h>
 #include <hprose/io/decoders/MapDecoder.h>
-#include <hprose/util/Util.h>
 #include <hprose/Variant.h>
 
 #include <ctime>
-#include <istream>
 #include <sstream>
 #include <memory>
 #include <numeric>
@@ -77,14 +74,6 @@ private:
 
 } // hprose::io::internal
 
-struct UnexpectedTag : std::runtime_error {
-    explicit UnexpectedTag(char tag)
-        : std::runtime_error(tag == -1 ?
-                             "no byte found in stream" :
-                             std::string("unexpected serialize tag '") + tag + "' in stream") {
-    }
-};
-
 template<class T>
 struct CastError : std::runtime_error {
     explicit CastError(char tag)
@@ -95,10 +84,10 @@ struct CastError : std::runtime_error {
 template<class T>
 struct Decoder;
 
-class Reader : public ByteReader {
+class Reader : public RawReader {
 public:
     Reader(std::istream &stream, bool simple = false)
-        : ByteReader(stream), refer(simple ? nullptr : new internal::ReaderRefer()) {
+        : RawReader(stream), refer(simple ? nullptr : new internal::ReaderRefer()) {
     }
 
     template<class T>

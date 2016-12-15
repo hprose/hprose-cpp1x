@@ -220,7 +220,7 @@ private:
             if (context.settings.mode == Normal) {
                 reader.unserialize(result);
             } else if (context.settings.mode == Serialized) {
-
+                result = reader.readRaw();
             }
             tag = reader.stream.get();
             if (tag == io::TagArgument) {
