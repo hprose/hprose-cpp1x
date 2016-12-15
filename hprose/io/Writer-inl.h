@@ -51,7 +51,7 @@ inline typename std::enable_if<
     std::is_enum<T>::value
 >::type
 encode(T v, Writer &writer) {
-    writer.writeInteger(static_cast<int>(v));
+    writer.writeInteger(static_cast<typename std::underlying_type<T>::type>(v));
 }
 
 template<class T>
@@ -77,8 +77,7 @@ inline typename std::enable_if<
     std::is_same<T, char>::value ||
     std::is_same<T, wchar_t>::value ||
     std::is_same<T, char16_t>::value ||
-    std::is_same<T, char32_t>::value,
-    void
+    std::is_same<T, char32_t>::value
 >::type
 encode(const T *v, Writer &writer) {
     if (v) {
