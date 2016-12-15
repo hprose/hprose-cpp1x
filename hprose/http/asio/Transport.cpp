@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http asio transport for cpp.                    *
  *                                                        *
- * LastModified: Dec 13, 2016                             *
+ * LastModified: Dec 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -96,7 +96,7 @@ Response Transport::readResponse(tcp::socket &socket) {
         }
     }
 
-    std::stringstream responseStream;
+    std::ostringstream responseStream;
     if (chunked) {
         while (true) {
             size_t chunk_size = 0;

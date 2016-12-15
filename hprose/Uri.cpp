@@ -13,7 +13,7 @@
  *                                                        *
  * URI for cpp.                                           *
  *                                                        *
- * LastModified: Dec 9, 2016                              *
+ * LastModified: Dec 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -97,7 +97,7 @@ std::string Uri::getHostname() const {
 }
 
 std::string Uri::getAuthority() const {
-    std::stringstream ss;
+    std::ostringstream ss;
     if (!username.empty() || !password.empty()) {
         ss << username;
         if (!password.empty()) {
@@ -113,7 +113,7 @@ std::string Uri::getAuthority() const {
 }
 
 std::string Uri::str() const {
-    std::stringstream ss;
+    std::ostringstream ss;
     auto authority = getAuthority();
     if (!authority.empty()) {
         ss << scheme << "://" << authority;

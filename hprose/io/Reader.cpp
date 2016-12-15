@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader unit for cpp.                            *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -65,10 +65,10 @@ std::string TagToString(char tag) {
 }  // internal
 
 std::string ByteReader::readUTF8String(int length) {
-    std::stringstream ss;
     if (length == 0) {
-        return ss.str();
+        return "";
     }
+    std::ostringstream ss;
     for (auto i = 0; i < length; i++) {
         auto c = stream.get();
         switch (c >> 4) {

@@ -13,7 +13,7 @@
  *                                                        *
  * hprose class manager for cpp.                          *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 15, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -50,7 +50,7 @@ template<>                                                         \
 void initClassCache<Class>(ClassCache &classCache) {               \
     auto fields = getClassFields<Class>();                         \
     auto count = fields.size();                                    \
-    std::stringstream stream;                                      \
+    std::ostringstream stream;                                     \
     stream << TagClass;                                            \
     util::WriteInt(stream, util::UTF16Length(Alias));              \
     stream << TagQuote << Alias << TagQuote;                       \
