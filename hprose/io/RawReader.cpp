@@ -9,7 +9,7 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/io/RawReader.h                                  *
+ * hprose/io/RawReader.cpp                                *
  *                                                        *
  * hprose raw reader for cpp.                             *
  *                                                        *
@@ -62,7 +62,7 @@ void RawReader::readRaw(std::ostream &ostream, char tag) {
 }
 
 void RawReader::readNumberRaw(std::ostream &ostream) {
-    while (true) {
+    while (!stream.eof()) {
         auto tag = static_cast<char>(stream.get());
         ostream << tag;
         if (tag == TagSemicolon) break;
@@ -70,7 +70,7 @@ void RawReader::readNumberRaw(std::ostream &ostream) {
 }
 
 void RawReader::readDateTimeRaw(std::ostream &ostream) {
-    while (true) {
+    while (!stream.eof()) {
         auto tag = static_cast<char>(stream.get());
         ostream << tag;
         if (tag == TagSemicolon || tag == TagUTC) break;
@@ -84,7 +84,7 @@ void RawReader::readUTF8CharRaw(std::ostream &ostream) {
 void RawReader::readStringRaw(std::ostream &ostream) {
     auto count = 0;
     char tag = '0';
-    while (true) {
+    while (!stream.eof()) {
         count *= 10;
         count += (tag - '0');
         tag = static_cast<char>(stream.get());
@@ -99,7 +99,7 @@ void RawReader::readStringRaw(std::ostream &ostream) {
 void RawReader::readBytesRaw(std::ostream &ostream) {
     auto count = 0;
     char tag = '0';
-    while (true) {
+    while (!stream.eof()) {
         count *= 10;
         count += (tag - '0');
         tag = static_cast<char>(stream.get());
@@ -117,16 +117,19 @@ void RawReader::readGUIDRaw(std::ostream &ostream) {
 
 void RawReader::readComplexRaw(std::ostream &ostream) {
     char tag = 0;
-    while (tag != TagOpenbrace) {
+    while (!stream.eof()) {
         tag = static_cast<char>(stream.get());
         ostream << tag;
+        if (tag == TagOpenbrace) break;
     }
-    tag = static_cast<char>(stream.get());
-    while (tag != TagClosebrace) {
-        readRaw(ostream, tag);
+    while (!stream.eof()) {
         tag = static_cast<char>(stream.get());
+        if (tag == TagClosebrace) {
+            ostream << tag;
+            break;
+        }
+        readRaw(ostream, tag);
     }
-    ostream << tag;
 }
 
 }

@@ -41,13 +41,13 @@ public:
         : ByteReader(stream) {
     }
 
-    std::string readRaw() {
+    inline std::string readRaw() {
         std::ostringstream stream;
         readRawTo(stream);
         return stream.str();
     }
 
-    void readRawTo(std::ostream &ostream) {
+    inline void readRawTo(std::ostream &ostream) {
         readRaw(ostream, static_cast<char>(stream.get()));
     }
 
