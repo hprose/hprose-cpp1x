@@ -13,7 +13,7 @@
  *                                                        *
  * hprose rpc client header for cpp.                      *
  *                                                        *
- * LastModified: Dec 15, 2016                             *
+ * LastModified: Dec 16, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -29,9 +29,28 @@
 #include <string>
 #include <vector>
 #include <random>
+#include <thread>
+#include <future>
 
 namespace hprose {
 namespace rpc {
+
+template<class T>
+struct is_future : std::false_type {
+};
+
+template<class T>
+struct is_future<std::future<T>> : std::true_type {
+};
+
+template<class T>
+struct result_of_future {
+};
+
+template<class T>
+struct result_of_future<std::future<T>> {
+    typedef T type;
+};
 
 class Client;
 
@@ -103,7 +122,8 @@ public:
 
     template<class R, class T>
     typename std::enable_if<
-        !std::is_void<R>::value,
+        !std::is_void<R>::value &&
+        !is_future<R>::value,
         R
     >::type
     invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
@@ -118,13 +138,23 @@ public:
 
     template<class R, class T>
     typename std::enable_if<
-        std::is_void<R>::value,
-        void
+        std::is_void<R>::value
     >::type
     invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
         auto context = getContext(settings);
         auto request = encode(name, args, context);
         sendRequest(request, context);
+    }
+
+    template<class R, class T>
+    typename std::enable_if<
+        is_future<R>::value,
+        R
+    >::type
+    invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
+        return std::async(std::launch::async, [=] {
+            return invoke<typename result_of_future<R>::type>(name, args, settings);
+        });
     }
 
     int retry;
