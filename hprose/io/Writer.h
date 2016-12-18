@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 18, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -54,11 +54,25 @@ public:
         lastref += count;
     }
 
-    inline void set(uintptr_t ptr) {
-        ref[ptr] = lastref++;
+    template<class T>
+    inline void set(const T &v) {
+        ref[reinterpret_cast<uintptr_t>(&v)] = std::make_pair(&typeid(v), lastref++);
     }
 
-    bool write(std::ostream &stream, uintptr_t ptr);
+    template<class T>
+    bool write(std::ostream &stream, const T &v) {
+        auto r = ref.find(reinterpret_cast<uintptr_t>(&v));
+        if (r != ref.end()) {
+            if (*r->second.first != typeid(v)) {
+                return false;
+            }
+            stream << TagRef;
+            util::WriteInt(stream, r->second.second);
+            stream << TagSemicolon;
+            return true;
+        }
+        return false;
+    }
 
     inline void reset() {
         ref.clear();
@@ -66,7 +80,7 @@ public:
     }
 
 private:
-    std::unordered_map<uintptr_t, int> ref;
+    std::unordered_map<uintptr_t, std::pair<const std::type_info *, int>> ref;
     int lastref;
 };
 
@@ -273,7 +287,6 @@ public:
 
     template<class Clock, class Duration>
     void writeTime(const std::chrono::time_point<Clock, Duration> &t) {
-
     }
 
     template<class T>
@@ -432,12 +445,12 @@ public:
 
     template<class T>
     inline bool writeRef(const T &v) {
-        return refer ? refer->write(stream, reinterpret_cast<uintptr_t>(&v)) : false;
+        return refer ? refer->write(stream, v) : false;
     }
 
     template<class T>
     inline void setRef(const T &v) {
-        if (refer) refer->set(reinterpret_cast<uintptr_t>(&v));
+        if (refer) refer->set(v);
     }
 
     inline void skipRef() {
