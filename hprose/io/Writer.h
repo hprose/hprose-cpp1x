@@ -48,6 +48,30 @@ namespace io {
 
 namespace internal {
 
+struct ReferKey {
+    template<class T>
+    ReferKey(const T &v)
+        :ptr(reinterpret_cast<uintptr_t>(&v)), type(reinterpret_cast<uintptr_t>(&typeid(v))) {
+    }
+
+    uintptr_t ptr;
+    uintptr_t type;
+};
+
+struct ReferKeyHash {
+    size_t operator()(const ReferKey &key) const {
+        auto h1 = std::hash<uintptr_t>{}(key.ptr);
+        auto h2 = std::hash<uintptr_t>{}(key.type);
+        return h1 ^ (h2 << 1);
+    }
+};
+
+struct ReferKeyEqual {
+    bool operator()(const ReferKey &left, const ReferKey &right) const {
+        return left.ptr == right.ptr && left.type == right.type;
+    }
+};
+
 class WriterRefer {
 public:
     inline void addCount(size_t count) {
@@ -56,18 +80,15 @@ public:
 
     template<class T>
     inline void set(const T &v) {
-        ref[reinterpret_cast<uintptr_t>(&v)] = std::make_pair(&typeid(v), lastref++);
+        ref[ReferKey(v)] = lastref++;
     }
 
     template<class T>
     bool write(std::ostream &stream, const T &v) {
-        auto r = ref.find(reinterpret_cast<uintptr_t>(&v));
+        auto r = ref.find(ReferKey(v));
         if (r != ref.end()) {
-            if (*r->second.first != typeid(v)) {
-                return false;
-            }
             stream << TagRef;
-            util::WriteInt(stream, r->second.second);
+            util::WriteInt(stream, r->second);
             stream << TagSemicolon;
             return true;
         }
@@ -80,7 +101,7 @@ public:
     }
 
 private:
-    std::unordered_map<uintptr_t, std::pair<const std::type_info *, int>> ref;
+    std::unordered_map<ReferKey, int, ReferKeyHash, ReferKeyEqual> ref;
     int lastref;
 };
 
