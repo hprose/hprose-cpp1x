@@ -13,7 +13,7 @@
  *                                                        *
  * hprose map decoder for cpp.                            *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 18, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -71,11 +71,15 @@ void readMap(T &v, Reader &reader) {
 template<class T>
 void readClass(T &v, Reader &reader) {
     auto className = reader.ByteReader::readString();
-    const auto &cache = ClassManager::SharedInstance().getClassCache(className);
+    const auto &classCache = ClassManager::SharedInstance().getClassCache(className);
+    auto fieldMap = classCache.fieldMap;
     auto count = reader.readCount();
+    std::vector<FieldCache> fields;
     for (auto i = 0; i < count; ++i) {
         auto fieldName = reader.readString<std::string>();
+        fields.push_back(fieldMap[fieldName]);
     }
+    reader.fieldsRef.push_back(fields);
     reader.stream.ignore();
     reader.readValue(v);
 }

@@ -30,6 +30,11 @@ void readMapAsObject(T &v, Reader &reader) {
 
 template<class T>
 void readObject(T &v, Reader &reader) {
+    auto index = reader.readCount();
+    auto fields = reader.fieldsRef[index];
+    for (auto &field : fields) {
+        field.decode(&v, reader);
+    }
 }
 
 template<class T>

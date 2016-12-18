@@ -7,7 +7,6 @@ if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang" AND ${CMAKE_SYSTEM} MATCHES "Linux"
 endif ()
 
 set(SOURCE_FILES
-        hprose/io/Writer.cpp
         hprose/io/Reader.cpp
         hprose/io/ByteReader.cpp
         hprose/io/RawReader.cpp

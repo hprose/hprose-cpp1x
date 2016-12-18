@@ -280,6 +280,9 @@ public:
         if (refer) refer->set(v);
     }
 
+    std::vector<const std::type_info *> classTypeRef;
+    std::vector<std::vector<FieldCache>> fieldsRef;
+
 private:
     std::unique_ptr<internal::ReaderRefer> refer;
 };

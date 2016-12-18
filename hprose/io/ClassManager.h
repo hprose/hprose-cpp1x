@@ -40,7 +40,8 @@ namespace hprose { namespace io {                                  \
                                                                    \
 template<>                                                         \
 std::vector<FieldCache> getClassFields<Class>() {                  \
-    typedef const Class * ClassPointer;                            \
+    typedef const Class * ConstClassPointer;                       \
+    typedef Class * ClassPointer;                                  \
     std::vector<FieldCache> fields;                                \
     Body                                                           \
     return fields;                                                 \
@@ -57,6 +58,7 @@ void initClassCache<Class>(ClassCache &classCache) {               \
     if (count > 0) util::WriteInt(stream, count);                  \
     stream << TagOpenbrace;                                        \
     for (auto &&field : fields) {                                  \
+        classCache.fieldMap[field.alias] = field;                  \
         stream << TagString;                                       \
         util::WriteInt(stream, util::UTF16Length(field.alias));    \
         stream << TagQuote << field.alias << TagQuote;             \
@@ -80,13 +82,16 @@ inline void decode(Class &v, Reader &reader) {                     \
 #define HPROSE_REG_CLASS(Class, ...) HPROSE_PP_OVERLOAD(HPROSE_REG_CLASS_,__VA_ARGS__)(Class, __VA_ARGS__)
 
 #define HPROSE_REG_FIELD_1(Field) HPROSE_REG_FIELD_2(Field, #Field)
-#define HPROSE_REG_FIELD_2(Field, Alias) {                         \
-    FieldCache fieldCache;                                         \
-    fieldCache.alias = Alias;                                      \
-    fieldCache.encode = [](const void *obj, Writer &writer) {      \
-        writer.writeValue(static_cast<ClassPointer>(obj)->Field);  \
-    };                                                             \
-    fields.push_back(std::move(fieldCache));                       \
+#define HPROSE_REG_FIELD_2(Field, Alias) {                             \
+    FieldCache fieldCache;                                             \
+    fieldCache.alias = Alias;                                          \
+    fieldCache.encode = [](const void *obj, Writer &writer) {          \
+        writer.writeValue(static_cast<ConstClassPointer>(obj)->Field); \
+    };                                                                 \
+    fieldCache.decode = [](void *obj, Reader &reader) {                \
+        reader.readValue(static_cast<ClassPointer>(obj)->Field);       \
+    };                                                                 \
+    fields.push_back(std::move(fieldCache));                           \
 }
 
 #define HPROSE_REG_FIELD(...) HPROSE_PP_OVERLOAD(HPROSE_REG_FIELD_, __VA_ARGS__)(__VA_ARGS__)
@@ -95,15 +100,18 @@ namespace hprose {
 namespace io {
 
 class Writer;
+class Reader;
 
 struct FieldCache {
     std::string alias;
     std::function<void(const void *, Writer &)> encode;
+    std::function<void(void *, Reader &)> decode;
 };
 
 struct ClassCache {
     std::string alias;
     std::vector<FieldCache> fields;
+    std::unordered_map<std::string, FieldCache> fieldMap;
     std::string data;
 };
 

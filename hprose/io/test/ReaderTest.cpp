@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader test for cpp.                            *
  *                                                        *
- * LastModified: Dec 4, 2016                              *
+ * LastModified: Dec 18, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -215,4 +215,32 @@ TEST(Reader, UnserializeMap) {
     std::unordered_map<std::string, std::string> map1;
     reader.unserialize(map1);
     EXPECT_EQ(map, map1);
+}
+
+struct TestStructForReader {
+    std::string name;
+    int age;
+    bool male;
+};
+
+HPROSE_REG_CLASS(TestStructForReader, "TestR", {
+    HPROSE_REG_FIELD(name);
+    HPROSE_REG_FIELD(age);
+    HPROSE_REG_FIELD(male);
+})
+
+TEST(Reader, UnserializeStruct) {
+    TestStructForReader test;
+    test.name = "tom";
+    test.age = 36;
+    test.male = true;
+    std::stringstream stream;
+    Writer writer(stream, false);
+    writer.serialize(test);
+    Reader reader(stream, false);
+    TestStructForReader test1;
+    reader.unserialize(test1);
+    EXPECT_EQ(test.name, test1.name);
+    EXPECT_EQ(test.age, test1.age);
+    EXPECT_EQ(test.male, test1.male);
 }

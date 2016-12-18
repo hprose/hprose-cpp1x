@@ -13,7 +13,7 @@
  *                                                        *
  * hprose decode funtions for cpp.                        *
  *                                                        *
- * LastModified: Nov 14, 2016                             *
+ * LastModified: Nov 18, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -52,6 +52,16 @@ decode(T &v, Reader &reader) {
 template<class Element, class Traits, class Allocator>
 inline void decode(std::basic_string<Element, Traits, Allocator> &v, Reader &reader) {
     v = reader.readString<std::basic_string<Element, Traits, Allocator> >();
+}
+
+template<class T>
+inline typename std::enable_if<
+    std::is_pointer<T>::value
+>::type
+decode(T &v, Reader &reader) {
+    if (v) {
+        reader.readValue(*v);
+    }
 }
 
 template<class T>
