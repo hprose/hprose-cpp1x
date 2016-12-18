@@ -71,7 +71,12 @@ void readMap(T &v, Reader &reader) {
 template<class T>
 void readClass(T &v, Reader &reader) {
     auto className = reader.ByteReader::readString();
-    const auto &classCache = ClassManager::SharedInstance().getClassCache(className);
+    auto classManager = ClassManager::SharedInstance();
+    auto classType = classManager.getClassType(className);
+    if (!classType) {
+        throw std::runtime_error("cannot convert " + className + " to type " + typeid(T).name());
+    }
+    const auto &classCache = classManager.getClassCache(*classType);
     auto fieldMap = classCache.fieldMap;
     auto count = reader.readCount();
     std::vector<FieldCache> fields;

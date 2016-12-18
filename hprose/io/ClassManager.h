@@ -100,6 +100,7 @@ namespace hprose {
 namespace io {
 
 class Writer;
+
 class Reader;
 
 struct FieldCache {
@@ -138,7 +139,7 @@ public:
     }
 
     template<class T>
-    inline const ClassCache &getClassCache() {
+    const ClassCache &getClassCache() {
         auto type = std::type_index(typeid(T));
         auto iter = cache.find(type);
         if (iter == cache.end()) {
@@ -149,9 +150,12 @@ public:
         }
     }
 
-    inline const ClassCache &getClassCache(const std::string &alias) {
-        auto search = types.find(alias);
-        return cache[std::type_index(*(search->second))];
+    inline const ClassCache &getClassCache(const std::type_info &type) {
+        return cache[std::type_index(type)];
+    }
+
+    inline const std::type_info *getClassType(const std::string &alias) {
+        return types[alias];
     }
 
 private:
