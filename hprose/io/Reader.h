@@ -13,13 +13,14 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Dec 15, 2016                             *
+ * LastModified: Dec 18, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #pragma once
 
+#include <hprose/io/ClassManager.h>
 #include <hprose/io/RawReader.h>
 #include <hprose/io/decoders/BoolDecoder.h>
 #include <hprose/io/decoders/IntDecoder.h>
@@ -27,6 +28,7 @@
 #include <hprose/io/decoders/StringDecoder.h>
 #include <hprose/io/decoders/ListDecoder.h>
 #include <hprose/io/decoders/MapDecoder.h>
+#include <hprose/io/decoders/ObjectDecoder.h>
 #include <hprose/Variant.h>
 
 #include <ctime>
@@ -178,6 +180,11 @@ public:
         decoders::MapDecode(v, *this, static_cast<char>(stream.get()));
     }
 
+    template<class T>
+    void readObject(T &v) {
+        decoders::ObjectDecode(v, *this, static_cast<char>(stream.get()));
+    }
+
     std::string readStringWithoutTag() {
         std::string s = ByteReader::readString();
         setRef(s);
@@ -283,4 +290,5 @@ private:
 #include <hprose/io/decoders/FloatDecoder-inl.h>
 #include <hprose/io/decoders/ListDecoder-inl.h>
 #include <hprose/io/decoders/MapDecoder-inl.h>
+#include <hprose/io/decoders/ObjectDecoder-inl.h>
 #include <hprose/io/Reader-inl.h>

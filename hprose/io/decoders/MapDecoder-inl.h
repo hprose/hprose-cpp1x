@@ -70,10 +70,18 @@ void readMap(T &v, Reader &reader) {
 
 template<class T>
 void readClass(T &v, Reader &reader) {
+    auto className = reader.ByteReader::readString();
+    const auto &cache = ClassManager::SharedInstance().getClassCache(className);
+    auto count = reader.readCount();
+    for (auto i = 0; i < count; ++i) {
+        auto fieldName = reader.readString<std::string>();
+    }
+    reader.stream.ignore();
+    reader.readValue(v);
 }
 
 template<class T>
-void readObject(T &v, Reader &reader) {
+void readObjectAsMap(T &v, Reader &reader) {
 }
 
 template<class T>
@@ -83,11 +91,11 @@ void readRefAsMap(T &v, Reader &reader) {
 template<class T>
 inline void MapDecode(T &v, Reader &reader, char tag) {
     switch (tag) {
-        case TagList:   readListAsMap(v, reader); break;
-        case TagMap:    readMap(v, reader);       break;
-        case TagClass:  readClass(v, reader);     break;
-        case TagObject: readObject(v, reader);    break;
-        case TagRef:    readRefAsList(v, reader); break;
+        case TagList:   readListAsMap(v, reader);   break;
+        case TagMap:    readMap(v, reader);         break;
+        case TagClass:  readClass(v, reader);       break;
+        case TagObject: readObjectAsMap(v, reader); break;
+        case TagRef:    readRefAsList(v, reader);   break;
         default:        throw CastError<T>(tag);
     }
 }

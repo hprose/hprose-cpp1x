@@ -13,12 +13,13 @@
  *                                                        *
  * hprose writer test for cpp.                            *
  *                                                        *
- * LastModified: Nov 8, 2016                              *
+ * LastModified: Nov 18, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
 #include <hprose/io/Writer.h>
+#include <hprose/io/Reader.h>
 
 #include <gtest/gtest.h>
 

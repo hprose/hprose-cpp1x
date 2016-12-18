@@ -13,7 +13,7 @@
  *                                                        *
  * hprose class manager for cpp.                          *
  *                                                        *
- * LastModified: Dec 15, 2016                             *
+ * LastModified: Dec 18, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -62,12 +62,17 @@ void initClassCache<Class>(ClassCache &classCache) {               \
         stream << TagQuote << field.alias << TagQuote;             \
     }                                                              \
     stream << TagClosebrace;                                       \
+    classCache.alias = Alias;                                      \
     classCache.fields = std::move(fields);                         \
     classCache.data = stream.str();                                \
 }                                                                  \
                                                                    \
 inline void encode(const Class &v, Writer &writer) {               \
     writer.writeObject(v);                                         \
+}                                                                  \
+                                                                   \
+inline void decode(Class &v, Reader &reader) {                     \
+    reader.readObject(v);                                          \
 }                                                                  \
                                                                    \
 } } // hprose::io
@@ -97,6 +102,7 @@ struct FieldCache {
 };
 
 struct ClassCache {
+    std::string alias;
     std::vector<FieldCache> fields;
     std::string data;
 };
@@ -115,21 +121,34 @@ public:
     }
 
     template<class T>
-    const ClassCache &getClassCache() {
+    void registerClass() {
+        auto type = std::type_index(typeid(T));
+        ClassCache classCache;
+        initClassCache<T>(classCache);
+        cache[type] = classCache;
+        types[classCache.alias] = &typeid(T);
+    }
+
+    template<class T>
+    inline const ClassCache &getClassCache() {
         auto type = std::type_index(typeid(T));
         auto iter = cache.find(type);
         if (iter == cache.end()) {
-            ClassCache classCache;
-            initClassCache<T>(classCache);
-            cache[type] = classCache;
+            registerClass<T>();
             return cache[type];
         } else {
             return iter->second;
         }
     }
 
+    inline const ClassCache &getClassCache(const std::string &alias) {
+        auto search = types.find(alias);
+        return cache[std::type_index(*(search->second))];
+    }
+
 private:
     std::unordered_map<std::type_index, ClassCache> cache;
+    std::unordered_map<std::string, const std::type_info *> types;
 };
 
 }
