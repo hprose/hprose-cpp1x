@@ -81,7 +81,7 @@ inline void decode(std::basic_string<Element, Traits, Allocator> &v, Reader &rea
 }
 
 template<class T>
-typename std::enable_if<
+inline typename std::enable_if<
     std::is_pointer<T>::value
 >::type
 decode(T &v, Reader &reader) {
@@ -94,6 +94,33 @@ decode(T &v, Reader &reader) {
         v = new typename std::remove_pointer<T>::type();
         reader.readValue(*v);
     }
+}
+
+template<class T, class Deleter>
+inline void decode(std::unique_ptr<T, Deleter> &v, Reader &reader) {
+    char tag = static_cast<char>(reader.stream.peek());
+    if (tag == TagNull) {
+        v = nullptr;
+    } else {
+        v.reset(new T());
+        reader.readValue(*v);
+    }
+}
+
+template<class T>
+inline void decode(std::shared_ptr<T> &v, Reader &reader) {
+    char tag = static_cast<char>(reader.stream.peek());
+    if (tag == TagNull) {
+        v = nullptr;
+    } else {
+        v.reset(new T());
+        reader.readValue(*v);
+    }
+}
+
+template<class T>
+inline void decode(std::weak_ptr<T> &v, Reader &reader) {
+    throw std::runtime_error("the weak pointer cannot be unserialized");
 }
 
 template<class T>
