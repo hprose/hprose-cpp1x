@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Dec 18, 2016                             *
+ * LastModified: Dec 19, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -406,7 +406,7 @@ public:
     void writeList(const std::tuple<Type...> &lst) {
         if (writeRef(lst)) return;
         setRef(lst);
-        size_t count = std::tuple_size<std::tuple<Type...> >::value;
+        size_t count = std::tuple_size<std::tuple<Type...>>::value;
         if (count == 0) {
             writeEmptyList();
             return;
@@ -437,7 +437,7 @@ public:
     void writeObject(const T &o) {
         const auto &cache = ClassManager::SharedInstance().getClassCache<T>();
         if (!classRefs) {
-            classRefs = std::unique_ptr<std::unordered_map<std::type_index, int> >(
+            classRefs = std::unique_ptr<std::unordered_map<std::type_index, int>>(
                 new std::unordered_map<std::type_index, int>()
             );
         }
@@ -547,7 +547,7 @@ private:
     }
 
     std::unique_ptr<internal::WriterRefer> refer;
-    std::unique_ptr<std::unordered_map<std::type_index, int> > classRefs;
+    std::unique_ptr<std::unordered_map<std::type_index, int>> classRefs;
 };
 
 }
