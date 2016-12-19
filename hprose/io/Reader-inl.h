@@ -57,6 +57,24 @@ decode(T &v, Reader &reader) {
     v = reader.readFloat<T>();
 }
 
+template<class T>
+inline typename std::enable_if<
+    std::is_same<T, char>::value ||
+    std::is_same<T, wchar_t>::value ||
+    std::is_same<T, char16_t>::value ||
+    std::is_same<T, char32_t>::value
+>::type
+decode(T *&v, Reader &reader) {
+    char tag = static_cast<char>(reader.stream.peek());
+    if (tag == TagNull) {
+        v = nullptr;
+    } else {
+        auto str = reader.readString<std::basic_string<T>>();
+        v = static_cast<T *>(malloc(str.size() * sizeof(T)));
+        std::copy(str.begin(), str.end(), v);
+    }
+}
+
 template<class Element, class Traits, class Allocator>
 inline void decode(std::basic_string<Element, Traits, Allocator> &v, Reader &reader) {
     v = reader.readString<std::basic_string<Element, Traits, Allocator>>();
