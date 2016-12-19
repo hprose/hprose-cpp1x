@@ -63,11 +63,17 @@ inline void decode(std::basic_string<Element, Traits, Allocator> &v, Reader &rea
 }
 
 template<class T>
-inline typename std::enable_if<
+typename std::enable_if<
     std::is_pointer<T>::value
 >::type
 decode(T &v, Reader &reader) {
-    if (v) {
+    char tag = static_cast<char>(reader.stream.peek());
+    if (tag == TagNull) {
+        v = nullptr;
+    } else if (tag == TagRef) {
+        reader.readValue(*v);
+    } else {
+        v = new typename std::remove_pointer<T>::type();
         reader.readValue(*v);
     }
 }
