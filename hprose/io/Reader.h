@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Dec 18, 2016                             *
+ * LastModified: Dec 19, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -48,11 +48,6 @@ namespace io {
 namespace internal {
 
 std::string TagToString(char tag);
-
-struct Ref {
-    uintptr_t ptr;
-    std::type_index type;
-};
 
 class ReaderRefer {
 public:
@@ -146,7 +141,7 @@ public:
         T
     >::type
     readString() {
-        std::wstring_convert<std::codecvt_utf8<wchar_t> > conv;
+        std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
         return conv.from_bytes(readString<std::string>());
     }
 
@@ -186,9 +181,9 @@ public:
     }
 
     std::string readStringWithoutTag() {
-        std::string s = ByteReader::readString();
-        setRef(s);
-        return s;
+        std::string str = ByteReader::readString();
+        setRef(str);
+        return str;
     }
 
     std::tm readDateTimeWithoutTag() {
@@ -278,6 +273,12 @@ public:
     template<class T>
     inline void setRef(const T &v) {
         if (refer) refer->set(v);
+    }
+
+    inline void reset() {
+        classTypeRef.clear();
+        fieldsRef.clear();
+        if (refer) refer->reset();
     }
 
     std::vector<const std::type_info *> classTypeRef;
