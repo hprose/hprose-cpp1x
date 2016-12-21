@@ -13,7 +13,7 @@
  *                                                        *
  * hprose decode funtions for cpp.                        *
  *                                                        *
- * LastModified: Nov 19, 2016                             *
+ * LastModified: Nov 21, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -70,8 +70,9 @@ decode(T *&v, Reader &reader) {
         v = nullptr;
     } else {
         auto str = reader.readString<std::basic_string<T>>();
-        v = static_cast<T *>(malloc(str.size() * sizeof(T)));
+        v = static_cast<T *>(malloc((str.size() + 1) * sizeof(T)));
         std::copy(str.begin(), str.end(), v);
+        *(v + str.size()) = 0;
     }
 }
 
