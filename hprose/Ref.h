@@ -21,6 +21,7 @@
 #pragma once
 
 #include <typeinfo>
+#include <functional>
 
 namespace hprose {
 
@@ -35,3 +36,30 @@ struct Ref {
 };
 
 } // hprose
+
+namespace std {
+
+template<>
+struct hash<hprose::Ref> {
+    typedef hprose::Ref argument_type;
+    typedef std::size_t result_type;
+
+    result_type operator()(argument_type const &ref) const {
+        result_type const h1(std::hash<const void *>{}(ref.ptr));
+        result_type const h2(std::hash<const std::type_info *>{}(ref.type));
+        return h1 ^ (h2 << 1);
+    }
+};
+
+template<>
+struct equal_to<hprose::Ref> {
+    typedef bool result_type;
+    typedef hprose::Ref first_argument_type;
+    typedef hprose::Ref second_argument_type;
+
+    result_type operator()(const first_argument_type &left, const second_argument_type &right) const {
+        return left.ptr == right.ptr && left.type == right.type;
+    }
+};
+
+} // std

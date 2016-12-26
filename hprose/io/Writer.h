@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Dec 19, 2016                             *
+ * LastModified: Dec 28, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -23,6 +23,7 @@
 #include <hprose/io/Tags.h>
 #include <hprose/io/ClassManager.h>
 #include <hprose/util/Util.h>
+#include <hprose/Ref.h>
 
 #include <ostream>
 #include <memory>
@@ -48,30 +49,6 @@ namespace io {
 
 namespace internal {
 
-struct ReferKey {
-    template<class T>
-    ReferKey(const T &v)
-        :ptr(reinterpret_cast<uintptr_t>(&v)), type(reinterpret_cast<uintptr_t>(&typeid(v))) {
-    }
-
-    uintptr_t ptr;
-    uintptr_t type;
-};
-
-struct ReferKeyHash {
-    size_t operator()(const ReferKey &key) const {
-        auto h1 = std::hash<uintptr_t>{}(key.ptr);
-        auto h2 = std::hash<uintptr_t>{}(key.type);
-        return h1 ^ (h2 << 1);
-    }
-};
-
-struct ReferKeyEqual {
-    bool operator()(const ReferKey &left, const ReferKey &right) const {
-        return left.ptr == right.ptr && left.type == right.type;
-    }
-};
-
 class WriterRefer {
 public:
     inline void addCount(size_t count) {
@@ -80,12 +57,12 @@ public:
 
     template<class T>
     inline void set(const T &v) {
-        ref[ReferKey(v)] = lastref++;
+        ref[Ref(v)] = lastref++;
     }
 
     template<class T>
     bool write(std::ostream &stream, const T &v) {
-        auto r = ref.find(ReferKey(v));
+        auto r = ref.find(Ref(v));
         if (r != ref.end()) {
             stream << TagRef;
             util::WriteInt(stream, r->second);
@@ -101,7 +78,7 @@ public:
     }
 
 private:
-    std::unordered_map<ReferKey, int, ReferKeyHash, ReferKeyEqual> ref;
+    std::unordered_map<Ref, int> ref;
     int lastref;
 };
 
