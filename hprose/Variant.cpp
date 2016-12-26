@@ -13,7 +13,7 @@
  *                                                        *
  * variant type for cpp.                                  *
  *                                                        *
- * LastModified: Dec 4, 2016                              *
+ * LastModified: Dec 26, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -34,6 +34,9 @@ namespace hprose {
       case Time:                             \
         apply(std::shared_ptr<std::tm>);     \
         break;                               \
+      case Reference:                        \
+        apply(Ref);                          \
+        break;                               \
       case Other:                            \
         apply(std::shared_ptr<Any>);         \
         break;                               \
@@ -50,6 +53,8 @@ const char *Variant::typeName() const {
             return "std::string";
         case Time:
             return "std::tm";
+        case Reference:
+            return "Ref";
         case Other:
             return "Any";
         default:

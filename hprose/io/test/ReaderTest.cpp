@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader test for cpp.                            *
  *                                                        *
- * LastModified: Dec 18, 2016                             *
+ * LastModified: Dec 26, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -83,6 +83,17 @@ TEST(Reader, UnserializeInt) {
     T_R(int64_t, intValue, 1234567);
 }
 
+enum Color { red, green, blue };
+
+TEST(Reader, UnserializeEnum) {
+    T(Color, red, red);
+    T(Color, green, green);
+    T(Color, blue, blue);
+    T(Color, 0, red);
+    T(Color, 1, green);
+    T(Color, 2, blue);
+}
+
 TEST(Reader, UnserializeFloat) {
     std::string floatValue("3.14159");
     T(float, true, 1.f);
@@ -117,6 +128,26 @@ TEST(Reader, UnserializeDouble) {
     T(double, "1", 1.0);
     T(double, "9", 9.0);
     T_R(double, doubleValue, 3.14159);
+}
+
+TEST(Reader, UnserializePointer) {
+    T(int *, nullptr, nullptr);
+    int i = 5;
+    std::wstring s = L"hello";
+    std::stringstream stream;
+    Writer writer(stream, false);
+    writer.serialize(i).serialize(s).serialize(i).serialize(s);
+    Reader reader(stream, false);
+    auto p1 = reader.unserialize<int *>();
+    EXPECT_EQ(i, *p1);
+    delete(p1);
+    auto p2 = reader.unserialize<wchar_t *>();
+    EXPECT_EQ(s, p2);
+    free(p2);
+    auto p3 = reader.unserialize<std::unique_ptr<int>>();
+    EXPECT_EQ(i, *p3);
+    auto p4 = reader.unserialize<std::shared_ptr<std::wstring>>();
+    EXPECT_EQ(s, *p4);
 }
 
 TEST(Reader, UnserializeArray) {
@@ -229,7 +260,7 @@ HPROSE_REG_CLASS(TestStructForReader, "TestR", {
     HPROSE_REG_FIELD(male);
 })
 
-TEST(Reader, UnserializeStruct) {
+TEST(Reader, UnserializeStructAsMap) {
     TestStructForReader test;
     test.name = "tom";
     test.age = 36;
@@ -238,9 +269,30 @@ TEST(Reader, UnserializeStruct) {
     Writer writer(stream, false);
     writer.serialize(test);
     Reader reader(stream, false);
+    std::unordered_map<std::string, std::string> map;
+    reader.unserialize(map);
+    EXPECT_EQ(test.name, map["name"]);
+    EXPECT_EQ(test.age, std::stoi(map["age"]));
+    EXPECT_EQ((test.male ? "true" : "false"), map["male"]);
+}
+
+TEST(Reader, UnserializeStruct) {
+    TestStructForReader test;
+    test.name = "tom";
+    test.age = 36;
+    test.male = true;
+    std::stringstream stream;
+    Writer writer(stream, false);
+    writer.serialize(test).serialize(test);
+    Reader reader(stream, false);
     TestStructForReader test1;
+    TestStructForReader test2;
     reader.unserialize(test1);
+    reader.unserialize(test2);
     EXPECT_EQ(test.name, test1.name);
     EXPECT_EQ(test.age, test1.age);
     EXPECT_EQ(test.male, test1.male);
+    EXPECT_EQ(test.name, test2.name);
+    EXPECT_EQ(test.age, test2.age);
+    EXPECT_EQ(test.male, test2.male);
 }

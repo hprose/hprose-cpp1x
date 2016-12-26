@@ -13,7 +13,7 @@
  *                                                        *
  * hprose map decoder for cpp.                            *
  *                                                        *
- * LastModified: Dec 18, 2016                             *
+ * LastModified: Dec 26, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -45,6 +45,7 @@ inline void setIntKey(std::string &str, int i) {
 template<class T>
 void readListAsMap(T &v, Reader &reader) {
     auto count = reader.readCount();
+    reader.setRef(Ref(v));
     for (auto i = 0; i < count; ++i) {
         typename T::key_type key;
         setIntKey(key, i);
@@ -58,6 +59,7 @@ void readListAsMap(T &v, Reader &reader) {
 template<class T>
 void readMap(T &v, Reader &reader) {
     auto count = reader.readCount();
+    reader.setRef(v);
     for (auto i = 0; i < count; ++i) {
         typename T::key_type key;
         reader.readValue(key);
@@ -91,10 +93,27 @@ void readClass(T &v, Reader &reader) {
 
 template<class T>
 void readObjectAsMap(T &v, Reader &reader) {
+    auto index = reader.readCount();
+    auto fields = reader.fieldsRef[index];
+    reader.setRef(v);
+    for (auto &field : fields) {
+        v[field.alias] = reader.unserialize<typename T::mapped_type>();
+    }
+    reader.stream.ignore();
 }
 
 template<class T>
 void readRefAsMap(T &v, Reader &reader) {
+    const auto &var = reader.readRef();
+    if (var.isRef()) {
+        const Ref &ref = var.getRef();
+        if (typeid(T) == *ref.type) {
+            v = *static_cast<const T *>(ref.ptr);
+            return;
+        }
+        throw std::runtime_error(std::string("value of type ") + ref.type->name() + " cannot be converted to type " + typeid(T).name());
+    }
+    throw std::runtime_error(std::string("value of type ") + var.typeName() + " cannot be converted to type map");
 }
 
 template<class T>

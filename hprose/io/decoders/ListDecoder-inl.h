@@ -13,7 +13,7 @@
  *                                                        *
  * hprose list decoder for cpp.                           *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: Dec 26, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -63,10 +63,10 @@ template<class T>
 void readList(T &v, Reader &reader) {
     auto count = reader.readCount();
     makeSize(v, count);
+    reader.setRef(Ref(v));
     for(auto &e : v) {
         reader.readValue(e);
     }
-    reader.setRef(v);
     reader.stream.ignore();
 }
 
@@ -138,13 +138,13 @@ void readList(std::tuple<Type...> &lst, Reader &reader) {
 template<class T>
 void readRefAsList(T &v, Reader &reader) {
     const auto &var = reader.readRef();
-    if (var.isOther()) {
-        const Any &any = var.getOther();
-        if (typeid(T) == any.type()) {
-            v = Any::cast<T>(any);
+    if (var.isRef()) {
+        const Ref &ref = var.getRef();
+        if (typeid(T) == *ref.type) {
+            v = *static_cast<const T *>(ref.ptr);
             return;
         }
-        throw std::runtime_error(std::string("value of type ") + any.type().name() + " cannot be converted to type " + typeid(T).name());
+        throw std::runtime_error(std::string("value of type ") + ref.type->name() + " cannot be converted to type " + typeid(T).name());
     }
     throw std::runtime_error(std::string("value of type ") + var.typeName() + " cannot be converted to type list");
 }

@@ -13,7 +13,7 @@
  *                                                        *
  * variant type for cpp.                                  *
  *                                                        *
- * LastModified: Dec 4, 2016                              *
+ * LastModified: Dec 26, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -45,6 +45,10 @@ inline Variant::Variant(std::tm v) : type(Time) {
     new (&data.vTime) std::shared_ptr<std::tm>(new std::tm(std::move(v)));
 }
 
+inline Variant::Variant(Ref ref) : type(Reference) {
+    new (&data.vRef) Ref(ref);
+}
+
 template<class T>
 Variant::Variant(const T &v) : type(Other) {
     new (&data.vOther) std::shared_ptr<Any>(new Any(v));
@@ -68,6 +72,7 @@ inline bool Variant::isInt64() const { return type == Int64; }
 inline bool Variant::isDouble() const { return type == Double; }
 inline bool Variant::isString() const { return type == String; }
 inline bool Variant::isTime() const { return type == Time; }
+inline bool Variant::isRef() const { return type == Reference; }
 inline bool Variant::isOther() const { return type == Other; }
 
 inline const std::string &Variant::getString() const & {
@@ -76,6 +81,10 @@ inline const std::string &Variant::getString() const & {
 
 inline const std::tm &Variant::getTime() const & {
     return *data.vTime;
+}
+
+inline const Ref &Variant::getRef() const & {
+    return data.vRef;
 }
 
 inline const Any &Variant::getOther() const & {
@@ -107,12 +116,17 @@ struct Variant::GetAddrImpl<std::shared_ptr<std::string> > {
 };
 
 template<>
-struct Variant::GetAddrImpl<std::shared_ptr<std::tm> > {
+struct Variant::GetAddrImpl<std::shared_ptr<std::tm>> {
     static std::shared_ptr<std::tm> *get(Data &d) noexcept { return &d.vTime; }
 };
 
 template<>
-struct Variant::GetAddrImpl<std::shared_ptr<Any> > {
+struct Variant::GetAddrImpl<Ref> {
+    static Ref *get(Data &d) noexcept { return &d.vRef; }
+};
+
+template<>
+struct Variant::GetAddrImpl<std::shared_ptr<Any>> {
     static std::shared_ptr<Any> *get(Data &d) noexcept { return &d.vOther; }
 };
 
