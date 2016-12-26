@@ -13,7 +13,7 @@
  *                                                        *
  * variant type for cpp.                                  *
  *                                                        *
- * LastModified: Dec 4, 2016                              *
+ * LastModified: Dec 26, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -21,6 +21,7 @@
 #pragma once
 
 #include <hprose/Any.h>
+#include <hprose/Ref.h>
 
 #include <cstdlib>
 #include <ctime>
@@ -43,6 +44,7 @@ public:
         Bytes,
         Time,
         Array,
+        Reference,
         Other
     };
 
@@ -53,6 +55,8 @@ public:
     Variant(std::string v);
 
     Variant(std::tm v);
+
+    Variant(Ref ref);
 
     template<class T>
     Variant(const T &v);
@@ -70,12 +74,14 @@ public:
     bool isDouble() const;
     bool isString() const;
     bool isTime() const;
+    bool isRef() const;
     bool isOther() const;
 
     const char *typeName() const;
 
     const std::string &getString() const &;
     const std::tm &getTime() const &;
+    const Ref &getRef() const &;
     const Any &getOther() const &;
 
 private:
@@ -99,6 +105,7 @@ private:
         std::shared_ptr<std::string> vString;
         std::shared_ptr<std::tm> vTime;
         std::shared_ptr<std::vector<Variant> > vArray;
+        Ref vRef;
         std::shared_ptr<Any> vOther;
     } data;
 };
