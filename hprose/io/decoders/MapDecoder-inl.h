@@ -59,7 +59,7 @@ void readListAsMap(T &v, Reader &reader) {
 template<class T>
 void readMap(T &v, Reader &reader) {
     auto count = reader.readCount();
-    reader.setRef(v);
+    reader.setRef(Ref(v));
     for (auto i = 0; i < count; ++i) {
         typename T::key_type key;
         reader.readValue(key);
@@ -95,7 +95,7 @@ template<class T>
 void readObjectAsMap(T &v, Reader &reader) {
     auto index = reader.readCount();
     auto fields = reader.fieldsRef[index];
-    reader.setRef(v);
+    reader.setRef(Ref(v));
     for (auto &field : fields) {
         v[field.alias] = reader.unserialize<typename T::mapped_type>();
     }

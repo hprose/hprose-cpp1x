@@ -44,9 +44,9 @@ struct hash<hprose::Ref> {
     typedef hprose::Ref argument_type;
     typedef std::size_t result_type;
 
-    result_type operator()(argument_type const &ref) const {
-        result_type const h1(std::hash<const void *>{}(ref.ptr));
-        result_type const h2(std::hash<const std::type_info *>{}(ref.type));
+    result_type operator()(const argument_type &ref) const {
+        const result_type h1(std::hash<const void *>{}(ref.ptr));
+        const result_type h2(std::hash<const std::type_info *>{}(ref.type));
         return h1 ^ (h2 << 1);
     }
 };
