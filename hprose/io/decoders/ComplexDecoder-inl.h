@@ -11,7 +11,7 @@
  *                                                        *
  * hprose/io/decoders/ComplexDecoder-inl.h                *
  *                                                        *
- * hprose float decoder for cpp.                          *
+ * hprose complex decoder for cpp.                        *
  *                                                        *
  * LastModified: Dec 30, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
@@ -41,14 +41,19 @@ void readStringAsComplex(std::complex<T> &v, Reader &reader) {
     v = std::complex<T>(util::StringToFloat<T>(reader.readStringWithoutTag()));
 }
 
-template<class T>
-void readList(T &v, Reader &reader);
+void checkSize(size_t actual, int expected);
 
 template<class T>
 void readListAsComplex(std::complex<T> &v, Reader &reader) {
-    std::array<T, 2> pair;
-    readList(pair, reader);
-    v = std::complex<T>(pair[0], pair[1]);
+    auto count = reader.readCount();
+    checkSize(count, 2);
+    reader.setRef(Ref(v));
+    T value;
+    reader.readValue(value);
+    v.real(value);
+    reader.readValue(value);
+    v.imag(value);
+    reader.stream.ignore();
 }
 
 template<class T>
@@ -60,9 +65,8 @@ void readRefAsComplex(std::complex<T> &v, Reader &reader) {
     }
     if (var.isRef()) {
         const Ref &ref = var.getRef();
-        if (typeid(std::array<T, 2>) == *ref.type) {
-            std::array<T, 2> pair = *static_cast<const std::array<T, 2> *>(ref.ptr);
-            v = std::complex<T>(pair[0], pair[1]);
+        if (typeid(std::complex<T>) == *ref.type) {
+            v = *static_cast<const std::complex<T> *>(ref.ptr);
             return;
         }
         throw std::runtime_error(std::string("value of type ") + ref.type->name() + " cannot be converted to type " + typeid(T).name());

@@ -39,8 +39,9 @@ using hprose::io::Reader;
     Writer writer(stream, false); \
     writer.serialize(value).serialize(value); \
     Reader reader(stream, false); \
-    EXPECT_EQ(reader.unserialize<Type>(), expected); \
-    EXPECT_EQ(reader.unserialize<Type>(), expected); \
+    Type value; \
+    reader.unserialize(value); EXPECT_EQ(value, expected); \
+    reader.unserialize(value); EXPECT_EQ(value, expected); \
 }
 
 TEST(Reader, UnserializeBool) {
