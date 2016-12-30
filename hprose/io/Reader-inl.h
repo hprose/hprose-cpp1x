@@ -13,7 +13,7 @@
  *                                                        *
  * hprose decode funtions for cpp.                        *
  *                                                        *
- * LastModified: Nov 21, 2016                             *
+ * LastModified: Dec 30, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -55,6 +55,11 @@ inline typename std::enable_if<
 >::type
 decode(T &v, Reader &reader) {
     v = reader.readFloat<T>();
+}
+
+template<class T>
+inline void decode(std::complex<T> &v, Reader &reader) {
+    reader.readComplex(v);
 }
 
 template<class T>

@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader test for cpp.                            *
  *                                                        *
- * LastModified: Dec 26, 2016                             *
+ * LastModified: Dec 30, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -128,6 +128,48 @@ TEST(Reader, UnserializeDouble) {
     T(double, "1", 1.0);
     T(double, "9", 9.0);
     T_R(double, doubleValue, 3.14159);
+}
+
+TEST(Reader, UnserializeComplexFloat) {
+    std::string complexValue("3.14159");
+    std::array<float, 2> floatPair({3.14159f, 3.14159f});
+    T(std::complex<float>, true, 1.f);
+    T(std::complex<float>, false, 0.f);
+    T(std::complex<float>, nullptr, 0.f);
+    T(std::complex<float>, "", 0.f);
+    T(std::complex<float>, 0, 0.f);
+    T(std::complex<float>, 1, 1.f);
+    T(std::complex<float>, 9, 9.f);
+    T(std::complex<float>, 100, 100.f);
+    // T(std::complex<float>, std::numeric_limits<int64_t>::max(), static_cast<float>(std::numeric_limits<int64_t>::max()));
+    // T(std::complex<float>, std::numeric_limits<float>::max(), std::numeric_limits<float>::max());
+    T(std::complex<float>, 0.0, 0.f);
+    T(std::complex<float>, "1", 1.f);
+    T(std::complex<float>, "9", 9.f);
+    T_R(std::complex<float>, complexValue, 3.14159f);
+    T(std::complex<float>, std::complex<float>(3.14159f, 3.14159f), std::complex<float>(3.14159f, 3.14159f));
+    T_R(std::complex<float>, floatPair, std::complex<float>(3.14159f, 3.14159f));
+}
+
+TEST(Reader, UnserializeComplexDouble) {
+    std::string complexValue("3.14159");
+    std::array<double, 2> doublePair({3.14159, 3.14159});
+    T(std::complex<double>, true, 1.0);
+    T(std::complex<double>, false, 0.0);
+    T(std::complex<double>, nullptr, 0.0);
+    T(std::complex<double>, "", 0.0);
+    T(std::complex<double>, 0, 0.0);
+    T(std::complex<double>, 1, 1.0);
+    T(std::complex<double>, 9, 9.0);
+    T(std::complex<double>, 100, 100.0);
+    // T(std::complex<double>, std::numeric_limits<float>::max(), static_cast<double>(std::numeric_limits<float>::max()));
+    // T(std::complex<double>, std::numeric_limits<double>::max(), std::numeric_limits<double>::max());
+    T(std::complex<double>, 0.0, 0.0);
+    T(std::complex<double>, "1", 1.0);
+    T(std::complex<double>, "9", 9.0);
+    T_R(std::complex<double>, complexValue, 3.14159);
+    T(std::complex<double>, std::complex<double>(3.14159, 3.14159), std::complex<double>(3.14159, 3.14159));
+    T_R(std::complex<double>, doublePair, std::complex<double>(3.14159, 3.14159));
 }
 
 TEST(Reader, UnserializePointer) {

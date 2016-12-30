@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Dec 19, 2016                             *
+ * LastModified: Dec 30, 2016                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -25,6 +25,7 @@
 #include <hprose/io/decoders/BoolDecoder.h>
 #include <hprose/io/decoders/IntDecoder.h>
 #include <hprose/io/decoders/FloatDecoder.h>
+#include <hprose/io/decoders/ComplexDecoder.h>
 #include <hprose/io/decoders/StringDecoder.h>
 #include <hprose/io/decoders/ListDecoder.h>
 #include <hprose/io/decoders/MapDecoder.h>
@@ -124,6 +125,11 @@ public:
     >::type
     readFloat() {
         return decoders::FloatDecode<T>(*this, static_cast<char>(stream.get()));
+    }
+
+    template<class T>
+    void readComplex(std::complex<T> &v) {
+        decoders::ComplexDecode(v, *this, static_cast<char>(stream.get()));
     }
 
     template<class T>
@@ -292,6 +298,7 @@ private:
 } // hprose::io
 
 #include <hprose/io/decoders/FloatDecoder-inl.h>
+#include <hprose/io/decoders/ComplexDecoder-inl.h>
 #include <hprose/io/decoders/ListDecoder-inl.h>
 #include <hprose/io/decoders/MapDecoder-inl.h>
 #include <hprose/io/decoders/ObjectDecoder-inl.h>
