@@ -25,6 +25,7 @@
 #include <set>
 #include <unordered_set>
 #include <map>
+#include <stdexcept>
 
 namespace hprose {
 namespace io {
