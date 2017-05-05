@@ -19,6 +19,7 @@
 \**********************************************************/
 
 #include <hprose/Uri.h>
+#include <hprose/util/Util.h>
 
 #include <algorithm>
 #include <regex>
