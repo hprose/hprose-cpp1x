@@ -52,7 +52,11 @@ inline typename std::enable_if<
     std::is_enum<T>::value
 >::type
 encode(T v, Writer &writer) {
+#ifdef HPROSE_HAS_UNDERLYING_TYPE
     writer.writeInteger(static_cast<typename std::underlying_type<T>::type>(v));
+#else // HPROSE_HAS_UNDERLYING_TYPE
+    writer.writeInteger(static_cast<int>(v));
+#endif // HPROSE_HAS_UNDERLYING_TYPE
 }
 
 template<class T>

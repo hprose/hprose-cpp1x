@@ -22,6 +22,7 @@
 
 #include <hprose/Any.h>
 #include <hprose/Ref.h>
+#include <hprose/util/Util.h>
 
 #include <cstdlib>
 #include <ctime>

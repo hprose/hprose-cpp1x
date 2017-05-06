@@ -152,9 +152,16 @@ public:
         R
     >::type
     invoke(const std::string &name, const std::vector<T> &args, const InvokeSettings *settings = nullptr) {
+#ifdef HPROSE_HAS_LAMBDA_CAPTURE
         return std::async(std::launch::async, [=] {
             return invoke<typename result_of_future<R>::type>(name, args, settings);
         });
+#else // HPROSE_HAS_LAMBDA_CAPTURE
+        auto func = [](Client *client, const std::string &name, const std::vector<T> &args, const InvokeSettings *settings) {
+            return client->invoke<typename result_of_future<R>::type>(name, args, settings);
+        };
+        return std::async(std::launch::async, std::bind(func, this, name, args, settings));
+#endif // HPROSE_HAS_LAMBDA_CAPTURE
     }
 
     int retry;

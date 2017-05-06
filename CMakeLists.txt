@@ -1,7 +1,20 @@
 cmake_minimum_required(VERSION 3.2)
 project(hprose)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
+if (CMAKE_COMPILER_IS_GNUCXX)
+    #gcc
+    execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
+                    OUTPUT_VARIABLE COMPILER_VERSION)
+    if (COMPILER_VERSION VERSION_GREATER 4.7 OR COMPILER_VERSION VERSION_EQUAL 4.7)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+    else()
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
+    endif()
+endif ()
+if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+endif ()
 
 set(SOURCE_FILES
         hprose/io/Reader.cpp

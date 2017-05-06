@@ -31,11 +31,21 @@ struct Destroy {
 
 } // hprose::detail
 
+#ifdef HPROSE_HAS_DELEGATING_CONSTRUCTORS
 inline Variant::Variant() : Variant(nullptr) {}
+#else // HPROSE_HAS_DELEGATING_CONSTRUCTORS
+inline Variant::Variant() : type(Null) {}
+#endif // HPROSE_HAS_DELEGATING_CONSTRUCTORS
 
 inline Variant::Variant(std::nullptr_t) : type(Null) {}
 
+#ifdef HPROSE_HAS_DELEGATING_CONSTRUCTORS
 inline Variant::Variant(const char *v) : Variant(std::string(v)) {}
+#else // HPROSE_HAS_DELEGATING_CONSTRUCTORS
+inline Variant::Variant(const char *v) : type(String) {
+    new (&data.vString) std::shared_ptr<std::string>(new std::string(v));
+}
+#endif // HPROSE_HAS_DELEGATING_CONSTRUCTORS
 
 inline Variant::Variant(std::string v) : type(String) {
     new (&data.vString) std::shared_ptr<std::string>(new std::string(std::move(v)));

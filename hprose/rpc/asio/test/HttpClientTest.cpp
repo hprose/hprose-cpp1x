@@ -30,3 +30,9 @@ TEST(HttpClient, Basic) {
     auto result = client.invoke<std::string>("hello", std::vector<std::string>({"world"}));
     EXPECT_EQ(result, "Hello world");
 }
+
+TEST(HttpClient, Async) {
+    HttpClient client("http://hprose.com/example/");
+    auto result = client.invoke<std::future<std::string> >("hello", std::vector<std::string>({"world"}));
+    EXPECT_EQ(result.get(), "Hello world");
+}

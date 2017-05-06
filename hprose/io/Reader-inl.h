@@ -46,7 +46,11 @@ inline typename std::enable_if<
     std::is_enum<T>::value
 >::type
 decode(T &v, Reader &reader) {
+#ifdef HPROSE_HAS_UNDERLYING_TYPE
     v = static_cast<T>(reader.readInteger<typename std::underlying_type<T>::type>());
+#else // HPROSE_HAS_UNDERLYING_TYPE
+    v = static_cast<T>(reader.readInteger<int>());
+#endif // HPROSE_HAS_UNDERLYING_TYPE
 }
 
 template<class T>
