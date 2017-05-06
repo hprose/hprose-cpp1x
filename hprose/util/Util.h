@@ -52,6 +52,22 @@
     #define HPROSE_HAS_REGEX
 #endif
 
+#if defined(__GNUC__)
+    #if defined(__clang__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)
+        #define HPROSE_HAS_REF_QUALIFIER
+    #endif
+#else
+    #define HPROSE_HAS_REF_QUALIFIER
+#endif
+
+#if defined(__GNUC__)
+    #if defined(__clang__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)
+        #define HPROSE_HAS_ARRAY_INITIALIZER_LIST
+    #endif
+#else
+    #define HPROSE_HAS_ARRAY_INITIALIZER_LIST
+#endif
+
 #ifndef HPROSE_HAS_STOX
 namespace std {
 inline int stoi(const std::string &str, std::size_t* pos = 0, int base = 10) {

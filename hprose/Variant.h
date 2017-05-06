@@ -79,10 +79,17 @@ public:
 
     const char *typeName() const;
 
+#ifdef HPROSE_HAS_REF_QUALIFIER
     const std::string &getString() const &;
     const std::tm &getTime() const &;
     const Ref &getRef() const &;
     const Any &getOther() const &;
+#else // HPROSE_HAS_REF_QUALIFIER
+    const std::string &getString() const;
+    const std::tm &getTime() const;
+    const Ref &getRef() const;
+    const Any &getOther() const;
+#endif // HPROSE_HAS_REF_QUALIFIER
 
 private:
     template<class T> struct GetAddrImpl;

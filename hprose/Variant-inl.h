@@ -75,6 +75,7 @@ inline bool Variant::isTime() const { return type == Time; }
 inline bool Variant::isRef() const { return type == Reference; }
 inline bool Variant::isOther() const { return type == Other; }
 
+#ifdef HPROSE_HAS_REF_QUALIFIER
 inline const std::string &Variant::getString() const & {
     return *data.vString;
 }
@@ -90,6 +91,23 @@ inline const Ref &Variant::getRef() const & {
 inline const Any &Variant::getOther() const & {
     return *data.vOther;
 }
+#else // HPROSE_HAS_REF_QUALIFIER
+inline const std::string &Variant::getString() const {
+    return *data.vString;
+}
+
+inline const std::tm &Variant::getTime() const {
+    return *data.vTime;
+}
+
+inline const Ref &Variant::getRef() const {
+    return data.vRef;
+}
+
+inline const Any &Variant::getOther() const {
+    return *data.vOther;
+}
+#endif // HPROSE_HAS_REF_QUALIFIER
 
 template<class T>
 T *Variant::getAddress() noexcept {
