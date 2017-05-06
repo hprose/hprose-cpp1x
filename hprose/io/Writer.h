@@ -33,7 +33,9 @@
 #include <ratio>
 #include <string>
 #include <locale>
+#ifdef HPROSE_HAS_CODECVT
 #include <codecvt>
+#endif // HPROSE_HAS_CODECVT
 #include <chrono>
 #include <array>
 #include <vector>
@@ -237,6 +239,7 @@ public:
         }
     }
 
+#ifdef HPROSE_HAS_CODECVT
     void writeString(const std::wstring &str) {
         std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
         writeString(conv.to_bytes(str));
@@ -251,6 +254,7 @@ public:
         std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
         writeString(conv.to_bytes(str));
     }
+#endif // HPROSE_HAS_CODECVT
 
     void writeBytes(const uint8_t *data, size_t count) {
         skipRef();

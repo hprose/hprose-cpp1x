@@ -187,6 +187,7 @@ TEST(Writer, SerializeString) {
     T(u8"🇨🇳", "s4\"🇨🇳\"");
     T("\x80\x81\x82", "b3\"\x80\x81\x82\"");
 
+#ifdef HPROSE_HAS_CODECVT
     T(L"", "e");
     T(L"π", "uπ");
     T(L"你", "u你");
@@ -207,6 +208,7 @@ TEST(Writer, SerializeString) {
     T(U"你好", R"(s2"你好")");
     T(U"你好啊,hello!", R"(s10"你好啊,hello!")");
     T(U"🇨🇳", "s4\"🇨🇳\"");
+#endif // HPROSE_HAS_CODECVT
 
     T(std::string(u8""), "e");
     T(std::string(u8"π"), "uπ");
@@ -216,6 +218,7 @@ TEST(Writer, SerializeString) {
     T(std::string(u8"🇨🇳"), "s4\"🇨🇳\"");
     T(std::string("\x80\x81\x82"), "b3\"\x80\x81\x82\"");
 
+#ifdef HPROSE_HAS_CODECVT
     T(std::wstring(L""), "e");
     T(std::wstring(L"π"), "uπ");
     T(std::wstring(L"你"), "u你");
@@ -236,6 +239,7 @@ TEST(Writer, SerializeString) {
     T(std::u32string(U"你好"), R"(s2"你好")");
     T(std::u32string(U"你好啊,hello!"), R"(s10"你好啊,hello!")");
     T(std::u32string(U"🇨🇳"), R"(s4"🇨🇳")");
+#endif // HPROSE_HAS_CODECVT
 }
 
 std::tm makeTm(int year, int month, int day, int hour = 0, int min = 0, int sec = 0, int gmtoff = 0) {

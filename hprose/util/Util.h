@@ -36,6 +36,14 @@
     #define HPROSE_HAS_STOX
 #endif
 
+#if defined(__GNUC__)
+    #if defined(__clang__) || __GNUC__ > 4
+        #define HPROSE_HAS_CODECVT
+    #endif
+#else
+    #define HPROSE_HAS_CODECVT
+#endif
+
 #ifndef HPROSE_HAS_STOX
 namespace std {
 inline int stoi(const std::string &str, std::size_t* pos = 0, int base = 10) {
