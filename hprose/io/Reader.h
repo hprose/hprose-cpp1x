@@ -37,7 +37,9 @@
 #include <memory>
 #include <numeric>
 #include <locale>
+#ifdef HPROSE_HAS_CODECVT
 #include <codecvt>
+#endif // HPROSE_HAS_CODECVT
 #include <typeindex>
 #include <type_traits>
 #include <vector>
@@ -141,6 +143,7 @@ public:
         return decoders::StringDecode(*this, static_cast<char>(stream.get()));
     }
 
+#ifdef HPROSE_HAS_CODECVT
     template<class T>
     inline typename std::enable_if<
         std::is_same<T, std::wstring>::value,
@@ -170,6 +173,7 @@ public:
         std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
         return conv.from_bytes(readString<std::string>());
     }
+#endif // HPROSE_HAS_CODECVT
 
     template<class T>
     void readList(T &v) {

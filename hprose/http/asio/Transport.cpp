@@ -19,6 +19,7 @@
 \**********************************************************/
 
 #include <hprose/http/asio/Transport.h>
+#include <hprose/util/Util.h>
 
 namespace hprose {
 namespace http {

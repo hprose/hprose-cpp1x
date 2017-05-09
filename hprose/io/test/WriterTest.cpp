@@ -187,6 +187,7 @@ TEST(Writer, SerializeString) {
     T(u8"🇨🇳", "s4\"🇨🇳\"");
     T("\x80\x81\x82", "b3\"\x80\x81\x82\"");
 
+#ifdef HPROSE_HAS_CODECVT
     T(L"", "e");
     T(L"π", "uπ");
     T(L"你", "u你");
@@ -207,6 +208,7 @@ TEST(Writer, SerializeString) {
     T(U"你好", R"(s2"你好")");
     T(U"你好啊,hello!", R"(s10"你好啊,hello!")");
     T(U"🇨🇳", "s4\"🇨🇳\"");
+#endif // HPROSE_HAS_CODECVT
 
     T(std::string(u8""), "e");
     T(std::string(u8"π"), "uπ");
@@ -216,6 +218,7 @@ TEST(Writer, SerializeString) {
     T(std::string(u8"🇨🇳"), "s4\"🇨🇳\"");
     T(std::string("\x80\x81\x82"), "b3\"\x80\x81\x82\"");
 
+#ifdef HPROSE_HAS_CODECVT
     T(std::wstring(L""), "e");
     T(std::wstring(L"π"), "uπ");
     T(std::wstring(L"你"), "u你");
@@ -236,6 +239,7 @@ TEST(Writer, SerializeString) {
     T(std::u32string(U"你好"), R"(s2"你好")");
     T(std::u32string(U"你好啊,hello!"), R"(s10"你好啊,hello!")");
     T(std::u32string(U"🇨🇳"), R"(s4"🇨🇳")");
+#endif // HPROSE_HAS_CODECVT
 }
 
 std::tm makeTm(int year, int month, int day, int hour = 0, int min = 0, int sec = 0, int gmtoff = 0) {
@@ -302,11 +306,43 @@ TEST(Writer, SerializeList) {
     T(a1, "a3{123}");
     T(a2, R"(b5"hello")");
 
+#ifdef HPROSE_HAS_ARRAY_INITIALIZER_LIST
     T((std::array<int, 3>({1, 2, 3})), "a3{123}");
     T((std::array<double, 3>({1, 2, 3})), "a3{d1;d2;d3;}");
     T((std::array<bool, 3>({true, false, true})), "a3{tft}");
     T((std::array<int, 0>()), "a{}");
     T((std::array<bool, 0>()), "a{}");
+#else // HPROSE_HAS_ARRAY_INITIALIZER_LIST
+    {
+        std::array<int, 3> var;
+        var[0] = 1;
+        var[1] = 2;
+        var[2] = 3;
+        T(var, "a3{123}");
+    }
+    {
+        std::array<double, 3> var;
+        var[0] = 1;
+        var[1] = 2;
+        var[2] = 3;
+        T(var, "a3{d1;d2;d3;}");
+    }
+    {
+        std::array<bool, 3> var;
+        var[0] = true;
+        var[1] = false;
+        var[2] = true;
+        T(var, "a3{tft}");
+    }
+    {
+        std::array<int, 0> var;
+        T(var, "a{}");
+    }
+    {
+        std::array<bool, 0> var;
+        T(var, "a{}");
+    }
+#endif // HPROSE_HAS_ARRAY_INITIALIZER_LIST
 
     T(std::vector<uint8_t>({'h', 'e', 'l', 'l', 'o'}), R"(b5"hello")");
     T(std::vector<uint8_t>(), R"(b"")");

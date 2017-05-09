@@ -27,6 +27,10 @@ namespace hprose {
 class Uri {
 public:
     explicit Uri(const std::string &str);
+    Uri();
+    ~Uri();
+
+    void setUri(const std::string &str);
 
     const std::string &getScheme() const { return scheme; }
 

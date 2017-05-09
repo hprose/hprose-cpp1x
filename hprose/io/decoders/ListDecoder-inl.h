@@ -26,6 +26,7 @@
 #include <unordered_set>
 #include <bitset>
 #include <tuple>
+#include <hprose/util/Util.h>
 
 namespace hprose {
 namespace io {

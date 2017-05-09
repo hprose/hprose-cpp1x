@@ -133,7 +133,13 @@ TEST(Reader, UnserializeDouble) {
 
 TEST(Reader, UnserializeComplexFloat) {
     std::string complexValue("3.14159");
+#ifdef HPROSE_HAS_ARRAY_INITIALIZER_LIST
     std::array<float, 2> floatPair({3.14159f, 3.14159f});
+#else // HPROSE_HAS_ARRAY_INITIALIZER_LIST
+    std::array<float, 2> floatPair;
+    floatPair[0] = 3.14159f;
+    floatPair[1] = 3.14159f;
+#endif // HPROSE_HAS_ARRAY_INITIALIZER_LIST
     T(std::complex<float>, true, 1.f);
     T(std::complex<float>, false, 0.f);
     T(std::complex<float>, nullptr, 0.f);
@@ -154,7 +160,13 @@ TEST(Reader, UnserializeComplexFloat) {
 
 TEST(Reader, UnserializeComplexDouble) {
     std::string complexValue("3.14159");
+#ifdef HPROSE_HAS_ARRAY_INITIALIZER_LIST
     std::array<double, 2> doublePair({3.14159, 3.14159});
+#else // HPROSE_HAS_ARRAY_INITIALIZER_LIST
+    std::array<double, 2> doublePair;
+    doublePair[0] = 3.14159;
+    doublePair[1] = 3.14159;
+#endif // HPROSE_HAS_ARRAY_INITIALIZER_LIST
     T(std::complex<double>, true, 1.0);
     T(std::complex<double>, false, 0.0);
     T(std::complex<double>, nullptr, 0.0);
@@ -173,6 +185,7 @@ TEST(Reader, UnserializeComplexDouble) {
     T_R(std::complex<double>, doublePair, std::complex<double>(3.14159, 3.14159));
 }
 
+#ifdef HPROSE_HAS_CODECVT
 TEST(Reader, UnserializePointer) {
     T(int *, nullptr, nullptr);
     int i = 5;
@@ -192,6 +205,7 @@ TEST(Reader, UnserializePointer) {
     auto p4 = reader.unserialize<std::shared_ptr<std::wstring>>();
     EXPECT_EQ(s, *p4);
 }
+#endif // HPROSE_HAS_CODECVT
 
 TEST(Reader, UnserializeArray) {
     int a[] = {1, 2, 3, 4, 5};

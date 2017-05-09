@@ -19,20 +19,27 @@
 \**********************************************************/
 
 #include <hprose/Uri.h>
+#include <hprose/util/Util.h>
 
 #include <algorithm>
+#ifdef HPROSE_HAS_REGEX
 #include <regex>
+#else // HPROSE_HAS_REGEX
+#include <string>
+#include <cstdlib>
+#include <cstring>
+#endif // HPROSE_HAS_REGEX
 #include <sstream>
 
 namespace hprose {
 
+#ifdef HPROSE_HAS_REGEX
 std::string submatch(const std::smatch &m, size_t idx) {
     auto &sub = m[idx];
     return std::string(sub.first, sub.second);
 }
 
-Uri::Uri(const std::string &str)
-    : port(0) {
+void Uri::setUri(const std::string &str) {
     static const std::regex uriRegex(
         "([a-zA-Z][a-zA-Z0-9+.-]*):"  // scheme:
         "([^?#]*)"                    // authority and path
@@ -87,6 +94,74 @@ Uri::Uri(const std::string &str)
 
     query = submatch(match, 3);
     fragment = submatch(match, 4);
+}
+
+#else // HPROSE_HAS_REGEX
+
+static std::string getLeftStr(std::string &str, const char sep) {
+    std::string ret;
+    std::string::size_type pos = str.find(sep);
+    if (pos != std::string::npos) {
+        ret = str.substr(0, pos);
+        str.erase(0, pos + 1);
+    }
+    return ret;
+}
+
+static std::string getRightStr(std::string &str, const char sep) {
+    std::string ret;
+    std::string::size_type pos = str.find(sep);
+    if (pos != std::string::npos) {
+        ret = str.substr(pos + 1);
+        str.erase(pos);
+    }
+    return ret;
+}
+
+void Uri::setUri(const std::string &str) {
+    //scheme:[//[user[:password]@]host[:port]][/path][?query][#fragment]
+    path = str;
+    scheme = getLeftStr(path, ':');
+    if (!scheme.empty()) {
+        std::transform(scheme.begin(), scheme.end(), scheme.begin(), tolower);
+    }
+
+    fragment = getRightStr(path, '#');
+    query = getRightStr(path, '?');
+
+    std::string::size_type pos = path.find("//");
+    if (pos != std::string::npos) {
+        path.erase(0, 2);
+        pos = path.find("/");
+        host = path;
+        path = getRightStr(host, '/');
+        if (pos != std::string::npos) {
+            path.insert(0, 1, '/');
+        }
+        if (!host.empty()) {
+            username = getLeftStr(host, '@');
+            if (!username.empty()) {
+                password = getRightStr(username, ':');
+            }
+            std::string strPort = getRightStr(host, ':');
+            if (!strPort.empty()) {
+                port = static_cast<uint16_t>(std::stoi(strPort));
+            }
+        }
+    }
+}
+#endif // HPROSE_HAS_REGEX
+
+Uri::Uri(const std::string &str)
+    : port(0) {
+    setUri(str);
+}
+
+Uri::Uri()
+    : port(0) {
+}
+
+Uri::~Uri() {
 }
 
 std::string Uri::getHostname() const {
