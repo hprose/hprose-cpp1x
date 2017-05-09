@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.2)
 project(hprose)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
-if (CMAKE_COMPILER_IS_GNUCXX)
+if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     #gcc
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
                     OUTPUT_VARIABLE COMPILER_VERSION)
@@ -11,8 +11,14 @@ if (CMAKE_COMPILER_IS_GNUCXX)
     else()
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++0x")
     endif()
-endif ()
-if (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
+    #Clang and AppleClang
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+    # using Visual Studio C++
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+else ()
+    # default
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 endif ()
 
