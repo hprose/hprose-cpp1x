@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.2)
 project(hprose)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g")
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     #gcc
+    set(CMAKE_CXX_FLAGS "-g")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
                     OUTPUT_VARIABLE COMPILER_VERSION)
     if (COMPILER_VERSION VERSION_GREATER 4.7 OR COMPILER_VERSION VERSION_EQUAL 4.7)
@@ -13,9 +13,13 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     endif()
 elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
     #Clang and AppleClang
+    set(CMAKE_CXX_FLAGS "-g")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # using Visual Studio C++
+    # -D_WIN32_WINNT=0x0501 to shut up asio warning
+    # /EHsc to shut up C++ exception handling was used but /EHsc was not selected.
+    set(CMAKE_CXX_FLAGS "-D_WIN32_WINNT=0x0501 /EHsc")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 else ()
     # default
