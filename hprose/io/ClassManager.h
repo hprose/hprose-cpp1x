@@ -34,16 +34,18 @@
 
 #define HPROSE_PP_OVERLOAD(prefix, ...) HPROSE_PP_CAT(prefix, HPROSE_PP_VARIADIC_SIZE(__VA_ARGS__))
 
-#define HPROSE_REG_CLASS_1(Class, Body) HPROSE_REG_CLASS_2(Class, #Class, Body)
-#define HPROSE_REG_CLASS_2(Class, Alias, Body)                     \
+#define HPROSE_REG_CLASS_1(Class) HPROSE_REG_CLASS_2(Class, #Class)
+#define HPROSE_REG_CLASS_2(Class, Alias)                           \
 namespace hprose { namespace io {                                  \
                                                                    \
 template<>                                                         \
 std::vector<FieldCache> getClassFields<Class>() {                  \
     typedef const Class * ConstClassPointer;                       \
     typedef Class * ClassPointer;                                  \
-    std::vector<FieldCache> fields;                                \
-    Body                                                           \
+    std::vector<FieldCache> fields;
+
+#define HPROSE_END_CLASS_1(Class) HPROSE_END_CLASS_2(Class, #Class)
+#define HPROSE_END_CLASS_2(Class, Alias)                           \
     return fields;                                                 \
 }                                                                  \
                                                                    \
@@ -79,7 +81,8 @@ inline void decode(Class &v, Reader &reader) {                     \
                                                                    \
 } } // hprose::io
 
-#define HPROSE_REG_CLASS(Class, ...) HPROSE_PP_OVERLOAD(HPROSE_REG_CLASS_,__VA_ARGS__)(Class, __VA_ARGS__)
+#define HPROSE_REG_CLASS(...) HPROSE_PP_OVERLOAD(HPROSE_REG_CLASS_, __VA_ARGS__)(__VA_ARGS__)
+#define HPROSE_END_CLASS(...) HPROSE_PP_OVERLOAD(HPROSE_END_CLASS_, __VA_ARGS__)(__VA_ARGS__)
 
 #define HPROSE_REG_FIELD_1(Field) HPROSE_REG_FIELD_2(Field, #Field)
 #define HPROSE_REG_FIELD_2(Field, Alias) {                             \

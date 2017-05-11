@@ -396,24 +396,24 @@ struct TestStruct2 : TestStruct1 {
     std::tm birthday;
 };
 
-HPROSE_REG_CLASS(TestStruct, "Test", {
+HPROSE_REG_CLASS(TestStruct, "Test")
     HPROSE_REG_FIELD(ID, "id");
-})
+HPROSE_END_CLASS(TestStruct, "Test")
 
-HPROSE_REG_CLASS(TestStruct1, "Test1", {
+HPROSE_REG_CLASS(TestStruct1, "Test1")
     HPROSE_REG_FIELD(ID, "id");
     HPROSE_REG_FIELD(Name, "name");
     HPROSE_REG_FIELD(Age, "age");
-})
+HPROSE_END_CLASS(TestStruct1, "Test1")
 
-HPROSE_REG_CLASS(TestStruct2, "Test2", {
+HPROSE_REG_CLASS(TestStruct2, "Test2")
     HPROSE_REG_FIELD(OOXX, "ooxx");
     HPROSE_REG_FIELD(pStruct, "testStruct2");
     HPROSE_REG_FIELD(ID, "id");
     HPROSE_REG_FIELD(Name, "name");
     HPROSE_REG_FIELD(Age, "age");
     HPROSE_REG_FIELD(Test, "test");
-})
+HPROSE_END_CLASS(TestStruct2, "Test2")
 
 TEST(Writer, SerializeStruct) {
     TestStruct2 st;
