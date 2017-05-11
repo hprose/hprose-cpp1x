@@ -1,0 +1,30 @@
+# Notes:
+#   - Minimal appveyor.yml file is an empty file. All sections are optional.
+#   - Indent each level of configuration with 2 spaces. Do not use tabs!
+#   - All section names are case-sensitive.
+#   - Section names should be unique on each level.
+
+#---------------------------------#
+#      general configuration      #
+#---------------------------------#
+
+# version format
+version: 1.0.{build}
+
+# Do not build on tags (GitHub and BitBucket)
+skip_tags: true
+configuration: Release
+
+# Build worker image (VM template)
+image: Visual Studio 2015
+
+install:
+  - curl -sSLo googletest-release-1.8.0.zip https://github.com/google/googletest/archive/release-1.8.0.zip
+  - 7z x googletest-release-1.8.0.zip
+  - cd googletest-release-1.8.0\googletest && cmake -G "Visual Studio 14 2015" . && cmake --build . && cd .. && cd ..
+  - curl -sSLo asio-asio-1-10-8.zip https://github.com/chriskohlhoff/asio/archive/asio-1-10-8.zip
+  - 7z x asio-asio-1-10-8.zip
+  - mv asio-asio-1-10-8\asio\include\asio.hpp . && mv asio-asio-1-10-8\asio\include\asio .
+build_script:
+    - cmake -G "Visual Studio 14 2015" -DGTEST_DIR=googletest-release-1.8.0\googletest
+    - cmake --build . && make && ./IOTest.out

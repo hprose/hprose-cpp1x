@@ -311,11 +311,11 @@ struct TestStructForReader {
     bool male;
 };
 
-HPROSE_REG_CLASS(TestStructForReader, "TestR", {
+HPROSE_REG_CLASS(TestStructForReader, "TestR")
     HPROSE_REG_FIELD(name);
     HPROSE_REG_FIELD(age);
     HPROSE_REG_FIELD(male);
-})
+HPROSE_END_CLASS(TestStructForReader, "TestR")
 
 TEST(Reader, UnserializeStructAsMap) {
     TestStructForReader test;
