@@ -391,7 +391,7 @@ struct TestStruct1 : TestStruct {
 
 struct TestStruct2 : TestStruct1 {
     bool OOXX;
-    TestStruct2 *TestStruct2;
+    TestStruct2 *pStruct;
     TestStruct Test;
     std::tm birthday;
 };
@@ -408,7 +408,7 @@ HPROSE_REG_CLASS(TestStruct1, "Test1", {
 
 HPROSE_REG_CLASS(TestStruct2, "Test2", {
     HPROSE_REG_FIELD(OOXX, "ooxx");
-    HPROSE_REG_FIELD(TestStruct2, "testStruct2");
+    HPROSE_REG_FIELD(pStruct, "testStruct2");
     HPROSE_REG_FIELD(ID, "id");
     HPROSE_REG_FIELD(Name, "name");
     HPROSE_REG_FIELD(Age, "age");
@@ -417,7 +417,7 @@ HPROSE_REG_CLASS(TestStruct2, "Test2", {
 
 TEST(Writer, SerializeStruct) {
     TestStruct2 st;
-    st.TestStruct2 = &st;
+    st.pStruct = &st;
     st.ID = 100;
     st.Name = "Tom";
     auto age = 18;
