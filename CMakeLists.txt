@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(hprose)
 
+find_package(Threads REQUIRED)
+
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     #gcc
     set(CMAKE_CXX_FLAGS "-g")
@@ -19,7 +21,7 @@ elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # using Visual Studio C++
     # -D_WIN32_WINNT=0x0501 to shut up asio warning
     # /EHsc to shut up C++ exception handling was used but /EHsc was not selected.
-    set(CMAKE_CXX_FLAGS "-D_WIN32_WINNT=0x0501 /EHsc")
+    set(CMAKE_CXX_FLAGS "-D_WIN32_WINNT=0x0501 /EHsc /utf-8")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 else ()
     # default
@@ -42,6 +44,7 @@ set(SOURCE_FILES
         hprose/Variant.cpp)
 
 include_directories("/usr/local/include" ".")
+link_directories(${GTEST_DIR})
 
 add_definitions(-DASIO_STANDALONE)
 add_library(hprose STATIC ${SOURCE_FILES})
@@ -54,4 +57,4 @@ set(TEST_FILES
 
 add_executable(IOTest.out ${TEST_FILES})
 target_include_directories(IOTest.out PUBLIC "${GTEST_DIR}/include")
-target_link_libraries(IOTest.out hprose pthread "${GTEST_DIR}/libgtest.a")
+target_link_libraries(IOTest.out hprose ${CMAKE_THREAD_LIBS_INIT} gtest)

@@ -40,6 +40,8 @@
     #if defined(__clang__) || __GNUC__ > 4
         #define HPROSE_HAS_CODECVT
     #endif
+#elif defined(_MSC_VER)
+    //#define HPROSE_HAS_CODECVT
 #else
     #define HPROSE_HAS_CODECVT
 #endif
@@ -64,6 +66,8 @@
     #if defined(__clang__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)
         #define HPROSE_HAS_ARRAY_INITIALIZER_LIST
     #endif
+#elif defined(_MSC_VER)
+    //#define HPROSE_HAS_ARRAY_INITIALIZER_LIST
 #else
     #define HPROSE_HAS_ARRAY_INITIALIZER_LIST
 #endif

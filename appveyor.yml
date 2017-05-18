@@ -21,10 +21,10 @@ image: Visual Studio 2015
 install:
   - curl -sSLo googletest-release-1.8.0.zip https://github.com/google/googletest/archive/release-1.8.0.zip
   - 7z x googletest-release-1.8.0.zip
-  - cd googletest-release-1.8.0\googletest && cmake -G "Visual Studio 14 2015" . && cmake --build . && cd .. && cd ..
+  - cd googletest-release-1.8.0\googletest && cmake -G "Visual Studio 14 2015" -DBUILD_SHARED_LIBS=on . && cmake --build . && copy /y Debug\gtest.dll . && cd .. && cd ..
   - curl -sSLo asio-asio-1-10-8.zip https://github.com/chriskohlhoff/asio/archive/asio-1-10-8.zip
   - 7z x asio-asio-1-10-8.zip
-  - mv asio-asio-1-10-8\asio\include\asio.hpp . && mv asio-asio-1-10-8\asio\include\asio .
+  - move asio-asio-1-10-8\asio\include\asio.hpp . && move asio-asio-1-10-8\asio\include\asio .
 build_script:
     - cmake -G "Visual Studio 14 2015" -DGTEST_DIR=googletest-release-1.8.0\googletest
-    - cmake --build . && make && ./IOTest.out
+    - cmake --build . && copy /y googletest-release-1.8.0\googletest\gtest.dll Debug\ && Debug\IOTest.out
