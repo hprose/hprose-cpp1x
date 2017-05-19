@@ -193,9 +193,7 @@ TEST(Writer, SerializeString) {
     T(L"你", u8"u你");
     T(L"你好", u8R"(s2"你好")");
     T(L"你好啊,hello!", u8R"(s10"你好啊,hello!")");
-#ifndef _MSC_VER
     T(L"🇨🇳", u8R"(s4"🇨🇳")");
-#endif
 
     T(u"", "e");
     T(u"π", u8"uπ");
@@ -226,9 +224,7 @@ TEST(Writer, SerializeString) {
     T(std::wstring(L"你"), u8"u你");
     T(std::wstring(L"你好"), u8R"(s2"你好")");
     T(std::wstring(L"你好啊,hello!"), u8R"(s10"你好啊,hello!")");
-#ifndef _MSC_VER
     T(std::wstring(L"🇨🇳"), u8R"(s4"🇨🇳")");
-#endif
 
     T(std::u16string(u""), "e");
     T(std::u16string(u"π"), u8"uπ");

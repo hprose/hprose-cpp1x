@@ -241,8 +241,14 @@ public:
 
 #ifdef HPROSE_HAS_CODECVT
     void writeString(const std::wstring &str) {
+#ifndef _MSC_VER
         std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
         writeString(conv.to_bytes(str));
+#else // _MSC_VER
+        //codecvt_utf8<wchar_t> works for UCS2->UTF8, this works for UTF16->UTF8
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> conv;
+        writeString(conv.to_bytes(str));
+#endif // _MSC_VER
     }
 
     void writeString(const std::u16string &str) {

@@ -150,8 +150,14 @@ public:
         T
     >::type
     readString() {
+#ifndef _MSC_VER
         std::wstring_convert<std::codecvt_utf8<wchar_t>> conv;
         return conv.from_bytes(readString<std::string>());
+#else // _MSC_VER
+        //codecvt_utf8<wchar_t> works for UTF8->UCS2, this works for UTF8->UTF16
+        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>, wchar_t> conv;
+        return conv.from_bytes(readString<std::string>());
+#endif // _MSC_VER
     }
 
     template<class T>
