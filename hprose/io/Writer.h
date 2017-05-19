@@ -246,13 +246,23 @@ public:
     }
 
     void writeString(const std::u16string &str) {
+#ifndef HPROSE_HAS_CODECVT_BUG
         std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
         writeString(conv.to_bytes(str));
+#else // HPROSE_HAS_CODECVT_BUG
+        std::wstring_convert<std::codecvt_utf8_utf16<uint16_t>, uint16_t> conv;
+        writeString(conv.to_bytes(reinterpret_cast<const uint16_t *>(str.data())));
+#endif // HPROSE_HAS_CODECVT_BUG
     }
 
     void writeString(const std::u32string &str) {
+#ifndef HPROSE_HAS_CODECVT_BUG
         std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
         writeString(conv.to_bytes(str));
+#else // HPROSE_HAS_CODECVT_BUG
+        std::wstring_convert<std::codecvt_utf8<uint32_t>, uint32_t> conv;
+        writeString(conv.to_bytes(reinterpret_cast<const uint32_t *>(str.data())));
+#endif // HPROSE_HAS_CODECVT_BUG
     }
 #endif // HPROSE_HAS_CODECVT
 

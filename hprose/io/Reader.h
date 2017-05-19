@@ -160,8 +160,17 @@ public:
         T
     >::type
     readString() {
+#ifndef HPROSE_HAS_CODECVT_BUG
         std::wstring_convert<std::codecvt_utf8_utf16<char16_t>, char16_t> conv;
         return conv.from_bytes(readString<std::string>());
+#else // HPROSE_HAS_CODECVT_BUG
+        std::wstring_convert<std::codecvt_utf8_utf16<uint16_t>, uint16_t> conv;
+        auto temp = conv.from_bytes(readString<std::string>());
+        std::u16string ret;
+        ret.resize(temp.size());
+        std::copy(temp.cbegin(), temp.cend(), &ret[0]);
+        return std::move(ret);
+#endif // HPROSE_HAS_CODECVT_BUG
     }
 
     template<class T>
@@ -170,8 +179,17 @@ public:
         T
     >::type
     readString() {
+#ifndef HPROSE_HAS_CODECVT_BUG
         std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
         return conv.from_bytes(readString<std::string>());
+#else // HPROSE_HAS_CODECVT_BUG
+        std::wstring_convert<std::codecvt_utf8<uint32_t>, uint32_t> conv;
+        auto temp = conv.from_bytes(readString<std::string>());
+        std::u32string ret;
+        ret.resize(temp.size());
+        std::copy(temp.cbegin(), temp.cend(), &ret[0]);
+        return std::move(ret);
+#endif // HPROSE_HAS_CODECVT_BUG
     }
 #endif // HPROSE_HAS_CODECVT
 
