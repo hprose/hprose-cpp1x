@@ -353,19 +353,11 @@ struct TestStructForReader {
     bool male;
 };
 
-#ifndef _MSC_VER
 HPROSE_REG_CLASS(TestStructForReader, "TestR", {
     HPROSE_REG_FIELD(name);
     HPROSE_REG_FIELD(age);
     HPROSE_REG_FIELD(male);
 })
-#else // _MSC_VER
-HPROSE_REG_CLASS_2(TestStructForReader, "TestR", {
-    HPROSE_REG_FIELD_1(name);
-    HPROSE_REG_FIELD_1(age);
-    HPROSE_REG_FIELD_1(male);
-})
-#endif // _MSC_VER
 
 TEST(Reader, UnserializeStructAsMap) {
     TestStructForReader test;

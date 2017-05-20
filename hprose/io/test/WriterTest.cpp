@@ -396,7 +396,6 @@ struct TestStruct2 : TestStruct1 {
     std::tm birthday;
 };
 
-#ifndef _MSC_VER
 HPROSE_REG_CLASS(TestStruct, "Test", {
     HPROSE_REG_FIELD(ID, "id");
 })
@@ -415,26 +414,6 @@ HPROSE_REG_CLASS(TestStruct2, "Test2", {
     HPROSE_REG_FIELD(Age, "age");
     HPROSE_REG_FIELD(Test, "test");
 })
-#else // _MSC_VER
-HPROSE_REG_CLASS_2(TestStruct, "Test", {
-    HPROSE_REG_FIELD_2(ID, "id");
-})
-
-HPROSE_REG_CLASS_2(TestStruct1, "Test1", {
-    HPROSE_REG_FIELD_2(ID, "id");
-    HPROSE_REG_FIELD_2(Name, "name");
-    HPROSE_REG_FIELD_2(Age, "age");
-})
-
-HPROSE_REG_CLASS_2(TestStruct2, "Test2", {
-    HPROSE_REG_FIELD_2(OOXX, "ooxx");
-    HPROSE_REG_FIELD_2(pStruct, "testStruct2");
-    HPROSE_REG_FIELD_2(ID, "id");
-    HPROSE_REG_FIELD_2(Name, "name");
-    HPROSE_REG_FIELD_2(Age, "age");
-    HPROSE_REG_FIELD_2(Test, "test");
-})
-#endif // _MSC_VER
 
 TEST(Writer, SerializeStruct) {
     TestStruct2 st;
