@@ -44,6 +44,8 @@ using hprose::io::Reader;
     reader.unserialize(value); EXPECT_EQ(value, expected); \
 }
 
+#define T_STR(Type, value) T(Type, value, value)
+
 TEST(Reader, UnserializeBool) {
     std::string trueValue("true");
     T(bool, true, true);
@@ -185,27 +187,67 @@ TEST(Reader, UnserializeComplexDouble) {
     T_R(std::complex<double>, doublePair, std::complex<double>(3.14159, 3.14159));
 }
 
-#ifdef HPROSE_HAS_CODECVT
 TEST(Reader, UnserializePointer) {
     T(int *, nullptr, nullptr);
     int i = 5;
     std::wstring s = L"hello";
     std::stringstream stream;
     Writer writer(stream, false);
+#ifdef HPROSE_HAS_CODECVT
     writer.serialize(i).serialize(s).serialize(i).serialize(s);
+#else // HPROSE_HAS_CODECVT
+    writer.serialize(i).serialize(i);
+#endif // HPROSE_HAS_CODECVT
+
     Reader reader(stream, false);
     auto p1 = reader.unserialize<int *>();
     EXPECT_EQ(i, *p1);
     delete(p1);
+#ifdef HPROSE_HAS_CODECVT
     auto p2 = reader.unserialize<wchar_t *>();
     EXPECT_EQ(s, p2);
     free(p2);
+#endif // HPROSE_HAS_CODECVT
     auto p3 = reader.unserialize<std::unique_ptr<int>>();
     EXPECT_EQ(i, *p3);
+#ifdef HPROSE_HAS_CODECVT
     auto p4 = reader.unserialize<std::shared_ptr<std::wstring>>();
     EXPECT_EQ(s, *p4);
-}
 #endif // HPROSE_HAS_CODECVT
+}
+
+TEST(Reader, UnserializeString) {
+    T_STR(std::string, u8"");
+    T_STR(std::string, u8"π");
+    T_STR(std::string, u8"你");
+    T_STR(std::string, u8"你好");
+    T_STR(std::string, u8"你好啊,hello!");
+    T_STR(std::string, u8"🇨🇳");
+    T_STR(std::string, "\x80\x81\x82");
+
+#ifdef HPROSE_HAS_CODECVT
+    T_STR(std::wstring, L"");
+    T_STR(std::wstring, L"π");
+    T_STR(std::wstring, L"你");
+    T_STR(std::wstring, L"你好");
+    T_STR(std::wstring, L"你好啊,hello!");
+    T_STR(std::wstring, L"🇨🇳");
+
+    T_STR(std::u16string, u"");
+    T_STR(std::u16string, u"π");
+    T_STR(std::u16string, u"你");
+    T_STR(std::u16string, u"你好");
+    T_STR(std::u16string, u"你好啊,hello!");
+    T_STR(std::u16string, u"🇨🇳");
+
+    T_STR(std::u32string, U"");
+    T_STR(std::u32string, U"π");
+    T_STR(std::u32string, U"你");
+    T_STR(std::u32string, U"你好");
+    T_STR(std::u32string, U"你好啊,hello!");
+    T_STR(std::u32string, U"🇨🇳");
+#endif // HPROSE_HAS_CODECVT
+}
 
 TEST(Reader, UnserializeArray) {
     int a[] = {1, 2, 3, 4, 5};

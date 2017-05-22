@@ -40,6 +40,11 @@
     #if defined(__clang__) || __GNUC__ > 4
         #define HPROSE_HAS_CODECVT
     #endif
+#elif defined(_MSC_VER)
+    #define HPROSE_HAS_CODECVT
+    //this is a bug of Visual Studio
+    //https://social.msdn.microsoft.com/Forums/en-US/8f40dcd8-c67f-4eba-9134-a19b9178e481/vs-2015-rc-linker-stdcodecvt-error?forum=vcgeneral
+    #define HPROSE_HAS_CODECVT_BUG
 #else
     #define HPROSE_HAS_CODECVT
 #endif
@@ -64,6 +69,8 @@
     #if defined(__clang__) || __GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ > 7)
         #define HPROSE_HAS_ARRAY_INITIALIZER_LIST
     #endif
+#elif defined(_MSC_VER)
+    //#define HPROSE_HAS_ARRAY_INITIALIZER_LIST
 #else
     #define HPROSE_HAS_ARRAY_INITIALIZER_LIST
 #endif
