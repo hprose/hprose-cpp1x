@@ -305,6 +305,7 @@ public:
 
     template<class Clock, class Duration>
     void writeTime(const std::chrono::time_point<Clock, Duration> &t) {
+        (void)t;
     }
 
     template<class T>

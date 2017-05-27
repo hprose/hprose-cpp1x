@@ -50,7 +50,7 @@ inline void makeSize(T (&v)[N], int count) {
 }
 
 template<class T, size_t N>
-inline void makeSize(std::array<T, N> &v, int count) {
+inline void makeSize(std::array<T, N> &, int count) {
     checkSize(N, count);
 }
 

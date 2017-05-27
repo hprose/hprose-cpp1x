@@ -25,7 +25,7 @@ namespace io {
 namespace decoders {
 
 template<class T>
-inline void setIntKey(T &v, int i) {
+inline void setIntKey(T &, int) {
     throw std::runtime_error(std::string("cannot convert int to type ") + typeid(T).name());
 }
 
