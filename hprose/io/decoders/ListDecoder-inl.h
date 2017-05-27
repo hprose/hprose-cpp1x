@@ -33,7 +33,9 @@ namespace io {
 namespace decoders {
 
 inline void checkSize(size_t actual, int expected) {
-    if (expected != actual) throw std::runtime_error("expected array size " + std::to_string(expected) + ", actual size " + std::to_string(expected));    
+    if (static_cast<size_t>(expected) != actual)
+        throw std::runtime_error("expected array size " + std::to_string(expected)
+            + ", actual size " + std::to_string(expected));    
 }
 
 template<class T>

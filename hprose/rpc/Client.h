@@ -76,7 +76,7 @@ struct InvokeSettings {
 class ClientContext : Context {
 public:
     ClientContext(const Client &client)
-        : retried(0), client(client), settings(InvokeSettings()) {
+        : retried(0), settings(InvokeSettings()), client(client) {
     }
 
     const Client &getClient() {

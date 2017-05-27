@@ -5,7 +5,7 @@ find_package(Threads REQUIRED)
 
 if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     #gcc
-    set(CMAKE_CXX_FLAGS "-g")
+    set(CMAKE_CXX_FLAGS "-g -Wall")
     execute_process(COMMAND ${CMAKE_C_COMPILER} -dumpversion
                     OUTPUT_VARIABLE COMPILER_VERSION)
     if (COMPILER_VERSION VERSION_GREATER 4.7 OR COMPILER_VERSION VERSION_EQUAL 4.7)

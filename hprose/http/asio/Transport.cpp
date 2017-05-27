@@ -78,7 +78,7 @@ Response Transport::readResponse(tcp::socket &socket) {
     size_t bytes = 0, len = 0;
     bool chunked = false;
 
-    auto read = ::asio::read_until(socket, response, "\r\n\r\n");
+    ::asio::read_until(socket, response, "\r\n\r\n");
     std::string header;
     internal::UniEqual uniEqual;
     while (std::getline(response_stream, header) && header != "\r") {
@@ -132,7 +132,6 @@ Response Transport::readResponse(tcp::socket &socket) {
         }
         if (len) {
             char buf[1024];
-            auto buffer = ::asio::buffer(buf, 1024);
             ::asio::error_code error;
             while (len) {
                 auto n = socket.read_some(::asio::buffer(buf), error);

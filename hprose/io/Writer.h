@@ -174,7 +174,7 @@ public:
             stream << static_cast<char>('0' + u);
             return;
         }
-        if (u <= std::numeric_limits<int32_t>::max()) {
+        if (u <= static_cast<uint32_t>(std::numeric_limits<int32_t>::max())) {
             stream << TagInteger;
         } else {
             stream << TagLong;
@@ -346,7 +346,7 @@ public:
             return;
         }
         writeListHeader(N);
-        for (auto i = 0; i < N; ++i) {
+        for (auto i = 0U; i < N; ++i) {
             writeValue(v[i]);
         }
         writeListFooter();
@@ -393,7 +393,7 @@ public:
             return;
         }
         writeListHeader(N);
-        for (auto i = 0; i < N; ++i) {
+        for (auto i = 0U; i < N; ++i) {
             writeBool(b.test(i));
         }
         writeListFooter();

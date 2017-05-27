@@ -79,7 +79,8 @@ TEST(Reader, UnserializeInt) {
     T(int64_t, std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::min());
     T(int64_t, std::numeric_limits<int64_t>::max(), std::numeric_limits<int64_t>::max());
     T(int64_t, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::min());
-    T(int64_t, std::numeric_limits<uint64_t>::max(), std::numeric_limits<uint64_t>::max());
+    T(int64_t, static_cast<int64_t>(std::numeric_limits<uint64_t>::max()),
+        static_cast<int64_t>(std::numeric_limits<uint64_t>::max()));
     T(int64_t, 0.0, 0);
     T(int64_t, "1", 1);
     T(int64_t, "9", 9);
