@@ -399,6 +399,12 @@ public:
         writeListFooter();
     }
 
+    void writeList(const std::bitset<0> &b) {
+        if (writeRef(b)) return;
+        setRef(b);
+        writeEmptyList();
+    }
+
     template<class... Type>
     void writeList(const std::tuple<Type...> &lst) {
         if (writeRef(lst)) return;
@@ -495,6 +501,7 @@ private:
     }
 
     inline void writeTime(int hour, int min, int sec, int nsec) {
+        (void)nsec;
         stream << TagTime;
         util::WriteTime(stream, hour, min, sec);
     }

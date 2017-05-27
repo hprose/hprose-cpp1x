@@ -26,6 +26,8 @@ namespace decoders {
 
 template<class T>
 void readMapAsObject(T &v, Reader &reader) {
+    (void)v;
+    (void)reader;
 }
 
 template<class T>

@@ -239,6 +239,7 @@ private:
         std::string
     >::type
     decode(const std::string &data, const std::vector<T> &args, const ClientContext &context) {
+        (void)args;
         checkData(data);
         if (context.settings.mode == RawWithEndTag) {
             return data;

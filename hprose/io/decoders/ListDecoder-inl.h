@@ -45,6 +45,7 @@ inline void makeSize(T &v, int count) {
 
 template<class T, size_t N>
 inline void makeSize(T (&v)[N], int count) {
+    (void)v;
     checkSize(N, count);
 }
 
@@ -118,7 +119,7 @@ template<std::size_t Index = 0, class... Tuple>
 inline typename std::enable_if<
     Index == sizeof...(Tuple)
 >::type
-readTupleElement(std::tuple<Tuple...> &, Reader &reader) {
+readTupleElement(std::tuple<Tuple...> &, Reader &) {
 }
 
 template<std::size_t Index = 0, class... Tuple>

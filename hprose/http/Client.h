@@ -60,10 +60,12 @@ public:
 
 private:
     Response doFollowingRedirects(const Request &req, bool shouldRedirect(int)) {
+        (void)shouldRedirect;
         return send(req, deadline());
     }
 
     Response send(const Request &req, time_t deadline) {
+        (void)deadline;
         return transport.sendRequest(req);
     }
 
