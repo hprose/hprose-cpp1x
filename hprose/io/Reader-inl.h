@@ -129,7 +129,7 @@ inline void decode(std::shared_ptr<T> &v, Reader &reader) {
 }
 
 template<class T>
-inline void decode(std::weak_ptr<T> &v, Reader &reader) {
+inline void decode(std::weak_ptr<T> &, Reader &) {
     throw std::runtime_error("the weak pointer cannot be unserialized");
 }
 

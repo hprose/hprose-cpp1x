@@ -29,7 +29,7 @@ std::string ByteReader::read(size_t count) {
     std::string str;
     str.resize(count);
     stream.read(const_cast<char *>(str.data()), count);
-    if (stream.gcount() != count) {
+    if (static_cast<size_t>(stream.gcount()) != count) {
         throw std::runtime_error("unexpected end of stream");
     }
     return str;

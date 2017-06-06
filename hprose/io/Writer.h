@@ -174,7 +174,7 @@ public:
             stream << static_cast<char>('0' + u);
             return;
         }
-        if (u <= std::numeric_limits<int32_t>::max()) {
+        if (u <= static_cast<uint32_t>(std::numeric_limits<int32_t>::max())) {
             stream << TagInteger;
         } else {
             stream << TagLong;
@@ -305,6 +305,7 @@ public:
 
     template<class Clock, class Duration>
     void writeTime(const std::chrono::time_point<Clock, Duration> &t) {
+        (void)t;
     }
 
     template<class T>
@@ -346,7 +347,7 @@ public:
             return;
         }
         writeListHeader(N);
-        for (auto i = 0; i < N; ++i) {
+        for (auto i = 0U; i < N; ++i) {
             writeValue(v[i]);
         }
         writeListFooter();
@@ -393,10 +394,16 @@ public:
             return;
         }
         writeListHeader(N);
-        for (auto i = 0; i < N; ++i) {
+        for (auto i = 0U; i < N; ++i) {
             writeBool(b.test(i));
         }
         writeListFooter();
+    }
+
+    void writeList(const std::bitset<0> &b) {
+        if (writeRef(b)) return;
+        setRef(b);
+        writeEmptyList();
     }
 
     template<class... Type>
@@ -495,6 +502,7 @@ private:
     }
 
     inline void writeTime(int hour, int min, int sec, int nsec) {
+        (void)nsec;
         stream << TagTime;
         util::WriteTime(stream, hour, min, sec);
     }

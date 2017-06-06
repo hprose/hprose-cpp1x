@@ -33,7 +33,9 @@ namespace io {
 namespace decoders {
 
 inline void checkSize(size_t actual, int expected) {
-    if (expected != actual) throw std::runtime_error("expected array size " + std::to_string(expected) + ", actual size " + std::to_string(expected));    
+    if (static_cast<size_t>(expected) != actual)
+        throw std::runtime_error("expected array size " + std::to_string(expected)
+            + ", actual size " + std::to_string(expected));    
 }
 
 template<class T>
@@ -43,11 +45,12 @@ inline void makeSize(T &v, int count) {
 
 template<class T, size_t N>
 inline void makeSize(T (&v)[N], int count) {
+    (void)v;
     checkSize(N, count);
 }
 
 template<class T, size_t N>
-inline void makeSize(std::array<T, N> &v, int count) {
+inline void makeSize(std::array<T, N> &, int count) {
     checkSize(N, count);
 }
 
@@ -116,7 +119,7 @@ template<std::size_t Index = 0, class... Tuple>
 inline typename std::enable_if<
     Index == sizeof...(Tuple)
 >::type
-readTupleElement(std::tuple<Tuple...> &, Reader &reader) {
+readTupleElement(std::tuple<Tuple...> &, Reader &) {
 }
 
 template<std::size_t Index = 0, class... Tuple>

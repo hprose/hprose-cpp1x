@@ -307,9 +307,9 @@ TEST(Writer, SerializeList) {
     T(a2, R"(b5"hello")");
 
 #ifdef HPROSE_HAS_ARRAY_INITIALIZER_LIST
-    T((std::array<int, 3>({1, 2, 3})), "a3{123}");
-    T((std::array<double, 3>({1, 2, 3})), "a3{d1;d2;d3;}");
-    T((std::array<bool, 3>({true, false, true})), "a3{tft}");
+    T((std::array<int, 3>({{1, 2, 3}})), "a3{123}");
+    T((std::array<double, 3>({{1, 2, 3}})), "a3{d1;d2;d3;}");
+    T((std::array<bool, 3>({{true, false, true}})), "a3{tft}");
     T((std::array<int, 0>()), "a{}");
     T((std::array<bool, 0>()), "a{}");
 #else // HPROSE_HAS_ARRAY_INITIALIZER_LIST

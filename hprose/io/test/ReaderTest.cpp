@@ -79,7 +79,8 @@ TEST(Reader, UnserializeInt) {
     T(int64_t, std::numeric_limits<int32_t>::min(), std::numeric_limits<int32_t>::min());
     T(int64_t, std::numeric_limits<int64_t>::max(), std::numeric_limits<int64_t>::max());
     T(int64_t, std::numeric_limits<int64_t>::min(), std::numeric_limits<int64_t>::min());
-    T(int64_t, std::numeric_limits<uint64_t>::max(), std::numeric_limits<uint64_t>::max());
+    T(int64_t, static_cast<int64_t>(std::numeric_limits<uint64_t>::max()),
+        static_cast<int64_t>(std::numeric_limits<uint64_t>::max()));
     T(int64_t, 0.0, 0);
     T(int64_t, "1", 1);
     T(int64_t, "9", 9);
@@ -136,7 +137,7 @@ TEST(Reader, UnserializeDouble) {
 TEST(Reader, UnserializeComplexFloat) {
     std::string complexValue("3.14159");
 #ifdef HPROSE_HAS_ARRAY_INITIALIZER_LIST
-    std::array<float, 2> floatPair({3.14159f, 3.14159f});
+    std::array<float, 2> floatPair({{3.14159f, 3.14159f}});
 #else // HPROSE_HAS_ARRAY_INITIALIZER_LIST
     std::array<float, 2> floatPair;
     floatPair[0] = 3.14159f;
@@ -163,7 +164,7 @@ TEST(Reader, UnserializeComplexFloat) {
 TEST(Reader, UnserializeComplexDouble) {
     std::string complexValue("3.14159");
 #ifdef HPROSE_HAS_ARRAY_INITIALIZER_LIST
-    std::array<double, 2> doublePair({3.14159, 3.14159});
+    std::array<double, 2> doublePair({{3.14159, 3.14159}});
 #else // HPROSE_HAS_ARRAY_INITIALIZER_LIST
     std::array<double, 2> doublePair;
     doublePair[0] = 3.14159;

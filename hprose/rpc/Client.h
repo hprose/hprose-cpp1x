@@ -76,7 +76,7 @@ struct InvokeSettings {
 class ClientContext : Context {
 public:
     ClientContext(const Client &client)
-        : retried(0), client(client), settings(InvokeSettings()) {
+        : retried(0), settings(InvokeSettings()), client(client) {
     }
 
     const Client &getClient() {
@@ -209,6 +209,7 @@ private:
         R
     >::type
     decode(const std::string &data, const std::vector<T> &args, const ClientContext &context) {
+        (void)args;
         checkData(data);
         if (context.settings.mode != Normal) {
             throw std::runtime_error("only normal mode can return non string type");
@@ -239,6 +240,7 @@ private:
         std::string
     >::type
     decode(const std::string &data, const std::vector<T> &args, const ClientContext &context) {
+        (void)args;
         checkData(data);
         if (context.settings.mode == RawWithEndTag) {
             return data;
