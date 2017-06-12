@@ -23,6 +23,8 @@
 #include <hprose/http/Request.h>
 #include <hprose/http/Response.h>
 
+#include <stdexcept>
+
 namespace hprose {
 namespace http {
 
