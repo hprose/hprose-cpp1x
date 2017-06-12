@@ -373,7 +373,7 @@ public:
     void writeList(const std::forward_list<T> &lst) {
         if (writeRef(lst)) return;
         setRef(lst);
-        size_t count = std::distance(std::begin(lst), std::end(lst));
+        size_t count = std::distance(lst.begin(), lst.end());
         if (count == 0) {
             writeEmptyList();
             return;
