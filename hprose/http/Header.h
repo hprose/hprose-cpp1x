@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http header for cpp.                            *
  *                                                        *
- * LastModified: Dec 14, 2016                             *
+ * LastModified: Nov 27, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -25,6 +25,8 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <set>
+#include <ostream>
 
 namespace hprose {
 namespace http {
@@ -69,7 +71,7 @@ public:
         (*this)[key] = {value};
     }
 
-    std::string get(std::string key) {
+    std::string get(std::string key) const {
         auto search = find(key);
         if (search != end()) {
             auto value = search->second;
@@ -82,6 +84,14 @@ public:
 
     inline void del(std::string key) {
         erase(key);
+    }
+
+    void writeSubset(std::ostream &ostream, const std::set<std::string> &exclude) const {
+        for (auto iter = cbegin(); iter != cend(); iter++) {
+            if (exclude.find(iter->first) == exclude.end()) {
+                ostream << iter->first << ": " << iter->second[0] << "\r\n";
+            }
+        }
     }
 
 };

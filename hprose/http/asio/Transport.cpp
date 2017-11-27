@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http asio transport for cpp.                    *
  *                                                        *
- * LastModified: Dec 15, 2016                             *
+ * LastModified: Nov 27, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -46,16 +46,7 @@ tcp::socket Transport::getConnection(const Request &req) {
 void Transport::writeRequest(const Request &req, tcp::socket &socket) {
     ::asio::streambuf request;
     std::ostream requestStream(&request);
-    requestStream << req.method << " "
-                  << ((req.uri.getPath() == "/*") ? std::string("*") : req.uri.getPath()) << " "
-                  << req.proto << "\r\n";
-    requestStream << "Host: " << req.uri.getHost()
-                  << ((req.uri.getPort() == 0) ? std::string() : (':' + std::to_string(req.uri.getPort())))
-                  << "\r\n";
-    for (auto iter = req.header.cbegin(); iter != req.header.cend(); iter++) {
-        requestStream << iter->first << ": " << iter->second[0] << "\r\n";
-    }
-    requestStream << "Content-Length: " << req.contentLength << "\r\n\r\n";
+    req.write(requestStream);
     if (req.contentLength >= 64 * 1024) {
         ::asio::write(socket, request);
         ::asio::write(socket, ::asio::buffer(req.body));

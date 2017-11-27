@@ -9,7 +9,7 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/http/Request.h                                  *
+ * hprose/http/Request.cpp                                *
  *                                                        *
  * hprose http request for cpp.                           *
  *                                                        *
@@ -18,43 +18,39 @@
  *                                                        *
 \**********************************************************/
 
-#pragma once
-
-#include <hprose/Uri.h>
-#include <hprose/http/Header.h>
-#include <hprose/http/Cookie.h>
-
-#include <string>
-#include <ostream>
+#include <hprose/http/Request.h>
 
 namespace hprose {
 namespace http {
 
-struct Request {
-    explicit Request(const std::string &uri)
-        : method("GET"), uri(Uri(uri)), proto("HTTP/1.1"), contentLength(0) {
+const char * DefaultUserAgent = "Hprose-http-client/1.1";
+
+const std::set<std::string> ReqWriteExcludeHeader = {"Host", "User-Agent", "Content-Length", "Transfer-Encoding", "Trailer"};
+
+void Request::write(std::ostream &ostream) const {
+    std::string host = uri.getHost();
+    if (uri.getPort() > 0) {
+        host += ":" + std::to_string(uri.getPort());
     }
 
-    explicit Request(std::string method, const std::string &uri)
-        : method(std::move(method)), uri(Uri(uri)), proto("HTTP/1.1"), contentLength(0) {
+    ostream << method << " " << uri.getPath() << " " << proto << "\r\n";
+
+    ostream << "Host: " << host << "\r\n";
+
+    std::string userAgent = DefaultUserAgent;
+    if (header.find("User-Agent") != header.end()) {
+        userAgent = header.get("User-Agent");
+    }
+    if (userAgent != "") {
+        ostream << "User-Agent: " << host << "\r\n";
     }
 
-    explicit Request(std::string method, const std::string &uri, std::string body)
-        : method(std::move(method)), uri(Uri(uri)), proto("HTTP/1.1"), body(std::move(body)),
-          contentLength(this->body.size()) {
-    }
+    ostream << "Content-Length: " << contentLength << "\r\n";
 
-    void addCookie(const Cookie &cookie);
+    header.writeSubset(ostream, ReqWriteExcludeHeader);
 
-    void write(std::ostream &ostream) const;
-
-    std::string method;
-    Uri uri;
-    std::string proto;
-    Header header;
-    std::string body;
-    int64_t contentLength;
-};
+    ostream << "\r\n";
+}
 
 }
-} // hprose::http
+}

@@ -15,7 +15,7 @@ if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
     endif()
 elseif (${CMAKE_CXX_COMPILER_ID} MATCHES "Clang")
     #Clang and AppleClang
-    set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -Werror")
+    set(CMAKE_CXX_FLAGS "-g -Wall -Wextra -Werror -Wno-error=deprecated-declarations")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     # using Visual Studio C++
@@ -37,6 +37,7 @@ set(SOURCE_FILES
         hprose/io/decoders/StringDecoder.cpp
         hprose/rpc/Client.cpp
         hprose/rpc/asio/HttpClient.cpp
+        hprose/http/Request.cpp
         hprose/http/Client.cpp
         hprose/http/asio/Transport.cpp
         hprose/util/Util.cpp
