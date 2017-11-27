@@ -54,6 +54,11 @@ struct Request {
     Header header;
     std::string body;
     int64_t contentLength;
+    std::vector<std::string> transferEncoding;
+    bool close;
+
+private:
+    bool shouldSendContentLength() const;
 };
 
 }
