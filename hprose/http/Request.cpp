@@ -23,7 +23,7 @@
 namespace hprose {
 namespace http {
 
-const char * DefaultUserAgent = "Hprose-http-client/1.1";
+const char *DefaultUserAgent = "Hprose-http-client/1.1";
 
 const std::set<std::string> ReqWriteExcludeHeader = {"Host", "User-Agent", "Content-Length", "Transfer-Encoding", "Trailer"};
 
@@ -53,13 +53,13 @@ void Request::write(std::ostream &ostream) const {
         ostream << "User-Agent: " << host << "\r\n";
     }
 
-	if (close) {
+    if (close) {
         ostream << "Connection: close\r\n";
-	}
+    }
     if (shouldSendContentLength()) {
         ostream << "Content-Length: " << contentLength << "\r\n";
     } else if (chunked(transferEncoding)) {
-        ostream << "Transfer-Encoding: chunked`\r\n";
+        ostream << "Transfer-Encoding: chunked\r\n";
     }
 
     header.writeSubset(ostream, ReqWriteExcludeHeader);
@@ -81,11 +81,11 @@ bool Request::shouldSendContentLength() const {
         return true;
     }
     if (contentLength == 0 && isIdentity(transferEncoding)) {
-		if (method == "GET" || method == "HEAD") {
-			return false;
-		}
-		return true;
-	}
+        if (method == "GET" || method == "HEAD") {
+            return false;
+        }
+        return true;
+    }
     return false;
 }
 
