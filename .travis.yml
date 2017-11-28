@@ -10,6 +10,7 @@ before_install:
 matrix:
   include:
     - os: linux
+      dist: precise
       env: COMPILER_NAME=gcc CXX=g++-5 CC=gcc-5
       addons:
         apt:
@@ -31,6 +32,7 @@ matrix:
         - tar xzf asio-1.10.8.tar.gz
         - cd asio-1.10.8 &&  ./configure --without-boost && make && sudo make install && cd ..
     - os: linux
+      dist: precise
       env: COMPILER_NAME=gcc CXX=g++-4.9 CC=gcc-4.9
       addons:
         apt:
@@ -52,6 +54,7 @@ matrix:
         - tar xzf asio-1.10.8.tar.gz
         - cd asio-1.10.8 &&  ./configure --without-boost && make && sudo make install && cd ..
     - os: linux
+      dist: precise
       env: COMPILER_NAME=gcc CXX=g++-4.8 CC=gcc-4.8
       addons:
         apt:
@@ -73,6 +76,7 @@ matrix:
         - tar xzf asio-1.10.8.tar.gz
         - cd asio-1.10.8 &&  ./configure --without-boost && make && sudo make install && cd ..
     - os: linux
+      dist: precise
       env: COMPILER_NAME=gcc CXX=g++-4.7 CC=gcc-4.7
       addons:
         apt:
@@ -94,6 +98,7 @@ matrix:
         - tar xzf asio-1.10.8.tar.gz
         - cd asio-1.10.8 &&  ./configure --without-boost && make && sudo make install && cd ..
     - os: linux
+      dist: precise
       env: COMPILER_NAME=gcc CXX=g++-4.6 CC=gcc-4.6
       before_install:
         - sudo apt-get autoremove cmake
@@ -109,6 +114,7 @@ matrix:
         - tar xzf asio-1.10.8.tar.gz
         - cd asio-1.10.8 &&  sudo cp -a include/asio.hpp /usr/local/include && sudo cp -a include/asio /usr/local/include && cd ..
     - os: linux
+      dist: precise
       env: COMPILER_NAME=clang CXX=clang++-4.0 CC=clang-4.0
       addons:
         apt:
