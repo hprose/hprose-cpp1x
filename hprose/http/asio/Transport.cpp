@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http asio transport for cpp.                    *
  *                                                        *
- * LastModified: Nov 27, 2017                             *
+ * LastModified: Nov 28, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -27,7 +27,8 @@ namespace asio {
 
 using ::asio::ip::tcp;
 
-Response Transport::sendRequest(const Request &req) {
+Response Transport::sendRequest(const Request &req, time_t deadline) {
+    (void)deadline;
     tcp::socket socket = getConnection(req);
     writeRequest(req, socket);
     return readResponse(socket);

@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http client for cpp.                            *
  *                                                        *
- * LastModified: Dec 13, 2016                             *
+ * LastModified: Nov 28, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -91,8 +91,7 @@ private:
     }
 
     Response send(const Request &req, time_t deadline) {
-        (void)deadline;
-        return transport.sendRequest(req);
+        return transport.sendRequest(req, deadline);
     }
 
     time_t deadline() {

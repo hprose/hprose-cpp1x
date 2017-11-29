@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http transport for cpp.                         *
  *                                                        *
- * LastModified: Dec 14, 2016                             *
+ * LastModified: Nov 28, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -32,7 +32,7 @@ public:
         : keepAlive(true), compression(false) {
     }
 
-    virtual Response sendRequest(const Request &req) = 0;
+    virtual Response sendRequest(const Request &req, time_t deadline) = 0;
 
     bool keepAlive;
 

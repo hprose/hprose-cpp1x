@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http asio transport for cpp.                    *
  *                                                        *
- * LastModified: Dec 13, 2016                             *
+ * LastModified: Nov 28, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -32,7 +32,7 @@ using ::asio::ip::tcp;
 
 class Transport : public http::Transport {
 public:
-    Response sendRequest(const Request &req);
+    Response sendRequest(const Request &req, time_t deadline);
 
 private:
     tcp::socket getConnection(const Request &req);

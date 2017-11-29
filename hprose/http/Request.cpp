@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http request for cpp.                           *
  *                                                        *
- * LastModified: Nov 27, 2017                             *
+ * LastModified: Nov 29, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -33,6 +33,16 @@ inline bool chunked(const std::vector<std::string> &transferEncoding)  {
 
 inline bool isIdentity(const std::vector<std::string> &transferEncoding)  { 
     return transferEncoding.size() == 1 && transferEncoding[0] == "identity";
+}
+
+void Request::addCookie(const Cookie &cookie) {
+    std::string raw = cookie.getName() + "=" + cookie.getValue();
+    std::string cookieValue = header.get("Cookie");
+    if (!cookieValue.empty()) {
+        header.set("Cookie", cookieValue + "; " + raw);
+    } else {
+        header.set("Cookie", raw);
+    }
 }
 
 void Request::write(std::ostream &ostream) const {
