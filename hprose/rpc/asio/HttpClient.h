@@ -13,7 +13,7 @@
  *                                                        *
  * hprose asio http client for cpp.                       *
  *                                                        *
- * LastModified: Dec 14, 2016                             *
+ * LastModified: Nov 29, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -41,20 +41,20 @@ public:
         : Client(uriList) {
     }
 
-    inline bool getKeepAlive() const {
-        return client.transport.keepAlive;
+    inline bool getKeepAlive() {
+        return client.getTransport().keepAlive;
     }
 
     inline void setKeepAlive(bool enable) {
-        client.transport.keepAlive = enable;
+        client.getTransport().keepAlive = enable;
     }
 
-    inline bool getCompression() const {
-        return client.transport.compression;
+    inline bool getCompression() {
+        return client.getTransport().compression;
     }
 
     inline void setCompression(bool enable) {
-        client.transport.compression = enable;
+        client.getTransport().compression = enable;
     }
 
     http::Header header;

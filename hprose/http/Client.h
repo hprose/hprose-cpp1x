@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http client for cpp.                            *
  *                                                        *
- * LastModified: Nov 28, 2017                             *
+ * LastModified: Nov 29, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -22,8 +22,10 @@
 
 #include <hprose/http/Request.h>
 #include <hprose/http/Response.h>
+#include <hprose/http/CookieJar.h>
 
 #include <stdexcept>
+#include <memory>
 
 namespace hprose {
 namespace http {
@@ -39,6 +41,17 @@ bool shouldRedirectPost(int statusCode);
 template<class Transport>
 class Client {
 public:
+    Client()
+        : cookieJar(nullptr), timeout(0) {
+    }
+
+    Transport &getTransport() { return transport; }
+    std::shared_ptr<CookieJar> getCookieJar() { return cookieJar; }
+    int getTimeout() { return timeout; }
+
+    void setCookieJar(std::shared_ptr<CookieJar> cookieJar) { this->cookieJar = cookieJar; }
+    void setTimeout(int timeout) { this->timeout = timeout; }
+
     Response execute(const Request &req) {
         std::string method = req.method.empty() ? "GET" : req.method;
         if (method == "GET" || method == "HEAD") {
@@ -65,10 +78,6 @@ public:
         Request req("HEAD", url);
         return doFollowingRedirects(req, internal::shouldRedirectGet);
     }
-
-    Transport transport;
-
-    int timeout;
 
 private:
     Response doFollowingRedirects(const Request &req, bool shouldRedirect(int)) {
@@ -101,6 +110,9 @@ private:
         return time_t();
     }
 
+    Transport transport;
+    std::shared_ptr<CookieJar> cookieJar;
+    int timeout;
 };
 
 }

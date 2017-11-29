@@ -9,30 +9,31 @@
 
 /**********************************************************\
  *                                                        *
- * hprose/rpc/asio/HttpClient.cpp                         *
+ * hprose/http/CookieJar.h                                *
  *                                                        *
- * hprose asio http client for cpp.                       *
+ * hprose http cookie jar for cpp.                        *
  *                                                        *
  * LastModified: Nov 29, 2017                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
 
-#include <hprose/rpc/asio/HttpClient.h>
+#pragma once
+
+#include <hprose/Uri.h>
+#include <hprose/http/Cookie.h>
+
+#include <vector>
 
 namespace hprose {
-namespace rpc {
-namespace asio {
+namespace http {
 
-std::string HttpClient::sendAndReceive(const std::string &data, const ClientContext &context) {
-    http::Request req("POST", uri, data);
-    req.header.insert(header.begin(), header.end());
-    req.header.set("Content-Type", "application/hprose");
-    client.setTimeout(context.settings.timeout);
-    auto response = client.execute(req);
-    return response.body;
-}
+class CookieJar {
+public:
+    virtual std::vector<Cookie> getCookies(const Uri &uri) = 0;
+
+    virtual void setCookies(const Uri &uri, const std::vector<Cookie> &cookies) = 0;
+};
 
 }
-}
-} // hprose::rpc::asio
+} // hprose::http
