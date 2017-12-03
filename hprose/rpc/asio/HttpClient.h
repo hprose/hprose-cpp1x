@@ -13,7 +13,7 @@
  *                                                        *
  * hprose asio http client for cpp.                       *
  *                                                        *
- * LastModified: Nov 29, 2017                             *
+ * LastModified: Dec 3, 2017                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -21,8 +21,7 @@
 #pragma once
 
 #include <hprose/Uri.h>
-#include <hprose/http/Client.h>
-#include <hprose/http/asio/Transport.h>
+#include <hprose/http/asio/Client.h>
 #include <hprose/rpc/Client.h>
 
 #include <asio.hpp>
@@ -63,7 +62,7 @@ protected:
     std::string sendAndReceive(const std::string &data, const ClientContext &context);
 
 private:
-    http::Client<http::asio::Transport> client;
+    http::asio::Client client;
 };
 
 }
