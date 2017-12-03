@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http client for cpp.                            *
  *                                                        *
- * LastModified: Nov 29, 2017                             *
+ * LastModified: Dec 3, 2017                              *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -46,10 +46,13 @@ public:
     }
 
     Transport &getTransport() { return transport; }
+
     std::shared_ptr<CookieJar> getCookieJar() { return cookieJar; }
-    int getTimeout() { return timeout; }
 
     void setCookieJar(std::shared_ptr<CookieJar> cookieJar) { this->cookieJar = cookieJar; }
+
+    int getTimeout() { return timeout; }
+    
     void setTimeout(int timeout) { this->timeout = timeout; }
 
     Response execute(const Request &req) {

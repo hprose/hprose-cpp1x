@@ -37,6 +37,7 @@ set(SOURCE_FILES
         hprose/io/decoders/StringDecoder.cpp
         hprose/rpc/Client.cpp
         hprose/rpc/asio/HttpClient.cpp
+        hprose/http/Cookie.cpp
         hprose/http/Request.cpp
         hprose/http/Client.cpp
         hprose/http/asio/Transport.cpp
