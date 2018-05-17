@@ -13,7 +13,7 @@
  *                                                        *
  * hprose reader header for cpp.                          *
  *                                                        *
- * LastModified: Dec 30, 2016                             *
+ * LastModified: May 17, 2018                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -85,7 +85,7 @@ struct Decoder;
 
 class Reader : public RawReader {
 public:
-    Reader(std::istream &stream, bool simple = false)
+    explicit Reader(std::istream &stream, bool simple = false)
         : RawReader(stream), refer(simple ? nullptr : new internal::ReaderRefer()) {
     }
 

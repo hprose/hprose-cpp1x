@@ -13,7 +13,7 @@
  *                                                        *
  * hprose byte reader for cpp.                            *
  *                                                        *
- * LastModified: Dec 15, 2016                             *
+ * LastModified: May 17, 2018                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -34,7 +34,7 @@ namespace io {
 
 class ByteReader {
 public:
-    ByteReader(std::istream &stream)
+    explicit ByteReader(std::istream &stream)
         : stream(stream) {
     }
 

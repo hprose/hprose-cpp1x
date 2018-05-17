@@ -13,7 +13,7 @@
  *                                                        *
  * hprose http client for cpp.                            *
  *                                                        *
- * LastModified: Dec 12, 2016                             *
+ * LastModified: May 17, 2018                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -33,8 +33,9 @@ bool shouldRedirectGet(int statusCode) {
         case StatusSeeOther:
         case StatusTemporaryRedirect:
             return true;
+        default:
+            return false;
     }
-    return false;
 }
 
 
@@ -43,8 +44,9 @@ bool shouldRedirectPost(int statusCode) {
         case StatusFound:
         case StatusSeeOther:
             return true;
+        default:
+            return false;
     }
-    return false;
 }
 
 } // internal

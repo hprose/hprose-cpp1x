@@ -13,7 +13,7 @@
  *                                                        *
  * hprose writer header for cpp.                          *
  *                                                        *
- * LastModified: Dec 28, 2016                             *
+ * LastModified: May 17, 2018                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -88,7 +88,7 @@ private:
 
 class Writer {
 public:
-    Writer(std::ostream &stream, bool simple = false)
+    explicit Writer(std::ostream &stream, bool simple = false)
         : stream(stream), refer(simple ? nullptr : new internal::WriterRefer()) {
     }
 

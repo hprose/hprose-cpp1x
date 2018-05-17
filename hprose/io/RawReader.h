@@ -13,7 +13,7 @@
  *                                                        *
  * hprose raw reader for cpp.                             *
  *                                                        *
- * LastModified: Dec 15, 2016                             *
+ * LastModified: May 17, 2018                             *
  * Author: Chen fei <cf@hprose.com>                       *
  *                                                        *
 \**********************************************************/
@@ -37,7 +37,7 @@ struct UnexpectedTag : std::runtime_error {
 
 class RawReader : public ByteReader {
 public:
-    RawReader(std::istream &stream)
+    explicit RawReader(std::istream &stream)
         : ByteReader(stream) {
     }
 
